@@ -1,6 +1,24 @@
-// Any of the following formats may be used
-const ctx = document.getElementById('myChart');
-const myChart = new Chart(ctx, {
+function datetimeUpdate() {
+    var weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    var month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    var date = new Date();
+    var dateString = weekday[date.getDay()] + ", " + date.getDate() + " " + month[date.getMonth()] + " " + date.getFullYear();
+    var timeString = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    var datetimeString = dateString + " " + timeString;
+    $("#datetime-display").html(datetimeString);
+}
+
+function main(){
+    datetimeUpdate();
+    setInterval(datetimeUpdate, 1000);
+}
+
+const ctx1 = document.getElementById('myChart1');
+const ctx2 = document.getElementById('myChart2');
+const ctx3 = document.getElementById('myChart3');
+const ctx4 = document.getElementById('myChart4');
+
+const chart = {
     type: 'bar',
     data: {
         labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
@@ -33,4 +51,10 @@ const myChart = new Chart(ctx, {
             }
         }
     }
-});
+};
+const myChart1 = new Chart(ctx1, chart);
+const myChart2 = new Chart(ctx2, chart);
+const myChart3 = new Chart(ctx3, chart);
+const myChart4 = new Chart(ctx4, chart);
+
+$(document).ready(main);

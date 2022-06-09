@@ -50,6 +50,10 @@ app.get('/', (_req, res) => {
     res.status(200).sendFile(PATH + '/index.html');
 });
 
+app.get('/dashboard', (_req, res) => {
+    res.status(200).sendFile(PATH + '/dashboard.html');
+});
+
 // Get data from NASA POWER API
 app.get('/get-nasa-data', (req, res) => {
     //if query is empty return error
