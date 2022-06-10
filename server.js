@@ -290,3 +290,14 @@ app.get('/get-light-device-object', (_req,res) => {
             res.status(500).send(error);
     });
 });
+
+
+// Response a 404 with 404.html
+app.use((req, res, _next) => {
+    res.status(404);
+    if(req.accepts('html')) {
+        res.sendFile(PATH + '/404.html');
+    }else{
+        res.send({error: 'Not found'});
+    }
+});
