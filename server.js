@@ -1,5 +1,4 @@
 const { exit } = require('process');
-
 const http = require('http'),
     express = require('express'),
     bodyParser = require('body-parser'),
@@ -87,15 +86,18 @@ app.get('/get-nasa-data', (req, res) => {
 
 // Get data from CMS API
 app.get('/get-env-sensor-data', (req, res) => {
+    // CMS API constants
+    const base_url = process.env.CMS_BASE_URL;
+    const auth = {
+        "username": process.env.CMS_UNAME, 
+        "password": process.env.CMS_PWD, 
+        "cms_uid": process.env.CMS_UID
+    };
     //if query is empty return error
     //note that start and end is the UNIX timestamp
     if(!req.query.start || !req.query.end) {
         res.status(400).send({message: 'Please provide a start and end date'});
     }else{
-        const base_url = "https://siit.pdxeng.ch:8000/cms/api/v1.0";
-        const auth = {"username": process.env.CMS_UNAME, 
-                    "password": process.env.CMS_PWD, 
-                    "cms_uid": process.env.CMS_UID};
         //get token
         axios.post(base_url + "/token", auth).then(response => {
             const token = response.data.token,
@@ -117,4 +119,174 @@ app.get('/get-env-sensor-data', (req, res) => {
             res.status(500).send(error);
         });
     }
+});
+
+app.get('/get-service-status', (_req,res) => {
+    const base_url = process.env.CMS_BASE_URL;
+    const auth = {
+        "username": process.env.CMS_UNAME, 
+        "password": process.env.CMS_PWD, 
+        "cms_uid": process.env.CMS_UID
+    };
+    axios.post(base_url+"/token", auth).then(response => {
+        const token = response.data.token,
+              head = { "Authorization": "Bearer " + token};
+        axios.get(base_url+"/monitoring/status", {
+            headers: head
+        }).then(response2 => {
+                res.status(200).send(response2.data.status);
+        }).catch(error => {
+                res.status(500).send(error);
+        });
+    }).catch(error => {
+        res.status(500).send(error);
+    });
+});
+
+app.get('/get-zone-list', (_req,res) => {
+    const base_url = process.env.CMS_BASE_URL;
+    const auth = {
+        "username": process.env.CMS_UNAME, 
+        "password": process.env.CMS_PWD, 
+        "cms_uid": process.env.CMS_UID
+    };
+    axios.post(base_url+"/token", auth).then(response => {
+        const token = response.data.token,
+              head = { "Authorization": "Bearer " + token};
+        axios.get(base_url+"/zones", {
+            headers: head
+        }).then(response2 => {
+            res.status(200).send(response2.data.zones);
+        }).catch(error => {
+            res.status(500).send(error);
+        });
+    }).catch(error => {
+        res.status(500).send(error);
+    });
+});
+
+app.get('/get-zone-event', (req,res) => {
+    if(!req.query.zone_id) {
+        res.status(400).send({message: 'Please provide a zone id'});
+    }else{
+        const base_url = process.env.CMS_BASE_URL;
+        const auth = {
+            "username": process.env.CMS_UNAME, 
+            "password": process.env.CMS_PWD, 
+            "cms_uid": process.env.CMS_UID
+        };
+        axios.post(base_url+"/token", auth).then(response => {
+            const token = response.data.token,
+                head = { "Authorization": "Bearer " + token};
+            axios.get(base_url+"/events/active/zones/"+req.query.zone_id, {
+                headers: head
+            }).then(response2 => {
+                res.status(200).send(response2.data.active_events);
+            }).catch(error => {
+                res.status(500).send(error);
+            });
+        }).catch(error => {
+            res.status(500).send(error);
+        });
+    }
+});
+
+app.get('/get-zone-device-list', (req,res) => {
+    if(!req.query.zone_id) {
+        res.status(400).send({message: 'Please provide a zone id'});
+    }else{
+        const base_url = process.env.CMS_BASE_URL;
+        const auth = {
+            "username": process.env.CMS_UNAME, 
+            "password": process.env.CMS_PWD, 
+            "cms_uid": process.env.CMS_UID
+        };
+        axios.post(base_url+"/token", auth).then(response => {
+            const token = response.data.token,
+                head = { "Authorization": "Bearer " + token};
+            axios.get(base_url+"/zones/"+req.query.zone_id+"/devices", {
+                headers: head
+            }).then(response2 => {
+                res.status(200).send(response2.data.devices);
+            }).catch(error => {
+                res.status(500).send(error);
+        }).catch(error => {
+            res.status(500).send(error);
+        });
+    });
+    }
+});
+
+app.get('/get-zone-light-device-list', (req,res) => {
+    if(!req.query.zone_id) {
+        res.status(400).send({message: 'Please provide a zone id'});
+    }else{
+        const base_url = process.env.CMS_BASE_URL;
+        const auth = {
+            "username": process.env.CMS_UNAME, 
+            "password": process.env.CMS_PWD, 
+            "cms_uid": process.env.CMS_UID
+        };
+        axios.post(base_url+"/token", auth).then(response => {
+            const token = response.data.token,
+                head = { "Authorization": "Bearer " + token};
+            axios.get(base_url+"/zones/"+req.query.zone_id+"/1/devices", {
+                headers: head
+            }).then(response2 => {
+                res.status(200).send(response2.data.devices);
+            }).catch(error => {
+                res.status(500).send(error);
+            });
+        }).catch(error => {
+            res.status(500).send(error);
+        });
+    }
+});
+
+app.get('/get-zone-light-data', (req,res) => {
+    if(!req.query.zone_id) {
+        res.status(400).send({message: 'Please provide a zone id'});
+    }else{
+        const base_url = process.env.CMS_BASE_URL;
+        const auth = {
+            "username": process.env.CMS_UNAME, 
+            "password": process.env.CMS_PWD, 
+            "cms_uid": process.env.CMS_UID
+        };
+        axios.post(base_url+"/token", auth).then(response => {
+            const token = response.data.token,
+                head = { "Authorization": "Bearer " + token};
+            axios.get(base_url+"/zones/"+req.query.zone_id+"/1/devices_and_measures", {
+                headers: head
+            }).then(response2 => {
+                res.status(200).send(response2.data.devices);
+            }).catch(error => {
+                res.status(500).send(error);
+            })
+        }).catch(error => {
+            res.status(500).send(error);
+        });
+    }
+});
+
+app.get('/get-light-device-object', (_req,res) => {
+    const base_url = process.env.CMS_BASE_URL;
+    const auth = {
+        "username": process.env.CMS_UNAME,
+        "password": process.env.CMS_PWD,
+        "cms_uid": process.env.CMS_UID
+    };
+    axios.post(base_url+"/token", auth).then(response => {
+        const token = response.data.token,
+            head = { "Authorization": "Bearer " + token};
+        axios.get(base_url+"/deviceTypes/3311/objects", {
+            headers: head
+        }).then(response2 => {
+            res.status(200).send(response2.data.objects);
+        }).catch(error => {
+            res.status(500).send(error);
+        })
+    }).catch(error => {
+            res.status(500).send(error);
+    });
 });
