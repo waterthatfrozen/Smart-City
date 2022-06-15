@@ -1,5 +1,27 @@
+html{
+    height: 100%;
+}
+
 body {
+    font-family: 'Inter', sans-serif;
+    align-content: center;
     font-size: .875rem;
+}
+
+main{
+    width: 100%;
+}
+
+.text-white {
+    color: white;
+}
+
+.smaller-font{
+    font-size: 0.8rem;
+}
+
+footer{
+    text-align: center;
 }
 
 .bd-placeholder-img {

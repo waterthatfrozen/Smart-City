@@ -53,6 +53,7 @@ app.get('/dashboard', (_req, res) => {
     res.status(200).sendFile(PATH + '/dashboard.html');
 });
 
+// HTTP GET REQUESTS ENDPOINT
 // Get data from NASA POWER API
 app.get('/get-nasa-data', (req, res) => {
     //if query is empty return error
@@ -315,6 +316,21 @@ app.get('/get-device-info', (req,res) => {
             res.status(500).send(error);
         });
     }
+});
+
+// HTTP POST ENDPOINTS
+app.post('/login', (req,res) => {
+    const base_url = process.env.CMS_BASE_URL;
+    const auth = {
+        "username": req.body.username,
+        "password": req.body.password,
+        "cms_uid": process.env.CMS_UID
+    };
+    axios.post(base_url+"/token", auth).then(response => {
+        res.status(200).send(response);
+    }).catch(error => {
+        res.status(400).send(error);
+    });
 });
 
 app.post('/set-light-dimming', (req,res) => {

@@ -12,8 +12,13 @@ function datetimeUpdate() {
 }
 
 function main(){
+    console.log(sessionStorage.getItem("loggedIn"));
     datetimeUpdate();
     setInterval(datetimeUpdate, 1000);
+    $("#sign-out").on("click",function(){
+        sessionStorage.clear();
+        window.location = "/";
+    });
 }
 
 const ctx1 = document.getElementById('myChart1');
