@@ -28,18 +28,17 @@ async function login(username, password){
         username: username,
         password: password
     };
-    await fetch("/login", {
+    await fetch("https://siit.pdxeng.ch:8000/cms/api/v1.0/token", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
             },
         body: JSON.stringify(data)
-    }).then(function(response){
-        if(response.status == 200){
-            // console.log(response);
+    }).then(response => response.json()).then(response => {
+        if(response.response_code == 200){
             sessionStorage.setItem("username", username);
             sessionStorage.setItem("password", password);
-            // sessionStorage.setItem("token", response.token);
+            sessionStorage.setItem("token", response.token);
             sessionStorage.setItem("loggedIn", true);
             window.location = "/dashboard";
         }else{
@@ -48,11 +47,10 @@ async function login(username, password){
             $("#error-message").prop("hidden", false).html(message);
             enableButton();
         }
-    }).catch(function(_error){
+    }).catch(function(error){
         var message = "<em class='bi bi-exclamation-circle-fill'></em>&nbsp;<strong>Login Error!</strong><br/>"+
         "<small>Please contact your system admin.</small>";
         $("#error-message").prop("hidden", false).html(message);
-        console.log(_error);
         enableButton();
     });
 }
