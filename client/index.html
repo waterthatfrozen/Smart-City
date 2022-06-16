@@ -26,11 +26,9 @@
 
     <main class="flex-shrink-0 text-dark">
         <div class="container mt-auto form-signin">
-            <form method="POST" class="form-floating" id="login-form">
+            <form method="POST" action="/login" class="form-floating" id="login-form" enctype="application/x-www-form-urlencoded">
                 <h2 class="mt-4 mb-3 fw-normal text-bold"><em class="bi bi-door-open me-2"></em>Log In</h2>
-                <div class="alert alert-danger" id="error-message" hidden>
-                    
-                </div>
+                <div class="alert alert-danger" id="error-message" hidden></div>
 
                 <div class="form-floating mb-2">
                     <input type="text" class="form-control" id="username" placeholder="Username" name="username" required>
@@ -59,6 +57,7 @@
         integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/login.js"></script>
+    <script src="js/datetime-update.js"></script>
 </body>
 
 </html>

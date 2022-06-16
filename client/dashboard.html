@@ -17,12 +17,26 @@
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="css/dashboard.css">
+        <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous" defer>
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="js/dashboard.js" defer></script>
+    <script src="js/datetime-update.js" defer></script>
+    <script>
+        if (!sessionStorage.getItem("loggedIn")) {
+           window.location = "/401";
+        }
+    </script>
 </head>
 
 <body>
 
     <header class="navbar navbar-dark sticky-top bg-success flex-md-nowrap p-0 shadow">
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/">Smart City Dashboard</a>
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/dashboard">Smart City Dashboard</a>
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
             data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
             aria-label="Toggle navigation">
@@ -42,10 +56,10 @@
                 <div class="position-sticky pt-3">
                     <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-2 mb-1 text-muted"><span>Overview</span></h6>
                     <ul class="nav flex-column mb-auto">
-                        <li class="nav-item"><a class="nav-link" href="#">System Overview</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/dashboard">System Overview</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Zone Overview</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Device Events</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Light Map View</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/maps-view">Light Map View</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Link 5</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">System Status</a></li>
                     </ul>
@@ -237,14 +251,6 @@
             </main>
         </div>
     </div>
-    <!-- SCRIPTS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
-    </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.js"
-        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/dashboard.js"></script>
 </body>
 
 </html>

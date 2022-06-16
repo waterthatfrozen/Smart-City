@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.88.1">
+    <title>Smart City Dashboard</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/dashboard/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+    integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+    crossorigin=""/>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style type="text/css">
+        body{
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            padding-top: 100px;
+            min-height: 92.5vh;
+        }
+    </style>
+        <script>
+            if (!sessionStorage.getItem("loggedIn")) {
+               window.location = "/401";
+            }
+        </script>
+</head>
+
+<body class="h-100">
+
+    <header class="navbar navbar-dark sticky-top bg-success flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/dashboard">Smart City Dashboard</a>
+        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
+            data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="form-control bg-dark text-white w-100" id="datetime-display">&nbsp;</div>
+        <div class="navbar-nav">
+            <div class="nav-item text-nowrap">
+                <a class="nav-link px-3" href="/" id="sign-out">Sign out</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-2 mb-1 text-muted"><span>Overview</span></h6>
+                    <ul class="nav flex-column mb-auto">
+                        <li class="nav-item"><a class="nav-link" href="/dashboard">System Overview</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Zone Overview</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Device Events</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/maps-view">Light Map View</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Link 5</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">System Status</a></li>
+                    </ul>
+
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted"><span>Zone</span></h6>
+                    <ul class="nav flex-column mb-auto">
+                        <li class="nav-item"><a class="nav-link" href="#">Link 1</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Link 2</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Link 3</a></li>
+                    </ul>
+                </div>
+                <ul class="nav flex-column mt-4 justify-content-between">
+                    <li class="nav-item nav-link smaller-font text-muted">
+                        &copy; 2022 Copyright Reserved.<br/>
+                        SIIT, Thammasat University.<br/>
+                        <a class="text-decoration-none text-muted" href="http://github.com/waterthatfrozen/">Project Information</a> | 
+                        <a class="text-decoration-none text-muted" href="#">Privacy Statement</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto p-0 col-lg-10">
+                <div id="map"></div>
+            </main>
+        </div>
+    </div>
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+    integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+    crossorigin=""></script>
+    <script src="js/datetime-update.js"></script>
+    <script>
+        var map = L.map('map').setView([14.067453, 100.605089], 16);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        L.marker([14.067453, 100.605089]).addTo(map)
+        .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
+        .openPopup();
+    </script>
+</body>
+
+</html>

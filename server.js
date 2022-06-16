@@ -1,36 +1,20 @@
-const { exit } = require('process');
+const {
+    exit
+} = require('process');
 const http = require('http'),
     express = require('express'),
     bodyParser = require('body-parser'),
-    axios = require('axios').default,
-    firebaseApp = require('firebase/app'),
-    firebaseAnalytics = require('firebase/analytics'),
-    firebaseFunctions = require('firebase/functions'),
     dotenv = require('dotenv'),
     app = express();
+const getDataAPI = require('./api/get-data'),
+    getSupportDataAPI = require('./api/get-support-data'),
+    getDeviceAPI = require('./api/get-device');
 
 dotenv.config();
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// Firebase Configurations
-const firebaseConfig = {
-    apiKey: process.env.FIREBASE_API_KEY,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.FIREBASE_MSGING_SENDER_ID,
-    appId: process.env.FIREBASE_APP_ID,
-    measurementId: process.env.FIREBASE_MEASUREMENT_ID
-};
-
-const firebase = firebaseApp.initializeApp(firebaseConfig);
-if (firebase) {
-    console.log('Firebase app initialized');
-}else{
-    console.log('Firebase app not initialized');
-    exit(1);
-}
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
 const PATH = __dirname + '/client';
 const PORT = process.env.PORT;
@@ -41,10 +25,6 @@ http.createServer(app).listen(PORT, () => {
 });
 
 //Routing
-app.get('/hello_world', (_req, res) => {
-    res.status(200).send({message: 'Hello World!'});
-});
-
 app.get('/', (_req, res) => {
     res.status(200).sendFile(PATH + '/index.html');
 });
@@ -53,337 +33,92 @@ app.get('/dashboard', (_req, res) => {
     res.status(200).sendFile(PATH + '/dashboard.html');
 });
 
-// HTTP GET REQUESTS ENDPOINT
-// Get data from NASA POWER API
+app.get('/maps-view', (_req, res) => {
+    res.status(200).sendFile(PATH + '/maps-view.html');
+});
+
+// Test API
+app.get('/hello-world', (_req, res) => {
+    getSupportDataAPI.helloWorld(_req, res);
+});
+
+// GET REQUEST
+// GET DATA REQUEST (api/get-data)
 app.get('/get-nasa-data', (req, res) => {
-    //if query is empty return error
-    if(!req.query.start || !req.query.end) {
-        res.status(400).send({message: 'Please provide a start and end date'});
-        }else{
-        const START = req.query.start, END = req.query.end;
-        const FORMAT = "JSON",
-            LATITUDE = 14.067453,
-            LONGITUDE = 100.605089,
-            PARAMETERS = "T2M,T2MDEW,T2MWET,TS,QV2M,RH2M,PRECTOTCORR,T2M_RANGE,T2M_MAX,T2M_MIN",
-            COMMUNITY = "RE";
-        const url = "https://power.larc.nasa.gov/api/temporal/daily/point";
-        axios.get(url, {
-            params: {
-                start: START,
-                end: END,
-                format: FORMAT,
-                latitude: LATITUDE,
-                longitude: LONGITUDE,
-                parameters: PARAMETERS,
-                community: COMMUNITY
-            }
-        }).then(response => {
-            res.status(200).send(response.data);
-        }).catch(error => {
-            res.status(500).send(error);
-        });
-    }
+    getDataAPI.getNasaData(req, res);
 });
 
-// Get data from CMS API
 app.get('/get-env-sensor-data', (req, res) => {
-    // CMS API constants
-    const base_url = process.env.CMS_BASE_URL;
-    const auth = {
-        "username": process.env.CMS_UNAME, 
-        "password": process.env.CMS_PWD, 
-        "cms_uid": process.env.CMS_UID
-    };
-    //if query is empty return error
-    //note that start and end is the UNIX timestamp
-    if(!req.query.start || !req.query.end) {
-        res.status(400).send({message: 'Please provide a start and end date'});
-    }else{
-        //get token
-        axios.post(base_url + "/token", auth).then(response => {
-            const token = response.data.token,
-                  head = { "Authorization": "Bearer " + token},
-                  url = base_url+"/reports/devices/"+process.env.CMS_ENVSNR_DEVICE_UID+"/objects/"+process.env.CMS_ENVSNR_OBJECT_NAME;
-            //get data
-            axios.get(url, {
-                headers: head,
-                params: {
-                    from: req.query.start,
-                    to: req.query.end
-                }
-            }).then(response2 => {
-                res.status(200).send(response2.data.values);
-            }).catch(error => {
-                res.status(500).send(error);
-            });
-        }).catch(error => {
-            res.status(500).send(error);
-        });
-    }
+    getDataAPI.getEnvSensorData(req, res);
 });
 
-app.get('/get-service-status', (_req,res) => {
-    const base_url = process.env.CMS_BASE_URL;
-    const auth = {
-        "username": process.env.CMS_UNAME, 
-        "password": process.env.CMS_PWD, 
-        "cms_uid": process.env.CMS_UID
-    };
-    axios.post(base_url+"/token", auth).then(response => {
-        const token = response.data.token,
-              head = { "Authorization": "Bearer " + token};
-        axios.get(base_url+"/monitoring/status", {
-            headers: head
-        }).then(response2 => {
-                res.status(200).send(response2.data.status);
-        }).catch(error => {
-                res.status(500).send(error);
-        });
-    }).catch(error => {
-        res.status(500).send(error);
-    });
+app.get('/get-env-sensor-hourly-data', (req, res) => {
+    getDataAPI.getEnvSensorHourlyData(req, res);
 });
 
-app.get('/get-zone-list', (_req,res) => {
-    const base_url = process.env.CMS_BASE_URL;
-    const auth = {
-        "username": process.env.CMS_UNAME, 
-        "password": process.env.CMS_PWD, 
-        "cms_uid": process.env.CMS_UID
-    };
-    axios.post(base_url+"/token", auth).then(response => {
-        const token = response.data.token,
-              head = { "Authorization": "Bearer " + token};
-        axios.get(base_url+"/zones", {
-            headers: head
-        }).then(response2 => {
-            res.status(200).send(response2.data.zones);
-        }).catch(error => {
-            res.status(500).send(error);
-        });
-    }).catch(error => {
-        res.status(500).send(error);
-    });
+app.get('/get-zone-light-data', (req, res) => {
+    getDataAPI.getZoneLightData(req, res);
 });
 
-app.get('/get-zone-event', (req,res) => {
-    if(!req.query.zone_id) {
-        res.status(400).send({message: 'Please provide a zone id'});
-    }else{
-        const base_url = process.env.CMS_BASE_URL;
-        const auth = {
-            "username": process.env.CMS_UNAME, 
-            "password": process.env.CMS_PWD, 
-            "cms_uid": process.env.CMS_UID
-        };
-        axios.post(base_url+"/token", auth).then(response => {
-            const token = response.data.token,
-                head = { "Authorization": "Bearer " + token};
-            axios.get(base_url+"/events/active/zones/"+req.query.zone_id, {
-                headers: head
-            }).then(response2 => {
-                res.status(200).send(response2.data.active_events);
-            }).catch(error => {
-                res.status(500).send(error);
-            });
-        }).catch(error => {
-            res.status(500).send(error);
-        });
-    }
+// GET SUPPORT DATA REQUEST (api/get-support-data)
+app.get('/get-service-status', (req, res) => {
+    getSupportDataAPI.getServiceStatus(req, res);
 });
 
-app.get('/get-zone-device-list', (req,res) => {
-    if(!req.query.zone_id) {
-        res.status(400).send({message: 'Please provide a zone id'});
-    }else{
-        const base_url = process.env.CMS_BASE_URL;
-        const auth = {
-            "username": process.env.CMS_UNAME, 
-            "password": process.env.CMS_PWD, 
-            "cms_uid": process.env.CMS_UID
-        };
-        axios.post(base_url+"/token", auth).then(response => {
-            const token = response.data.token,
-                head = { "Authorization": "Bearer " + token};
-            axios.get(base_url+"/zones/"+req.query.zone_id+"/devices", {
-                headers: head
-            }).then(response2 => {
-                res.status(200).send(response2.data.devices);
-            }).catch(error => {
-                res.status(500).send(error);
-        }).catch(error => {
-            res.status(500).send(error);
-        });
-    });
-    }
+app.get('/get-zone-list', (req, res) => {
+    getSupportDataAPI.getZoneList(req, res);
 });
 
-app.get('/get-zone-light-device-list', (req,res) => {
-    if(!req.query.zone_id) {
-        res.status(400).send({message: 'Please provide a zone id'});
-    }else{
-        const base_url = process.env.CMS_BASE_URL;
-        const auth = {
-            "username": process.env.CMS_UNAME, 
-            "password": process.env.CMS_PWD, 
-            "cms_uid": process.env.CMS_UID
-        };
-        axios.post(base_url+"/token", auth).then(response => {
-            const token = response.data.token,
-                head = { "Authorization": "Bearer " + token};
-            axios.get(base_url+"/zones/"+req.query.zone_id+"/1/devices", {
-                headers: head
-            }).then(response2 => {
-                res.status(200).send(response2.data.devices);
-            }).catch(error => {
-                res.status(500).send(error);
-            });
-        }).catch(error => {
-            res.status(500).send(error);
-        });
-    }
+app.get('/get-zone-event', (req, res) => {
+    getSupportDataAPI.getZoneEventList(req, res);
 });
 
-app.get('/get-zone-light-data', (req,res) => {
-    if(!req.query.zone_id) {
-        res.status(400).send({message: 'Please provide a zone id'});
-    }else{
-        const base_url = process.env.CMS_BASE_URL;
-        const auth = {
-            "username": process.env.CMS_UNAME, 
-            "password": process.env.CMS_PWD, 
-            "cms_uid": process.env.CMS_UID
-        };
-        axios.post(base_url+"/token", auth).then(response => {
-            const token = response.data.token,
-                head = { "Authorization": "Bearer " + token};
-            axios.get(base_url+"/zones/"+req.query.zone_id+"/1/devices_and_measures", {
-                headers: head
-            }).then(response2 => {
-                res.status(200).send(response2.data.devices);
-            }).catch(error => {
-                res.status(500).send(error);
-            })
-        }).catch(error => {
-            res.status(500).send(error);
-        });
-    }
+// GET DEVICE REQUEST (api/get-device)
+app.get('/get-zone-device-list', (req, res) => {
+    getDeviceAPI.getZoneDeviceList(req, res);
 });
 
-app.get('/get-light-device-object', (_req,res) => {
-    const base_url = process.env.CMS_BASE_URL;
-    const auth = {
-        "username": process.env.CMS_UNAME,
-        "password": process.env.CMS_PWD,
-        "cms_uid": process.env.CMS_UID
-    };
-    axios.post(base_url+"/token", auth).then(response => {
-        const token = response.data.token,
-            head = { "Authorization": "Bearer " + token};
-        axios.get(base_url+"/deviceTypes/3311/objects", {
-            headers: head
-        }).then(response2 => {
-            res.status(200).send(response2.data.objects);
-        }).catch(error => {
-            res.status(500).send(error);
-        })
-    }).catch(error => {
-            res.status(500).send(error);
-    });
+app.get('/get-zone-light-device-list', (req, res) => {
+    getDeviceAPI.getZoneLightDeviceList(req, res);
 });
 
-app.get('/get-device-info', (req,res) => {
-    if(!req.query.device_id) {
-        res.status(400).send({message: 'Please provide a device id'});
-    }else{
-        const base_url = process.env.CMS_BASE_URL;
-        const auth = {
-            "username": process.env.CMS_UNAME,
-            "password": process.env.CMS_PWD,
-            "cms_uid": process.env.CMS_UID
-        };
-        axios.post(base_url+"/token", auth).then(response => {
-            const token = response.data.token,
-                  head = { "Authorization": "Bearer " + token};
-            axios.get(base_url+"/devices/"+req.query.device_id, {
-                headers: head
-            }).then(response2 => {
-                res.status(200).send(response2.data.devices[0]);
-            }).catch(error => {
-                res.status(500).send(error);
-            });
-        }).catch(error => {
-            res.status(500).send(error);
-        });
-    }
+app.get('/get-device-info', (req, res) => {
+    getDeviceAPI.getDeviceInfo(req, res);
 });
 
-// HTTP POST ENDPOINTS
-app.post('/login', (req,res) => {
+// POST REQUEST
+app.post('/login', (req, res) => {
     const base_url = process.env.CMS_BASE_URL;
     const auth = {
         "username": req.body.username,
         "password": req.body.password,
         "cms_uid": process.env.CMS_UID
     };
-    axios.post(base_url+"/token", auth).then(response => {
+    axios.post(base_url + "/token", auth).then(response => {
         res.status(200).send(response);
     }).catch(error => {
         res.status(400).send(error);
     });
 });
 
-app.post('/set-light-dimming', (req,res) => {
-    const accept_dimming_value = [0,25,50,75,100];
-    if(!req.body.device_id || !req.body.dimming_value) {
-        res.status(400).send({message: 'Please provide a device id, and value'});
-    }else if(!accept_dimming_value.includes(req.body.dimming_value)) {
-        res.status(400).send({message: 'Please provide a valid dimming value'});
-    }else{
-        const base_url = process.env.CMS_BASE_URL;
-        const auth = {
-            "username": process.env.CMS_UNAME,
-            "password": process.env.CMS_PWD,
-            "cms_uid": process.env.CMS_UID
-        };
-        axios.post(base_url+"/token", auth).then(response => {
-            const token = response.data.token,
-                  head = { "Authorization": "Bearer " + token};
-            axios.get(base_url+"/devices/"+req.body.device_id, {
-                headers: head
-            }).then(response2 => {
-                const gateway_mac = response2.data.devices[0].gateway_MAC;
-                axios.put(base_url+"/devices/commands/id/"+req.body.device_id,{
-                    "gateway_mac": gateway_mac,
-                    "command_name": "set_light_control",
-                    "objects": [{
-                        "object_id": 3311,
-                        "instance_id": 0,
-                        "resource_id": 5851,
-                        "resource_value": req.body.dimming_value
-                    }],
-                    "instance_id": 0,
-                    "object_id": 3311
-                },{headers: head}).then(response3 => {
-                    res.status(200).send(response3.data);
-                }).catch(error => {
-                    res.status(500).send(error);
-                });
-            }).catch(error => {
-                res.status(500).send({location: "Getting Device Information",error: error});
-            });
-        }).catch(error => {
-            res.status(500).send({location: "Getting Token",error: error});
-        });
-    }
+const setDevice = require('./api/set-device');
+app.post('/set-light-dimming', (req, res) => {
+    setDevice.setLightDimming(req, res);
+});
+
+// Response 401
+app.get('/401', (_req, res) => {
+    res.status(401).sendFile(PATH + '/401.html');
 });
 
 // Response a 404 with 404.html
 app.use((req, res, _next) => {
     res.status(404);
-    if(req.accepts('html')) {
+    if (req.accepts('html')) {
         res.sendFile(PATH + '/404.html');
-    }else{
-        res.send({error: 'Not found'});
+    } else {
+        res.send({
+            error: 'Not found'
+        });
     }
 });
