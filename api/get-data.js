@@ -109,9 +109,14 @@ exports.getEnvSensorHourlyData = function (req, res) {
                 }
             }).then(response2 => {
                 var receivedValue = response2.data.values;
-                var sendValue = [receivedValue[0]];
-                for (var i = 1; i < receivedValue.length; i = i + 6) {
-                    sendValue.push(receivedValue[i]);
+                var sendValue = [receivedValue[0], receivedValue[1]];
+                var prevHour = (new Date(receivedValue[1][0])).getHours();
+                for (var i = 2; i < receivedValue.length; i++) {
+                    var currHour = (new Date(receivedValue[i][0])).getHours();
+                    if (currHour != prevHour) {
+                        sendValue.push(receivedValue[i]);
+                        prevHour = currHour;
+                    }
                 }
                 res.status(200).send({
                     values: sendValue
