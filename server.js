@@ -101,6 +101,21 @@ app.post('/login', (req, res) => {
     });
 });
 
+//for testing send data endpoint
+app.post('/test-send-data', (req, res) => {
+    try {
+        res.status(200).send({
+            message: "received data successfully",
+            received_body: req.body
+        });
+    } catch (error) {
+        res.status(500).send({
+            message: "error on receiving data",
+            error: error
+        });
+    }
+});
+
 const setDevice = require('./api/set-device');
 app.post('/set-light-dimming', (req, res) => {
     setDevice.setLightDimming(req, res);

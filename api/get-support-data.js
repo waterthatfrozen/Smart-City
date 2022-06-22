@@ -1,7 +1,10 @@
 const axios = require('axios').default;
 
 exports.helloWorld = function (_req, res) {
-    res.status(200).send("Hello World!");
+    res.status(200).send({
+        message: "Hello World!",
+        timestamp: new Date().toISOString()
+    });
 };
 
 exports.getServiceStatus = function (_req, res) {
