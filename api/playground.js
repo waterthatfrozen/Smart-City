@@ -42,7 +42,9 @@ exports.testSendData = function (req, res) {
 exports.testSelectData = function (req, res) {
     var selectQuery = "SELECT * FROM dbo.test_message";
     if (req.query.id) {
-        selectQuery = selectQuery + " WHERE messageId = " + req.query.id;
+        var queryId = req.query.id;
+        queryId = queryId.split(' ');
+        selectQuery = selectQuery + " WHERE messageId = " + queryId[0];
     }
     sql.query(selectQuery, function (err, result) {
         if (err) {
@@ -66,7 +68,11 @@ exports.testInsertData = function (req, res) {
         });
     } else {
         try {
-            var insertQuery = "INSERT INTO dbo.test_message (messageText) VALUES ('" + req.body.message + "')";
+            var insertMessage = req.body.message;
+            // replace ' with '' in insertMessage
+            insertMessage = insertMessage.replace(/'/g, "''");
+            console.log(insertMessage);
+            var insertQuery = "INSERT INTO dbo.test_message (messageText) VALUES ('" + insertMessage + "')";
             sql.query(insertQuery, function (err, result) {
                 if (err) {
                     throw err;
@@ -93,7 +99,12 @@ exports.testUpdateData = function (req, res) {
         });
     } else {
         try {
-            var updateQuery = "UPDATE dbo.test_message SET messageText = '" + req.body.message + "' WHERE messageId = " + req.body.id;
+            var updateMessage = req.body.message;
+            // replace ' with '' in updateMessage
+            updateMessage = updateMessage.replace(/'/g, "''");
+            var updateId = req.body.id;
+            updateId = updateId.split(' ');
+            var updateQuery = "UPDATE dbo.test_message SET messageText = '" + updateMessage + "' WHERE messageId = " + updateId[0];
             sql.query(updateQuery, function (err, result) {
                 if (err) {
                     throw err;
@@ -120,7 +131,9 @@ exports.testDeleteData = function (req, res) {
         });
     } else {
         try {
-            var deleteQuery = "DELETE FROM dbo.test_message WHERE messageId = " + req.query.id;
+            var deleteId = req.query.id;
+            deleteId = deleteId.split(' ');
+            var deleteQuery = "DELETE FROM dbo.test_message WHERE messageId = " + deleteId[0];
             sql.query(deleteQuery, function (err, result) {
                 if (err) {
                     throw err;
