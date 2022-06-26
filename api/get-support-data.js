@@ -1,12 +1,5 @@
 const axios = require('axios').default;
 
-exports.helloWorld = function (_req, res) {
-    res.status(200).send({
-        message: "Hello World!",
-        timestamp: new Date().toISOString()
-    });
-};
-
 exports.getServiceStatus = function (_req, res) {
     const base_url = process.env.CMS_BASE_URL;
     const auth = {
