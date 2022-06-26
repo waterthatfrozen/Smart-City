@@ -8,7 +8,8 @@ const http = require('http'),
     app = express();
 const getDataAPI = require('./api/get-data'),
     getSupportDataAPI = require('./api/get-support-data'),
-    getDeviceAPI = require('./api/get-device');
+    getDeviceAPI = require('./api/get-device'),
+    playgroundAPI = require('./api/playground');
 
 dotenv.config();
 app.use(bodyParser.json());
@@ -25,21 +26,37 @@ http.createServer(app).listen(PORT, () => {
 });
 
 //Routing
-app.get('/', (_req, res) => {
+app.get('/', (req, res) => {
     res.status(200).sendFile(PATH + '/index.html');
 });
 
-app.get('/dashboard', (_req, res) => {
+app.get('/dashboard', (req, res) => {
     res.status(200).sendFile(PATH + '/dashboard.html');
 });
 
-app.get('/maps-view', (_req, res) => {
+app.get('/maps-view', (req, res) => {
     res.status(200).sendFile(PATH + '/maps-view.html');
 });
 
 // Test API
-app.get('/hello-world', (_req, res) => {
-    getSupportDataAPI.helloWorld(_req, res);
+app.get('/hello-world', (req, res) => {
+    playgroundAPI.helloWorld(req, res);
+});
+
+app.get('/test-select-data', (req, res) => {
+    playgroundAPI.testSelectData(req, res);
+});
+
+app.post('/test-insert-data', (req, res) => {
+    playgroundAPI.testInsertData(req, res);
+});
+
+app.put('/test-update-data', (req, res) => {
+    playgroundAPI.testUpdateData(req, res);
+});
+
+app.delete('/test-delete-data', (req, res) => {
+    playgroundAPI.testDeleteData(req, res);
 });
 
 // GET REQUEST
@@ -103,17 +120,7 @@ app.post('/login', (req, res) => {
 
 //for testing send data endpoint
 app.post('/test-send-data', (req, res) => {
-    try {
-        res.status(200).send({
-            message: "received data successfully",
-            received_body: req.body
-        });
-    } catch (error) {
-        res.status(500).send({
-            message: "error on receiving data",
-            error: error
-        });
-    }
+    playgroundAPI.testSendData(req, res);
 });
 
 const setDevice = require('./api/set-device');
@@ -122,7 +129,7 @@ app.post('/set-light-dimming', (req, res) => {
 });
 
 // Response 401
-app.get('/401', (_req, res) => {
+app.get('/401', (req, res) => {
     res.status(401).sendFile(PATH + '/401.html');
 });
 
