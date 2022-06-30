@@ -1,21 +1,70 @@
-const {
-    exit
-} = require('process');
 const http = require('http'),
     express = require('express'),
+    sessions = require('express-session'),
+    cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
     dotenv = require('dotenv'),
+    axios = require('axios'),
     app = express();
 const getDataAPI = require('./api/get-data'),
     getSupportDataAPI = require('./api/get-support-data'),
     getDeviceAPI = require('./api/get-device'),
     playgroundAPI = require('./api/playground');
 
+const tokenMaxAge = 6 * 60 * 60 * 1000;
+
+function checkTokenValid(req, res, next) {
+    // check for session is expired or not
+    if (req.session.token) {
+        var now = new Date().getTime();
+        var tokenExpiry = new Date(req.session.cookie._expires).getTime();
+        if (now < tokenExpiry) {
+            next();
+        } else {
+            req.session = null;
+            res.status(401).redirect('/401');
+        }
+    } else {
+        res.status(401).redirect('/401');
+    }
+}
+
 dotenv.config();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+app.use(cookieParser());
+
+// session settings
+app.use(sessions({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        maxAge: tokenMaxAge
+    }
+}));
+
+// remove the session cookie on the server when it expires
+app.use(function (req, _res, next) {
+    if (req.session.token) {
+        var now = new Date().getTime();
+        var tokenExpiry = new Date(req.session.cookie._expires).getTime();
+        if (now > tokenExpiry) {
+            req.session = null;
+        }
+    }
+    next();
+});
+
+// remove the back button from the browser
+app.use(function (_req, res, next) {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', 0);
+    next();
+});
 
 const PATH = __dirname + '/client';
 const PORT = process.env.PORT;
@@ -26,16 +75,20 @@ http.createServer(app).listen(PORT, () => {
 });
 
 //Routing
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
     res.status(200).sendFile(PATH + '/index.html');
 });
 
 app.get('/dashboard', (req, res) => {
-    res.status(200).sendFile(PATH + '/dashboard.html');
+    checkTokenValid(req, res, () => {
+        res.status(200).sendFile(PATH + '/dashboard.html');
+    });
 });
 
 app.get('/maps-view', (req, res) => {
-    res.status(200).sendFile(PATH + '/maps-view.html');
+    checkTokenValid(req, res, () => {
+        res.status(200).sendFile(PATH + '/maps-view.html');
+    });
 });
 
 // Test API
@@ -103,7 +156,7 @@ app.get('/get-device-info', (req, res) => {
     getDeviceAPI.getDeviceInfo(req, res);
 });
 
-// POST REQUEST
+// LOGIN REQUEST
 app.post('/login', (req, res) => {
     const base_url = process.env.CMS_BASE_URL;
     const auth = {
@@ -112,9 +165,25 @@ app.post('/login', (req, res) => {
         "cms_uid": process.env.CMS_UID
     };
     axios.post(base_url + "/token", auth).then(response => {
-        res.status(200).send(response);
+        if (response.status === 200) {
+            req.session.token = response.data.token;
+            req.session.save(() => {
+                res.status(200).redirect('/dashboard');
+            });
+        } else {
+            res.status(400).send({
+                "status": "fail"
+            });
+        }
     }).catch(error => {
         res.status(400).send(error);
+    });
+});
+
+// LOGOUT REQUEST
+app.get('/logout', (req, res) => {
+    req.session.destroy(() => {
+        res.status(200).redirect('/');
     });
 });
 

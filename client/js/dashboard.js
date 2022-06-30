@@ -1,8 +1,8 @@
 function main() {
-    $("#sign-out").on("click", function () {
-        sessionStorage.clear();
-        window.location = "/";
-    });
+    // $("#sign-out").on("click", function () {
+    //     sessionStorage.clear();
+    //     window.location = "/";
+    // });
 }
 
 const ctx1 = document.getElementById('myChart1');
