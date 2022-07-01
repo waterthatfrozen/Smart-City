@@ -31,11 +31,6 @@
             min-height: 92.5vh;
         }
     </style>
-        <script>
-            if (!sessionStorage.getItem("loggedIn")) {
-               window.location = "/401";
-            }
-        </script>
 </head>
 
 <body class="h-100">
@@ -50,7 +45,7 @@
         <div class="form-control bg-dark text-white w-100" id="datetime-display">&nbsp;</div>
         <div class="navbar-nav">
             <div class="nav-item text-nowrap">
-                <a class="nav-link px-3" href="/" id="sign-out">Sign out</a>
+                <a class="nav-link px-3" href="/logout" id="sign-out">Sign out</a>
             </div>
         </div>
     </header>

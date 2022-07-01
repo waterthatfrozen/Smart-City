@@ -26,11 +26,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <script src="js/dashboard.js" defer></script>
     <script src="js/datetime-update.js" defer></script>
-    <script>
-        if (!sessionStorage.getItem("loggedIn")) {
-           window.location = "/401";
-        }
-    </script>
 </head>
 
 <body>
@@ -45,7 +40,7 @@
         <div class="form-control bg-dark text-white w-100" id="datetime-display">&nbsp;</div>
         <div class="navbar-nav">
             <div class="nav-item text-nowrap">
-                <a class="nav-link px-3" href="/" id="sign-out">Sign out</a>
+                <a class="nav-link px-3" href="/logout" id="sign-out">Sign out</a>
             </div>
         </div>
     </header>
