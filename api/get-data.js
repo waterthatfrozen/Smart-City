@@ -12,7 +12,7 @@ exports.getNasaData = function (req, res) {
         const FORMAT = "JSON",
             LATITUDE = 14.067453,
             LONGITUDE = 100.605089,
-            PARAMETERS = "T2M,T2MDEW,T2MWET,TS,QV2M,RH2M,PRECTOTCORR,T2M_RANGE,T2M_MAX,T2M_MIN",
+            PARAMETERS = "T2M,T2MDEW,T2MWET,QV2M,RH2M,PRECTOTCORR,PS,WS10M,WD10M,WS50M,WD50M,ALLSKY_SFC_SW_DWN,CLRSKY_SFC_SW_DWN,ALLSKY_SFC_UVA,ALLSKY_SFC_UVB,ALLSKY_SFC_UV_INDEX",
             COMMUNITY = "RE";
         const url = "https://power.larc.nasa.gov/api/temporal/daily/point";
         axios.get(url, {

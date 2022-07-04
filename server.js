@@ -112,9 +112,18 @@ app.delete('/test-delete-data', (req, res) => {
     playgroundAPI.testDeleteData(req, res);
 });
 
+//for testing send data endpoint
+app.post('/test-send-data', (req, res) => {
+    playgroundAPI.testSendData(req, res);
+});
+
 // GET REQUEST
 // GET DATA REQUEST (api/get-data)
 app.get('/get-nasa-data', (req, res) => {
+    getDataAPI.getNasaData(req, res);
+});
+
+app.get('/api/getNasaData', (req, res) => {
     getDataAPI.getNasaData(req, res);
 });
 
@@ -122,37 +131,45 @@ app.get('/get-env-sensor-data', (req, res) => {
     getDataAPI.getEnvSensorData(req, res);
 });
 
+app.get('/api/getEnvSensorData', (req, res) => {
+    getDataAPI.getEnvSensorData(req, res);
+});
+
 app.get('/get-env-sensor-hourly-data', (req, res) => {
     getDataAPI.getEnvSensorHourlyData(req, res);
 });
 
-app.get('/get-zone-light-data', (req, res) => {
+app.get('/api/getEnvSensorHourlyData', (req, res) => {
+    getDataAPI.getEnvSensorHourlyData(req, res);
+});
+
+app.get('/api/getZoneLightData', (req, res) => {
     getDataAPI.getZoneLightData(req, res);
 });
 
 // GET SUPPORT DATA REQUEST (api/get-support-data)
-app.get('/get-service-status', (req, res) => {
+app.get('/api/getServiceStatus', (req, res) => {
     getSupportDataAPI.getServiceStatus(req, res);
 });
 
-app.get('/get-zone-list', (req, res) => {
+app.get('/api/getZoneList', (req, res) => {
     getSupportDataAPI.getZoneList(req, res);
 });
 
-app.get('/get-zone-event', (req, res) => {
+app.get('/api/getZoneEvent', (req, res) => {
     getSupportDataAPI.getZoneEventList(req, res);
 });
 
 // GET DEVICE REQUEST (api/get-device)
-app.get('/get-zone-device-list', (req, res) => {
+app.get('/api/getZoneDeviceList', (req, res) => {
     getDeviceAPI.getZoneDeviceList(req, res);
 });
 
-app.get('/get-zone-light-device-list', (req, res) => {
+app.get('/api/getZoneLightDeviceList', (req, res) => {
     getDeviceAPI.getZoneLightDeviceList(req, res);
 });
 
-app.get('/get-device-info', (req, res) => {
+app.get('/api/getDeviceInfo', (req, res) => {
     getDeviceAPI.getDeviceInfo(req, res);
 });
 
@@ -187,13 +204,8 @@ app.get('/logout', (req, res) => {
     });
 });
 
-//for testing send data endpoint
-app.post('/test-send-data', (req, res) => {
-    playgroundAPI.testSendData(req, res);
-});
-
 const setDevice = require('./api/set-device');
-app.post('/set-light-dimming', (req, res) => {
+app.post('/api/setLightDimming', (req, res) => {
     setDevice.setLightDimming(req, res);
 });
 

@@ -1,8 +1,36 @@
+const PARAMS = ["gw_timestamp", "temperature", "humidity", "wind_velocity", "wind_direction", "illuminance", "rain_level", "ultra_violet_a"];
+var paramsIndex = [];
+var envSensorData = [];
+PARAMS.forEach(function (_param, _index) {
+    envSensorData.push([]);
+});
+console.log(envSensorData);
+
+async function fetchEnvSensorData() {
+    const currentTime = Math.round(new Date().getTime() / 1000),
+        start = currentTime - (60 * 60 * 2),
+        end = currentTime;
+    await fetch("/API/getEnvSensorData?start=" + start + "&end=" + end).then(response => response.json()).then(data => {
+        data = data.values;
+        var dataHeader = data[0];
+        var dataBody = data.slice(1);
+        PARAMS.forEach(function (param, _index) {
+            paramsIndex.push(dataHeader.indexOf(param));
+        });
+        envSensorData.forEach(function (param, index) {
+            param.push(dataBody.map(function (row) {
+                return row[paramsIndex[index]];
+            }));
+        });
+    }).catch(error => {
+        $("#env-sensor-value-container").text(error);
+    });
+}
+
 function main() {
-    // $("#sign-out").on("click", function () {
-    //     sessionStorage.clear();
-    //     window.location = "/";
-    // });
+    var envSensorValueContainer = $("#env-sensor-value-container");
+    // want temperature, humidity, wind velocity and direction, illuminance, rain level, ultraviolet A
+    fetchEnvSensorData();
 }
 
 const ctx1 = document.getElementById('myChart1');
