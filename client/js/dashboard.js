@@ -77,7 +77,7 @@ async function fetchEnvSensorData() {
     });
 }
 
-function envSensorValuePanel(title, subtitle, value, unit, comment) {
+function envSensorValuePanel(title, subtitle, value, unit) {
     if (value == null) {
         value = "N/A";
     }
@@ -86,8 +86,7 @@ function envSensorValuePanel(title, subtitle, value, unit, comment) {
                     <div class="card-body">
                         <h5 class="card-title">${title}</h5>
                         <h6 class="card-subtitle mb-2">${subtitle}</h6>
-                        <p class="card-text display-5">${value}<small class="h4">${unit}</small></p>
-                        <span class="text-muted">${comment}</span>
+                        <p class="card-text display-5">${value}<small class="h4"> ${unit}</small></p>
                     </div>
                 </div>
             </div>`;
@@ -95,12 +94,14 @@ function envSensorValuePanel(title, subtitle, value, unit, comment) {
 
 function main() {
     var envSensorValueContainer = $("#env-sensor-value-container");
+    var envSensorTimestamp = $("#env-sensor-timestamp");
     fetchEnvSensorData().then(() => {
         envSensorValueContainer.html("");
         for (var i = 1; i < PARAMS.length; i++) {
             var row = envSensorData[i];
-            envSensorValueContainer.append(envSensorValuePanel(PARAMS_TITLE[i], "", row[0][row.length - 1], PARAMS_UNIT[i], ""));
+            envSensorValueContainer.append(envSensorValuePanel(PARAMS_TITLE[i], "", row[0][row.length - 1], PARAMS_UNIT[i]));
         }
+        envSensorTimestamp.text("As of " + datetimeTransform(envSensorData[0][0][envSensorData[0][0].length - 1]));
     });
     // fetchEnvSensorData();
 }
