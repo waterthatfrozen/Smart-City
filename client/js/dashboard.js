@@ -1,10 +1,59 @@
-const PARAMS = ["gw_timestamp", "temperature", "humidity", "wind_velocity", "wind_direction", "illuminance", "rain_level", "ultra_violet_a"];
+const PARAMS = ["gw_timestamp", "temperature", "humidity", "wind_velocity", "wind_direction", "illuminance", "rain_level", "ultra_violet_a", "ultra_violet_b"];
+const PARAMS_TITLE = ["Timestamp", "Temperature", "Humidity", "Wind Velocity", " Wind Direction", "Illuminance", "Rain Level", "Ultra Violet A", "Ultra Violet B"];
+const PARAMS_UNIT = ["", "°C", "%", "m/s", "°", "klx", "mm", "", ""];
 var paramsIndex = [];
 var envSensorData = [];
+
 PARAMS.forEach(function (_param, _index) {
     envSensorData.push([]);
 });
 console.log(envSensorData);
+
+async function cleanEnvSensorData() {
+    // wind direction round to 360
+    var wind_direction_idx = PARAMS.indexOf("wind_direction");
+    if (wind_direction_idx != -1) {
+        envSensorData[wind_direction_idx].forEach(function (row, index) {
+            envSensorData[wind_direction_idx][index] = row.map(function (value) {
+                return value % 360;
+            });
+        });
+    }
+    // illuminance from lux to kilolux
+    var illuminance_idx = PARAMS.indexOf("illuminance");
+    if (illuminance_idx != -1) {
+        envSensorData[illuminance_idx].forEach(function (row, index) {
+            envSensorData[illuminance_idx][index] = row.map(function (value) {
+                return (value / 1000).toFixed(2);
+            });
+        });
+    }
+    // round wind velocity and ultraviolet to 2 decimal
+    var wind_velocity_idx = PARAMS.indexOf("wind_velocity");
+    var ultravioleta_idx = PARAMS.indexOf("ultra_violet_a");
+    var ultravioletb_idx = PARAMS.indexOf("ultra_violet_b");
+    if (wind_velocity_idx != -1) {
+        envSensorData[wind_velocity_idx].forEach(function (row, index) {
+            envSensorData[wind_velocity_idx][index] = row.map(function (value) {
+                return value.toFixed(2);
+            });
+        });
+    }
+    if (ultravioleta_idx != -1) {
+        envSensorData[ultravioleta_idx].forEach(function (row, index) {
+            envSensorData[ultravioleta_idx][index] = row.map(function (value) {
+                return value.toFixed(2);
+            });
+        });
+    }
+    if (ultravioletb_idx != -1) {
+        envSensorData[ultravioletb_idx].forEach(function (row, index) {
+            envSensorData[ultravioletb_idx][index] = row.map(function (value) {
+                return value.toFixed(2);
+            });
+        });
+    }
+}
 
 async function fetchEnvSensorData() {
     const currentTime = Math.round(new Date().getTime() / 1000),
@@ -22,15 +71,38 @@ async function fetchEnvSensorData() {
                 return row[paramsIndex[index]];
             }));
         });
+        cleanEnvSensorData();
     }).catch(error => {
         $("#env-sensor-value-container").text(error);
     });
 }
 
+function envSensorValuePanel(title, subtitle, value, unit, comment) {
+    if (value == null) {
+        value = "N/A";
+    }
+    return `<div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">${title}</h5>
+                        <h6 class="card-subtitle mb-2">${subtitle}</h6>
+                        <p class="card-text display-5">${value}<small class="h4">${unit}</small></p>
+                        <span class="text-muted">${comment}</span>
+                    </div>
+                </div>
+            </div>`;
+}
+
 function main() {
     var envSensorValueContainer = $("#env-sensor-value-container");
-    // want temperature, humidity, wind velocity and direction, illuminance, rain level, ultraviolet A
-    fetchEnvSensorData();
+    fetchEnvSensorData().then(() => {
+        envSensorValueContainer.html("");
+        for (var i = 1; i < PARAMS.length; i++) {
+            var row = envSensorData[i];
+            envSensorValueContainer.append(envSensorValuePanel(PARAMS_TITLE[i], "", row[0][row.length - 1], PARAMS_UNIT[i], ""));
+        }
+    });
+    // fetchEnvSensorData();
 }
 
 const ctx1 = document.getElementById('myChart1');
