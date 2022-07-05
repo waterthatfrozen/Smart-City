@@ -79,69 +79,37 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-1 mb-2 border-bottom">
                     <h2>System Overview</h2>
-                    <h6 id="env-sensor-timestamp"><div class="spinner-grow spinner-grow-sm" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                      </div> Loading...</h6>
+                    <h6 id="env-sensor-timestamp">
+                        <div class="spinner-grow spinner-grow-sm" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div> Loading timestamp...
+                    </h6>
                 </div>
                 <div class="row row-cols-2 row-cols-md-4 g-3 m-1" id="env-sensor-value-container">
                     <!-- loading indicator -->
-                    <div class="col">
-                        <div class="card">
+                    <div class="w-100" id="env-sensor-loading-container">
+                        <div class="card" id="env-sensor-loading-card">
                             <div class="card-body">
-                                <p class="card-text"><div class="spinner-grow spinner-grow-sm" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                  </div> Loading...</p>
+                                <p class="card-text" id="env-sensor-loading-text">
+                                    <div id="env-sensor-loading-spinner" class="spinner-grow spinner-grow-sm" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div> Loading value...
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="row row-cols-1 row-cols-md-2 g-3 m-1">
-                    <div class="col">
-                        <div class="card">
+                <div class="row row-cols-1 row-cols-md-2 g-3 m-1" id="env-sensor-graph-container">
+                    <!-- loading indicator -->
+                    <div class="w-100" id="graph-loading-container">
+                        <div class="card" id="graph-loading-card">
                             <div class="card-body">
-                                <h6 class="card-title">Graph Title</h6>
-                                <canvas class="w-100" id="myChart1" width="300" height="175"></canvas>
-                            </div>
-                            <div class="card-footer">
-                                <small class="text-muted">Last updated 3 mins ago</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col">
-                        <div class="card">
-                            <div class="card-body">
-                                <h6 class="card-title">Graph Title</h6>
-                                <canvas class="w-100" id="myChart2" width="300" height="175"></canvas>
-                            </div>
-                            <div class="card-footer">
-                                <small class="text-muted">Last updated 3 mins ago</small>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="col">
-                        <div class="card">
-                            <div class="card-body">
-                                <h6 class="card-title">Graph Title</h6>
-                                <canvas class="w-100" id="myChart3" width="300" height="175"></canvas>
-                            </div>
-                            <div class="card-footer">
-                                <small class="text-muted">Last updated 3 mins ago</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col">
-                        <div class="card">
-                            <div class="card-body">
-                                <h6 class="card-title">Graph Title</h6>
-                                <canvas class="w-100" id="myChart4" width="300" height="175"></canvas>
-                            </div>
-                            <div class="card-footer">
-                                <small class="text-muted">Last updated 3 mins ago</small>
+                                <p class="card-text" id="graph-loading-text">
+                                    <div id="graph-loading-spinner" class="spinner-grow spinner-grow-sm" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div> Loading graph...
+                                </p>
                             </div>
                         </div>
                     </div>

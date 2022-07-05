@@ -1,15 +1,34 @@
 const PARAMS = ["gw_timestamp", "temperature", "humidity", "wind_velocity", "wind_direction", "illuminance", "rain_level", "ultra_violet_a", "ultra_violet_b"];
 const PARAMS_TITLE = ["Timestamp", "Temperature", "Humidity", "Wind Velocity", " Wind Direction", "Illuminance", "Rain Level", "Ultra Violet A", "Ultra Violet B"];
 const PARAMS_UNIT = ["", "°C", "%", "m/s", "°", "klx", "mm", "", ""];
+const GRAPHS_TITLE = ["Temperature in the past 2 hours", "Humidity in the past 2 hours", "Illuminance in the past 2 hours", "Rain level in the past 2 hours"];
+const GRAPHS_PARAMS = ["temperature", "humidity", "illuminance", "rain_level"];
+var chartConfig = [];
 var paramsIndex = [];
 var envSensorData = [];
+var error_flag = false;
 
 PARAMS.forEach(function (_param, _index) {
     envSensorData.push([]);
 });
 console.log(envSensorData);
 
+async function errorDisplay(error) {
+    $("#env-sensor-timestamp").text("");
+    $("#env-sensor-loading-container").addClass("w-100");
+    $("#env-sensor-loading-card").html('<div class="card-body"><p class="card-text" id="env-sensor-loading-text"></p></div>');
+    $("#env-sensor-loading-text").html("<strong>Error on loading data to display</strong><br/>" + error);
+    $("#env-sensor-loading-card").addClass("alert-danger");
+    error_flag = true;
+}
+
 async function cleanEnvSensorData() {
+    // set new date format
+    envSensorData[0].forEach(function (param, index) {
+        envSensorData[0][index] = param.map(function (row) {
+            return new Date(row);
+        });
+    });
     // wind direction round to 360
     var wind_direction_idx = PARAMS.indexOf("wind_direction");
     if (wind_direction_idx != -1) {
@@ -73,7 +92,7 @@ async function fetchEnvSensorData() {
         });
         cleanEnvSensorData();
     }).catch(error => {
-        $("#env-sensor-value-container").text(error);
+        errorDisplay(error);
     });
 }
 
@@ -92,62 +111,78 @@ function envSensorValuePanel(title, subtitle, value, unit) {
             </div>`;
 }
 
+function envSensorGraphPanel(title, footer, label, xValue, yValue) {
+    chartConfig.push({
+        type: 'line',
+        data: {
+            labels: xValue,
+            datasets: [{
+                label: label,
+                data: yValue,
+                backgroundColor: 'rgb(54, 162, 235)',
+                borderColor: 'rgb(54, 162, 235)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    grace: '25%'
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+    return `<div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title">${title}</h6>
+                    <canvas class="w-100" id="${label}-chart" width="300" height="175"></canvas>
+            </div>
+            <div class="card-footer">
+                <small class="text-muted">${footer}</small>
+            </div>
+        </div>
+    </div>`;
+}
+
 function main() {
     var envSensorValueContainer = $("#env-sensor-value-container");
     var envSensorTimestamp = $("#env-sensor-timestamp");
+    var envSensorGraphContainer = $("#env-sensor-graph-container");
+    var timestampStringMessage = "";
     fetchEnvSensorData().then(() => {
-        envSensorValueContainer.html("");
-        for (var i = 1; i < PARAMS.length; i++) {
-            var row = envSensorData[i];
-            envSensorValueContainer.append(envSensorValuePanel(PARAMS_TITLE[i], "", row[0][row.length - 1], PARAMS_UNIT[i]));
-        }
-        envSensorTimestamp.text("As of " + datetimeTransform(envSensorData[0][0][envSensorData[0][0].length - 1]));
-    });
-    // fetchEnvSensorData();
-}
-
-const ctx1 = document.getElementById('myChart1');
-const ctx2 = document.getElementById('myChart2');
-const ctx3 = document.getElementById('myChart3');
-const ctx4 = document.getElementById('myChart4');
-
-const chart = {
-    type: 'bar',
-    data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-        datasets: [{
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        scales: {
-            y: {
-                beginAtZero: true
+        // value panel
+        if (!error_flag) {
+            timestampStringMessage = "As of " + datetimeTransform(envSensorData[0][0][envSensorData[0][0].length - 1]);
+            envSensorValueContainer.html("");
+            for (var i = 1; i < PARAMS.length; i++) {
+                var row = envSensorData[i];
+                envSensorValueContainer.append(envSensorValuePanel(PARAMS_TITLE[i], "", row[0][row.length - 1], PARAMS_UNIT[i]));
             }
+            envSensorTimestamp.text(timestampStringMessage);
         }
-    }
-};
-const myChart1 = new Chart(ctx1, chart);
-const myChart2 = new Chart(ctx2, chart);
-const myChart3 = new Chart(ctx3, chart);
-const myChart4 = new Chart(ctx4, chart);
+        // graph panel
+        envSensorGraphContainer.html("");
+        var timestampValue = envSensorData[0][0];
+        // get only the time portion of timestampValue
+        timestampValue = timestampValue.map(function (value) {
+            var hours = value.getHours() < 10 ? "0" + value.getHours() : value.getHours();
+            var minutes = value.getMinutes() < 10 ? "0" + value.getMinutes() : value.getMinutes();
+            return hours + ":" + minutes;
+        });
+        for (const param in GRAPHS_PARAMS) {
+            var param_idx = PARAMS.indexOf(GRAPHS_PARAMS[param]);
+            envSensorGraphContainer.append(envSensorGraphPanel(GRAPHS_TITLE[param], timestampStringMessage, PARAMS_TITLE[param_idx], timestampValue, envSensorData[param_idx][0]));
+            var ctx = document.getElementById(PARAMS_TITLE[param_idx] + "-chart").getContext('2d');
+            var chart = new Chart(ctx, chartConfig[param]);
+        }
+    });
+}
 
 $(document).ready(main);
