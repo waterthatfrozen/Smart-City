@@ -1,5 +1,5 @@
 function disableButton() {
-    var spinner = "<div class='spinner-border spinner-border-sm text-light' role='status'><span class='visually-hidden'>Loading...</span></div>"
+    var spinner = "<div class='spinner-grow spinner-grow-sm text-light' role='status'><span class='visually-hidden'>Loading...</span></div>"
     $("#submit-button").prop("disabled", true);
     $("#submit-button").html(spinner + "&nbsp;Logging in...");
 }
