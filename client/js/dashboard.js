@@ -1,6 +1,6 @@
 const PARAMS = ["gw_timestamp", "temperature", "humidity", "wind_velocity", "wind_direction", "illuminance", "rain_level", "ultra_violet_a", "ultra_violet_b"];
 const PARAMS_TITLE = ["Timestamp", "Temperature", "Humidity", "Wind Velocity", " Wind Direction", "Illuminance", "Rain Level", "Ultra Violet A", "Ultra Violet B"];
-const PARAMS_UNIT = ["", "°C", "%", "m/s", "°", "klx", "mm", "W/m^2", "W/m^2"];
+const PARAMS_UNIT = ["", "°C", "%", "m/s", "°", "klx", "mm", "W/m<sup>2</sup>", "W/m<sup>2</sup>"];
 const GRAPHS_TITLE = ["Temperature in the past 2 hours (°C)", "Humidity in the past 2 hours (%)", "Illuminance in the past 2 hours (klx)", "Rain level in the past 2 hours (mm)"];
 const GRAPHS_PARAMS = ["temperature", "humidity", "illuminance", "rain_level"];
 var chartConfig = [];
@@ -11,7 +11,6 @@ var error_flag = false;
 PARAMS.forEach(function (_param, _index) {
     envSensorData.push([]);
 });
-console.log(envSensorData);
 
 async function errorDisplay(error) {
     $("#env-sensor-timestamp").text("Error on loading data");
@@ -78,11 +77,10 @@ async function fetchEnvSensorData() {
     const currentTime = Math.round(new Date().getTime() / 1000),
         start = currentTime - (60 * 60 * 2),
         end = currentTime;
-    await fetch("/API/getEnvSensorData?start=" + start + "&end=" + end).then(response => {
-        response.json();
-    }).then(data => {
+    await fetch("/API/getEnvSensorData?start=" + start + "&end=" + end).then(response =>
+        response.json()
+    ).then(data => {
         data = data.values;
-        console.log(data);
         if (data.length == 0) {
             errorDisplay("No data found");
             throw new Error("No data found");
