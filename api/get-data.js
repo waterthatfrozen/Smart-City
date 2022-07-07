@@ -65,6 +65,7 @@ exports.getEnvSensorData = function (req, res) {
             }).then(response2 => {
                 var responseValue = response2.data.values;
                 if (responseValue.length > 0) {
+                    console.log(responseValue.length);
                     res.status(200).send({
                         values: responseValue
                     });
