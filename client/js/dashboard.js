@@ -1,8 +1,8 @@
-const PARAMS = ["gw_timestamp", "temperature", "humidity", "wind_velocity", "wind_direction", "illuminance", "rain_level", "ultra_violet_a", "ultra_violet_b"];
-const PARAMS_TITLE = ["Timestamp", "Temperature", "Humidity", "Wind Velocity", " Wind Direction", "Illuminance", "Rain Level", "Ultra Violet A", "Ultra Violet B"];
-const PARAMS_UNIT = ["", "°C", "%", "m/s", "°", "klx", "mm", "W/m<sup>2</sup>", "W/m<sup>2</sup>"];
-const GRAPHS_TITLE = ["Temperature in the past 2 hours (°C)", "Humidity in the past 2 hours (%)", "Illuminance in the past 2 hours (klx)", "Rain level in the past 2 hours (mm)"];
-const GRAPHS_PARAMS = ["temperature", "humidity", "illuminance", "rain_level"];
+const PARAMS = ["gw_timestamp", "temperature", "humidity", "wind_velocity", "wind_direction", "illuminance", "air_pressure", "ultra_violet_a", "ultra_violet_b"];
+const PARAMS_TITLE = ["Timestamp", "Temperature", "Humidity", "Wind Velocity", " Wind Direction", "Illuminance", "Air Pressure", "Ultra Violet A", "Ultra Violet B"];
+const PARAMS_UNIT = ["", "°C", "%", "m/s", "°", "klx", "hPa", "W/m<sup>2</sup>", "W/m<sup>2</sup>"];
+const GRAPHS_TITLE = ["Temperature in the past 2 hours (°C)", "Humidity in the past 2 hours (%)", "Illuminance in the past 2 hours (klx)", "Air Pressure in the past 2 hours (hPa)"];
+const GRAPHS_PARAMS = ["temperature", "humidity", "illuminance", "air_pressure"];
 var chartConfig = [];
 var paramsIndex = [];
 var envSensorData = [];
@@ -16,8 +16,9 @@ async function errorDisplay(error) {
     $("#env-sensor-timestamp").text("Error on loading data");
     $("#env-sensor-loading-container").addClass("w-100");
     $("#env-sensor-loading-card").html('<div class="card-body"><p class="card-text" id="env-sensor-loading-text"></p></div>');
-    $("#env-sensor-loading-text").html("<strong>Error on loading data to display</strong><br/>" + error);
+    $("#env-sensor-loading-text").html("<strong>Error on loading data to display</strong><br/>Environmental sensor might be disconnect from the system, please contact system administrator immediately.<br/>Error: " + error);
     $("#env-sensor-loading-card").addClass("alert-danger");
+    $("#env-sensor-graph-container").html("");
     error_flag = true;
 }
 
