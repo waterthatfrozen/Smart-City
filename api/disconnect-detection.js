@@ -46,7 +46,7 @@ function insertLog(disconnectStartTime, disconnectEndTime) {
 
 // calling the API to get the data every 10 minutes to check if the sensor is connected or not
 function checkSensorConnection() {
-    axios.get('http://localhost:3000/api/getEnvSensorData', {
+    axios.get('http://siit-smart-city.azurewebsites.net/api/getEnvSensorData', {
         headers: {
             'Content-Type': 'application/json'
         },

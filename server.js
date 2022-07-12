@@ -97,6 +97,11 @@ app.get('/', (_req, res) => {
     res.status(200).sendFile(PATH + '/index.html');
 });
 
+// get image from img folder
+app.get('/img/:img', (req, res) => {
+    res.status(200).sendFile(PATH + '/img/' + req.params.img);
+});
+
 app.get('/sensor-connection', (_req, res) => {
     res.status(200).sendFile(PATH + '/sensor-connection.html');
 });

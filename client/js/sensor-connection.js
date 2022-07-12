@@ -16,6 +16,7 @@ async function checkEnvSensorConnection() {
         hideLoadingContainer();
         console.log(data.conne);
         if (data.connected) {
+            $("#loading-container").after("");
             $("#loading-container").after(`
             <div class="alert alert-success" role="alert">
             <i class="bi bi-cloud-check-fill"></i><br/>
@@ -23,6 +24,7 @@ async function checkEnvSensorConnection() {
             Timestamp: ${data.checkTime}.
             </div>`);
         } else {
+            $("#loading-container").after("");
             $("#loading-container").after(`
             <div class="alert alert-danger" role="alert">
             <i class="bi bi-cloud-slash-fill"></i><br/>
