@@ -26,9 +26,10 @@ async function cleanEnvSensorData() {
     // set new date format
     envSensorData[0].forEach(function (param, index) {
         envSensorData[0][index] = param.map(function (row) {
-            return new Date(row);
+            return Date(row);
         });
     });
+
     // wind direction round to 360
     var wind_direction_idx = PARAMS.indexOf("wind_direction");
     if (wind_direction_idx != -1) {
@@ -176,8 +177,9 @@ function main() {
             var timestampValue = envSensorData[0][0];
             // get only the time portion of timestampValue
             timestampValue = timestampValue.map(function (value) {
-                var hours = value.getHours() < 10 ? "0" + value.getHours() : value.getHours();
-                var minutes = value.getMinutes() < 10 ? "0" + value.getMinutes() : value.getMinutes();
+                var currentValue = new Date(value);
+                var hours = currentValue.getHours() < 10 ? "0" + currentValue.getHours() : currentValue.getHours();
+                var minutes = currentValue.getMinutes() < 10 ? "0" + currentValue.getMinutes() : currentValue.getMinutes();
                 return hours + ":" + minutes;
             });
             for (const param in GRAPHS_PARAMS) {
