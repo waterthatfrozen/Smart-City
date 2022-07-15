@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/login.css">
-
+    <link rel="manifest" href="smart-city.webmanifest">
     <title>Welcome to Smart City</title>
 </head>
 
@@ -26,23 +26,30 @@
 
     <main class="flex-shrink-0 text-dark">
         <div class="container mt-auto form-signin">
-            <form method="POST" action="/login" class="form-floating" id="login-form" enctype="application/x-www-form-urlencoded">
+            <form method="POST" action="/login" class="form-floating" id="login-form"
+                enctype="application/x-www-form-urlencoded">
                 <h2 class="mt-4 mb-3 fw-normal text-bold"><em class="bi bi-door-open me-2"></em>Log In</h2>
                 <div class="alert alert-danger" id="error-message" hidden></div>
 
                 <div class="form-floating mb-2">
-                    <input type="text" class="form-control" id="username" placeholder="Username" name="username" required>
+                    <input type="text" class="form-control" id="username" placeholder="Username" name="username"
+                        required>
                     <label for="floatingInput">Username</label>
                 </div>
                 <div class="form-floating mb-2">
-                    <input type="password" class="form-control" id="password" placeholder="Password" name="pwd" required>
+                    <input type="password" class="form-control" id="password" placeholder="Password" name="pwd"
+                        required>
                     <label for="floatingPassword">Password</label>
                 </div>
-                <button class="w-100 btn btn-success mb-3" id="submit-button" type="submit"><em class='bi bi-key'></em>&nbsp;Log In</button>
+                <button class="w-100 btn btn-success mb-3" id="submit-button" type="submit"><em
+                        class='bi bi-key'></em>&nbsp;Log In</button>
                 <p class="text-dark small">
-                    &copy; 2022 Copyright Reserved.<br/>
-                    SIIT, Thammasat University.<br/>
-                    <a href="http://github.com/waterthatfrozen/" class="text-decoration-none link-secondary">Project Information</a>&nbsp;|&nbsp;
+                    &copy; 2022 Copyright Reserved.<br />
+                    SIIT, Thammasat University.<br />
+                    <a href="/sensor-connection" class="text-decoration-none link-secondary">Environmental Sensor
+                        Connection</a><br />
+                    <a href="http://github.com/waterthatfrozen/" class="text-decoration-none link-secondary">Project
+                        Information</a>&nbsp;|&nbsp;
                     <a href="#" class="text-decoration-none link-secondary">Privacy Statement</a>&nbsp;
                 </p>
             </form>

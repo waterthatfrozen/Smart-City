@@ -5,11 +5,34 @@ const http = require('http'),
     bodyParser = require('body-parser'),
     dotenv = require('dotenv'),
     axios = require('axios'),
+    sql = require('mssql'),
     app = express();
+dotenv.config();
+
+// connect to SQL server
+const sqlConfig = {
+    user: process.env.SQL_UNAME,
+    password: process.env.SQL_PWD,
+    server: process.env.SQL_SERVER,
+    database: process.env.SQL_DB
+};
+
+sql.connect(sqlConfig, function (err) {
+    if (err) {
+        console.log("Error while connecting to database :- \n" + err);
+    } else {
+        console.log('Connected to SQL Server');
+    }
+});
+
+// require API
 const getDataAPI = require('./api/get-data'),
     getSupportDataAPI = require('./api/get-support-data'),
     getDeviceAPI = require('./api/get-device'),
     playgroundAPI = require('./api/playground');
+
+// Environmental Sensor Disconnect Detection
+const disconnectDetection = require('./api/disconnect-detection');
 
 const tokenMaxAge = 6 * 60 * 60 * 1000;
 
@@ -29,13 +52,14 @@ function checkTokenValid(req, res, next) {
     }
 }
 
-dotenv.config();
+// Express configuration
+const PATH = __dirname + '/client';
+const PORT = process.env.PORT;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(cookieParser());
-
 // session settings
 app.use(sessions({
     secret: process.env.SESSION_SECRET,
@@ -45,19 +69,17 @@ app.use(sessions({
         maxAge: tokenMaxAge
     }
 }));
-
 // remove the session cookie on the server when it expires
 app.use(function (req, _res, next) {
     if (req.session.token) {
-        var now = new Date().getTime();
-        var tokenExpiry = new Date(req.session.cookie._expires).getTime();
+        let now = new Date().getTime();
+        let tokenExpiry = new Date(req.session.cookie._expires).getTime();
         if (now > tokenExpiry) {
             req.session = null;
         }
     }
     next();
 });
-
 // remove the back button from the browser
 app.use(function (_req, res, next) {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -65,10 +87,6 @@ app.use(function (_req, res, next) {
     res.setHeader('Expires', 0);
     next();
 });
-
-const PATH = __dirname + '/client';
-const PORT = process.env.PORT;
-
 app.use(express.static(PATH));
 http.createServer(app).listen(PORT, () => {
     console.log('Server listening on http://localhost:' + PORT);
@@ -77,6 +95,15 @@ http.createServer(app).listen(PORT, () => {
 //Routing
 app.get('/', (_req, res) => {
     res.status(200).sendFile(PATH + '/index.html');
+});
+
+// get image from img folder
+app.get('/img/:img', (req, res) => {
+    res.status(200).sendFile(PATH + '/img/' + req.params.img);
+});
+
+app.get('/sensor-connection', (_req, res) => {
+    res.status(200).sendFile(PATH + '/sensor-connection.html');
 });
 
 app.get('/dashboard', (req, res) => {
@@ -92,24 +119,29 @@ app.get('/maps-view', (req, res) => {
 });
 
 // Test API
-app.get('/hello-world', (req, res) => {
+app.get('/api/helloWorld', (req, res) => {
     playgroundAPI.helloWorld(req, res);
 });
 
-app.get('/test-select-data', (req, res) => {
+app.get('/api/testSelectData', (req, res) => {
     playgroundAPI.testSelectData(req, res);
 });
 
-app.post('/test-insert-data', (req, res) => {
+app.post('/api/testInsertData', (req, res) => {
     playgroundAPI.testInsertData(req, res);
 });
 
-app.put('/test-update-data', (req, res) => {
+app.put('/api/testUpdateData', (req, res) => {
     playgroundAPI.testUpdateData(req, res);
 });
 
-app.delete('/test-delete-data', (req, res) => {
+app.delete('/api/testDeleteData', (req, res) => {
     playgroundAPI.testDeleteData(req, res);
+});
+
+//for testing send data endpoint
+app.post('/api/testSendData', (req, res) => {
+    playgroundAPI.testSendData(req, res);
 });
 
 // GET REQUEST
@@ -118,7 +150,15 @@ app.get('/get-nasa-data', (req, res) => {
     getDataAPI.getNasaData(req, res);
 });
 
+app.get('/api/getNasaData', (req, res) => {
+    getDataAPI.getNasaData(req, res);
+});
+
 app.get('/get-env-sensor-data', (req, res) => {
+    getDataAPI.getEnvSensorData(req, res);
+});
+
+app.get('/api/getEnvSensorData', (req, res) => {
     getDataAPI.getEnvSensorData(req, res);
 });
 
@@ -126,34 +166,42 @@ app.get('/get-env-sensor-hourly-data', (req, res) => {
     getDataAPI.getEnvSensorHourlyData(req, res);
 });
 
-app.get('/get-zone-light-data', (req, res) => {
+app.get('/api/getEnvSensorHourlyData', (req, res) => {
+    getDataAPI.getEnvSensorHourlyData(req, res);
+});
+
+app.get('/api/getZoneLightData', (req, res) => {
     getDataAPI.getZoneLightData(req, res);
 });
 
 // GET SUPPORT DATA REQUEST (api/get-support-data)
-app.get('/get-service-status', (req, res) => {
+app.get('/api/getServiceStatus', (req, res) => {
     getSupportDataAPI.getServiceStatus(req, res);
 });
 
-app.get('/get-zone-list', (req, res) => {
+app.get('/api/getZoneList', (req, res) => {
     getSupportDataAPI.getZoneList(req, res);
 });
 
-app.get('/get-zone-event', (req, res) => {
+app.get('/api/getZoneEvent', (req, res) => {
     getSupportDataAPI.getZoneEventList(req, res);
 });
 
 // GET DEVICE REQUEST (api/get-device)
-app.get('/get-zone-device-list', (req, res) => {
+app.get('/api/getZoneDeviceList', (req, res) => {
     getDeviceAPI.getZoneDeviceList(req, res);
 });
 
-app.get('/get-zone-light-device-list', (req, res) => {
+app.get('/api/getZoneLightDeviceList', (req, res) => {
     getDeviceAPI.getZoneLightDeviceList(req, res);
 });
 
-app.get('/get-device-info', (req, res) => {
+app.get('/api/getDeviceInfo', (req, res) => {
     getDeviceAPI.getDeviceInfo(req, res);
+});
+
+app.get('/api/checkSensorConnection', (req, res) => {
+    disconnectDetection.checkSensorConnection(req, res);
 });
 
 // LOGIN REQUEST
@@ -187,13 +235,8 @@ app.get('/logout', (req, res) => {
     });
 });
 
-//for testing send data endpoint
-app.post('/test-send-data', (req, res) => {
-    playgroundAPI.testSendData(req, res);
-});
-
 const setDevice = require('./api/set-device');
-app.post('/set-light-dimming', (req, res) => {
+app.post('/api/setLightDimming', (req, res) => {
     setDevice.setLightDimming(req, res);
 });
 

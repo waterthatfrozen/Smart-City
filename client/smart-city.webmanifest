@@ -1,0 +1,17 @@
+{
+    "short_name": "Smart City",
+    "name": "SIIT Smart City",
+    "icons": [
+        {
+            "src": "/img/icon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#13653f",
+    "theme_color": "#13653f",
+    "orientation": "portrait",
+    "description": "SIIT Smart City Project - Smart Lighting System"
+}

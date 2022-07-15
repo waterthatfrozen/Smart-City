@@ -12,7 +12,7 @@ exports.getNasaData = function (req, res) {
         const FORMAT = "JSON",
             LATITUDE = 14.067453,
             LONGITUDE = 100.605089,
-            PARAMETERS = "T2M,T2MDEW,T2MWET,TS,QV2M,RH2M,PRECTOTCORR,T2M_RANGE,T2M_MAX,T2M_MIN",
+            PARAMETERS = "T2M,T2MDEW,T2MWET,QV2M,RH2M,PRECTOTCORR,PS,WS10M,WD10M,WS50M,WD50M,ALLSKY_SFC_SW_DWN,CLRSKY_SFC_SW_DWN,ALLSKY_SFC_UVA,ALLSKY_SFC_UVB,ALLSKY_SFC_UV_INDEX",
             COMMUNITY = "RE";
         const url = "https://power.larc.nasa.gov/api/temporal/daily/point";
         axios.get(url, {
@@ -63,9 +63,16 @@ exports.getEnvSensorData = function (req, res) {
                     to: req.query.end
                 }
             }).then(response2 => {
-                res.status(200).send({
-                    values: response2.data.values
-                });
+                var responseValue = response2.data.values;
+                if (responseValue.length > 0) {
+                    res.status(200).send({
+                        values: responseValue
+                    });
+                } else {
+                    res.status(400).send({
+                        error: "No data found for this time period"
+                    });
+                }
             }).catch(error => {
                 res.status(500).send(error);
             });
@@ -109,18 +116,24 @@ exports.getEnvSensorHourlyData = function (req, res) {
                 }
             }).then(response2 => {
                 var receivedValue = response2.data.values;
-                var sendValue = [receivedValue[0], receivedValue[1]];
-                var prevHour = (new Date(receivedValue[1][0])).getHours();
-                for (var i = 2; i < receivedValue.length; i++) {
-                    var currHour = (new Date(receivedValue[i][0])).getHours();
-                    if (currHour != prevHour) {
-                        sendValue.push(receivedValue[i]);
-                        prevHour = currHour;
+                if (receivedValue.length > 0) {
+                    var sendValue = [receivedValue[0], receivedValue[1]];
+                    var prevHour = (new Date(receivedValue[1][0])).getHours();
+                    for (var i = 2; i < receivedValue.length; i++) {
+                        var currHour = (new Date(receivedValue[i][0])).getHours();
+                        if (currHour != prevHour) {
+                            sendValue.push(receivedValue[i]);
+                            prevHour = currHour;
+                        }
                     }
+                    res.status(200).send({
+                        values: sendValue
+                    });
+                } else {
+                    res.status(400).send({
+                        error: "No data found for this time period"
+                    });
                 }
-                res.status(200).send({
-                    values: sendValue
-                });
             }).catch(error => {
                 res.status(500).send(error);
             });

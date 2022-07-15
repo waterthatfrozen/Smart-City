@@ -3,21 +3,6 @@ const sql = require('mssql');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const sqlConfig = {
-    user: process.env.SQL_UNAME,
-    password: process.env.SQL_PWD,
-    server: process.env.SQL_SERVER,
-    database: process.env.SQL_DB
-};
-
-sql.connect(sqlConfig, function (err) {
-    if (err) {
-        console.log(err);
-    } else {
-        console.log('Connected to SQL Server');
-    }
-});
-
 exports.helloWorld = function (_req, res) {
     res.status(200).send({
         message: "Hello World!",
