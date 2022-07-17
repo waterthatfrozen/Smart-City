@@ -36,7 +36,7 @@ async function cleanEnvSensorData() {
     if (wind_direction_idx != -1) {
         envSensorData[wind_direction_idx].forEach(function (row, index) {
             envSensorData[wind_direction_idx][index] = row.map(function (value) {
-                return value % 360;
+                return Math.floor(value % 360);
             });
         });
     }
