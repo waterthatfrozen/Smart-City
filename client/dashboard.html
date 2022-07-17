@@ -27,6 +27,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <script src="js/datetime-update.js" defer></script>
     <script src="js/dashboard.js" defer></script>
+    <script src="js/sidebar.js" defer></script>
 </head>
 
 <body>
@@ -48,158 +49,126 @@
 
     <div class="container-fluid">
         <div class="row">
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <h6
-                        class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-2 mb-1 text-muted">
-                        <span>Overview</span></h6>
-                    <ul class="nav flex-column mb-auto">
-                        <li class="nav-item"><a class="nav-link" href="/dashboard">System Overview</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Zone Overview</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Device Events</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/maps-view">Light Map View</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Link 5</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">System Status</a></li>
-                    </ul>
-
-                    <h6
-                        class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        <span>Zone</span></h6>
-                    <ul class="nav flex-column mb-auto">
-                        <li class="nav-item"><a class="nav-link" href="#">Link 1</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Link 2</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Link 3</a></li>
-                    </ul>
-                </div>
-                <ul class="nav flex-column mt-4 justify-content-between">
-                    <li class="nav-item nav-link smaller-font text-muted">
-                        &copy; 2022 Copyright Reserved.<br />
-                        SIIT, Thammasat University.<br />
-                        <a class="text-decoration-none text-muted" href="http://github.com/waterthatfrozen/">Project
-                            Information</a> |
-                        <a class="text-decoration-none text-muted" href="#">Privacy Statement</a>
-                    </li>
-                </ul>
-            </nav>
-
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div
-                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-1 mb-2 border-bottom">
-                    <h2 id="header">System Overview</h2>
-                    <div class="btn-group">
-                        <button type="button" disabled class="btn btn-sm btn-secondary" id="env-sensor-timestamp">
-                            <div class="spinner-grow spinner-grow-sm" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div> Loading timestamp...
-                        </button>
-                        <button class="btn btn-sm btn-secondary" onclick="window.location.reload();">Refresh</button>
-                    </div>
-                </div>
-                <div class="row row-cols-2 row-cols-md-4 g-3 m-1" id="env-sensor-value-container">
-                    <!-- loading indicator -->
-                    <div class="w-100" id="env-sensor-loading-container">
-                        <div class="card" id="env-sensor-loading-card">
-                            <div class="card-body">
-                                <p class="card-text" id="env-sensor-loading-text">
-                                    <div id="env-sensor-loading-spinner" class="spinner-grow spinner-grow-sm"
-                                        role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div> Loading value...
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row row-cols-1 row-cols-md-2 g-3 m-1" id="env-sensor-graph-container">
-                    <!-- loading indicator -->
-                    <div class="w-100" id="graph-loading-container">
-                        <div class="card" id="graph-loading-card">
-                            <div class="card-body">
-                                <p class="card-text" id="graph-loading-text">
-                                    <div id="graph-loading-spinner" class="spinner-grow spinner-grow-sm" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div> Loading graph...
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <h4 class="mt-4">Zone Breakdown</h4>
-                <div class="table-responsive">
-                    <table class="table table-striped" id="zone-breakdown-table-container">
-                        <caption>Zone statistics overview. Last updated on XXXXXXXX</caption>
-                        <thead class="table-dark">
-                            <tr>
-                                <th scope="col">Zone<br />Number</th>
-                                <th scope="col">Zone<br />Name</th>
-                                <th scope="col">Number<br />of Devices</th>
-                                <th scope="col">Active<br />Power</th>
-                                <th scope="col">Average<br />Light Dimming</th>
-                                <th scope="col">Power<br />Factor</th>
-                                <th scope="col">Zone<br />View</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr id="zone-breakdown-loading-container">
-                                <td colspan="7">
-                                    <div id="zone-breakdown-loading-spinner" class="spinner-grow spinner-grow-sm"
-                                        role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div> Under construction...
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>2 - Sanya-Thammasak</td>
-                                <td>XXX</td>
-                                <td>XXX</td>
-                                <td>XXX</td>
-                                <td>XXX</td>
-                                <td>Link</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>3 - Talad-Wicha</td>
-                                <td>XXX</td>
-                                <td>XXX</td>
-                                <td>XXX</td>
-                                <td>XXX</td>
-                                <td>Link</td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>4 - Yung Thong - Outside</td>
-                                <td>XXX</td>
-                                <td>XXX</td>
-                                <td>XXX</td>
-                                <td>XXX</td>
-                                <td>Link</td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>5 - Yung Thong - Inside</td>
-                                <td>XXX</td>
-                                <td>XXX</td>
-                                <td>XXX</td>
-                                <td>XXX</td>
-                                <td>Link</td>
-                            </tr>
-                            <tr>
-                                <td>6</td>
-                                <td>6 - Pitaktham</td>
-                                <td>XXX</td>
-                                <td>XXX</td>
-                                <td>XXX</td>
-                                <td>XXX</td>
-                                <td>Link</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </main>
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"></nav>
         </div>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div
+                class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-1 mb-2 border-bottom">
+                <h2 id="header">System Overview</h2>
+                <div class="btn-group">
+                    <button type="button" disabled class="btn btn-sm btn-secondary" id="env-sensor-timestamp">
+                        <div class="spinner-grow spinner-grow-sm" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div> Loading timestamp...
+                    </button>
+                    <button class="btn btn-sm btn-secondary" onclick="window.location.reload();">Refresh</button>
+                </div>
+            </div>
+            <div class="row row-cols-2 row-cols-md-4 g-3 m-1" id="env-sensor-value-container">
+                <!-- loading indicator -->
+                <div class="w-100" id="env-sensor-loading-container">
+                    <div class="card" id="env-sensor-loading-card">
+                        <div class="card-body">
+                            <p class="card-text" id="env-sensor-loading-text">
+                                <div id="env-sensor-loading-spinner" class="spinner-grow spinner-grow-sm" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div> Loading value...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 g-3 m-1" id="env-sensor-graph-container">
+                <!-- loading indicator -->
+                <div class="w-100" id="graph-loading-container">
+                    <div class="card" id="graph-loading-card">
+                        <div class="card-body">
+                            <p class="card-text" id="graph-loading-text">
+                                <div id="graph-loading-spinner" class="spinner-grow spinner-grow-sm" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div> Loading graph...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="mt-4">Zone Breakdown</h4>
+            <div class="table-responsive">
+                <table class="table table-striped" id="zone-breakdown-table-container">
+                    <caption>Zone statistics overview. Last updated on XXXXXXXX</caption>
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">Zone<br />Number</th>
+                            <th scope="col">Zone<br />Name</th>
+                            <th scope="col">Number<br />of Devices</th>
+                            <th scope="col">Active<br />Power</th>
+                            <th scope="col">Average<br />Light Dimming</th>
+                            <th scope="col">Power<br />Factor</th>
+                            <th scope="col">Zone<br />View</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="zone-breakdown-loading-container">
+                            <td colspan="7">
+                                <div id="zone-breakdown-loading-spinner" class="spinner-grow spinner-grow-sm"
+                                    role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div> Under construction...
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>2 - Sanya-Thammasak</td>
+                            <td>XXX</td>
+                            <td>XXX</td>
+                            <td>XXX</td>
+                            <td>XXX</td>
+                            <td>Link</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>3 - Talad-Wicha</td>
+                            <td>XXX</td>
+                            <td>XXX</td>
+                            <td>XXX</td>
+                            <td>XXX</td>
+                            <td>Link</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>4 - Yung Thong - Outside</td>
+                            <td>XXX</td>
+                            <td>XXX</td>
+                            <td>XXX</td>
+                            <td>XXX</td>
+                            <td>Link</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>5 - Yung Thong - Inside</td>
+                            <td>XXX</td>
+                            <td>XXX</td>
+                            <td>XXX</td>
+                            <td>XXX</td>
+                            <td>Link</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>6 - Pitaktham</td>
+                            <td>XXX</td>
+                            <td>XXX</td>
+                            <td>XXX</td>
+                            <td>XXX</td>
+                            <td>Link</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
     </div>
 </body>
 

@@ -4,11 +4,15 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const initializeTime = Math.round(new Date().getTime() / 1000);
+const CMSInitializeTime = Math.round(new Date("2022-02-04 17:00:00 +07").getTime() / 1000);
 let intervalDuration = 60 * 10;
 let startTime = initializeTime - intervalDuration;
 let endTime = initializeTime;
-let lastKnownConnectedTime = 0;
-
+let lastKnownSensorConnectedTime = 0;
+let gatewayDisconnectLog = [];
+let sensorCheckError = false;
+let sensorErrorMessage = "";
+let gatewayErrorMessage = "";
 let sensorConnected = false;
 
 function bangkokTimeString(timestamp) {
@@ -18,34 +22,54 @@ function bangkokTimeString(timestamp) {
 }
 
 // function to insert disconnect log into database
-function insertLog(disconnectStartTime, disconnectEndTime) {
+function insertSensorDisconnectLog(disconnectStartTime, disconnectEndTime) {
     disconnectStartTime = bangkokTimeString(disconnectStartTime);
     disconnectEndTime = bangkokTimeString(disconnectEndTime);
     // check for previous disconnect log
     let selectQuery = "SELECT * FROM dbo.sensor_disconnect_log WHERE disconnectEndTime = '" + disconnectStartTime + "'";
     let logQuery = "";
     sql.query(selectQuery, function (err, result) {
-        if (!err) {
-            if (result.recordset.length > 0) {
-                // update disconnect log
-                logQuery = "UPDATE dbo.sensor_disconnect_log SET disconnectEndTime = '" + disconnectEndTime + "' WHERE disconnectEndTime = '" + disconnectStartTime + "'";
-            } else {
-                // insert disconnect log
-                logQuery = "INSERT INTO dbo.sensor_disconnect_log (disconnectStartTime, disconnectEndTime) VALUES ('" + disconnectStartTime + "', '" + disconnectEndTime + "')";
-            }
+        if (err) {
+            throw err;
+        }
+        if (result.recordset.length > 0) {
+            // update disconnect log
+            logQuery = "UPDATE dbo.sensor_disconnect_log SET disconnectEndTime = '" + disconnectEndTime + "' WHERE disconnectEndTime = '" + disconnectStartTime + "'";
         } else {
-            console.log(err);
+            // insert disconnect log
+            logQuery = "INSERT INTO dbo.sensor_disconnect_log (disconnectStartTime, disconnectEndTime) VALUES ('" + disconnectStartTime + "', '" + disconnectEndTime + "')";
         }
         sql.query(logQuery, function (err2, _result) {
             if (err2) {
-                console.log(err2);
+                throw err2;
             }
         });
     });
 }
 
+function insertGatewayDisconnectLog(gatewayName, disconnectTime) {
+    disconnectTime = bangkokTimeString(disconnectTime);
+    // check for previous disconnect log
+    // if exists, no need to insert
+    let selectQuery = "SELECT * FROM dbo.gateway_disconnect_log WHERE gatewayName = '" + gatewayName + "' AND disconnectTime = '" + disconnectTime + "'";
+    sql.query(selectQuery, function (err, result) {
+        if (err) {
+            throw err;
+        }
+        if (result.recordset.length === 0) {
+            let logQuery = "INSERT INTO dbo.gateway_disconnect_log (gatewayName, disconnectTime) VALUES ('" + gatewayName + "', '" + disconnectTime + "')";
+            sql.query(logQuery, (err2, _result) => {
+                if (err2) {
+                    throw err2;
+                }
+            });
+        }
+    });
+}
+
 // calling the API to get the data every 10 minutes to check if the sensor is connected or not
 function checkSensorConnection() {
+    sensorCheckError = false;
     axios.get('http://siit-smart-city.azurewebsites.net/api/getEnvSensorData', {
         headers: {
             'Content-Type': 'application/json'
@@ -58,16 +82,20 @@ function checkSensorConnection() {
         let data = response.data.values;
         if (data.length > 0) {
             sensorConnected = true;
-            lastKnownConnectedTime = new Date(data[1][0]).getTime() / 1000;
+            lastKnownSensorConnectedTime = new Date(data[1][0]).getTime() / 1000;
         } else {
             sensorConnected = false;
-            insertLog(startTime, endTime);
+            insertSensorDisconnectLog(startTime, endTime);
         }
     }).catch(function (error) {
-        // check for 400 error
-        if (error.response.status === 400) {
-            sensorConnected = false;
-            insertLog(startTime, endTime);
+        if (error.response !== undefined) {
+            if (error.response.status !== 400) {
+                sensorConnected = false;
+                insertSensorDisconnectLog(startTime, endTime);
+            }
+        } else {
+            sensorCheckError = true;
+            sensorErrorMessage = error.message;
         }
     }).finally(function () {
         startTime = endTime;
@@ -75,16 +103,75 @@ function checkSensorConnection() {
     });
 }
 
-checkSensorConnection();
-setInterval(() => {
+async function checkGatewayConnection() {
+    axios.get('https://siit-smart-city.azurewebsites.net/api/getZoneEvent', {
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        params: {
+            zone_id: 10
+        }
+    }).then(function (response) {
+        gatewayDisconnectLog = [];
+        let gatewayLogData = response.data;
+        if (gatewayLogData.length > 0) {
+            gatewayLogData.forEach(function (log) {
+                let gatewayLogTimestamp = new Date(log.timestamp).getTime() / 1000;
+                let gatewayLogName = log.device_label.split('_BB')[0];
+                if (log.name.toLowerCase() === 'gateway_disconnect' && gatewayLogTimestamp > CMSInitializeTime) {
+                    let gatewayLog = {
+                        gateway_name: gatewayLogName,
+                        gateway_timestamp: bangkokTimeString(gatewayLogTimestamp),
+                        gateway_event: log.name
+                    }
+                    insertGatewayDisconnectLog(gatewayLogName, gatewayLogTimestamp);
+                    gatewayDisconnectLog.push(gatewayLog);
+                }
+            });
+        }
+    }).catch(function (error) {
+        gatewayDisconnectLog = null;
+        gatewayErrorMessage = error.message;
+    });
+}
+
+function checkAllConnection() {
     checkSensorConnection();
+    checkGatewayConnection();
+}
+
+checkAllConnection();
+setInterval(() => {
+    checkAllConnection();
 }, intervalDuration * 1000);
 
 exports.checkSensorConnection = function (_req, res) {
-    res.status(200).send({
-        connected: sensorConnected,
-        lastKnownConnectedTime: bangkokTimeString(lastKnownConnectedTime),
-        checkTime: bangkokTimeString(startTime),
-        intervalDuration: intervalDuration
-    });
+    if (sensorCheckError) {
+        res.status(500).send({
+            error: "Error while checking sensor connection",
+            message: sensorErrorMessage
+        });
+    } else {
+        res.status(200).send({
+            connected: sensorConnected,
+            lastKnownConnectedTime: bangkokTimeString(lastKnownSensorConnectedTime),
+            checkTime: bangkokTimeString(startTime),
+            intervalDuration: intervalDuration
+        });
+    }
+};
+
+exports.checkGatewayConnection = function (_req, res) {
+    if (gatewayDisconnectLog !== null) {
+        res.status(200).send({
+            gatewayDisconnectLog: gatewayDisconnectLog,
+            checkTime: bangkokTimeString(startTime),
+            intervalDuration: intervalDuration
+        });
+    } else {
+        res.status(500).send({
+            error: "Error while getting gateway disconnect log",
+            message: gatewayErrorMessage
+        });
+    }
 };

@@ -87,6 +87,15 @@ app.use(function (_req, res, next) {
     res.setHeader('Expires', 0);
     next();
 });
+// prevent browser for calling static files
+app.use(function (req, res, next) {
+    if (req.url.indexOf('.html') > -1) {
+        res.status(404).redirect('/404');
+    } else {
+        next();
+    }
+});
+
 app.use(express.static(PATH));
 http.createServer(app).listen(PORT, () => {
     console.log('Server listening on http://localhost:' + PORT);
@@ -115,6 +124,12 @@ app.get('/dashboard', (req, res) => {
 app.get('/maps-view', (req, res) => {
     checkTokenValid(req, res, () => {
         res.status(200).sendFile(PATH + '/maps-view.html');
+    });
+});
+
+app.get('/device-connection', (req, res) => {
+    checkTokenValid(req, res, () => {
+        res.status(200).sendFile(PATH + '/device-connection.html');
     });
 });
 
@@ -202,6 +217,10 @@ app.get('/api/getDeviceInfo', (req, res) => {
 
 app.get('/api/checkSensorConnection', (req, res) => {
     disconnectDetection.checkSensorConnection(req, res);
+});
+
+app.get('/api/checkGatewayConnection', (req, res) => {
+    disconnectDetection.checkGatewayConnection(req, res);
 });
 
 // LOGIN REQUEST
