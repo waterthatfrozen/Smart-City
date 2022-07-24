@@ -1,0 +1,18 @@
+html {
+    height: 100%;
+    box-sizing: border-box;
+    /* overflow: hidden; */
+}
+
+body {
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+#map {
+    padding-top: 0;
+    height: 60vh;
+    max-height: 100%;
+    position: relative;
+}

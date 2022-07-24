@@ -89,7 +89,7 @@ function checkSensorConnection() {
         }
     }).catch(function (error) {
         if (error.response !== undefined) {
-            if (error.response.status !== 400) {
+            if (error.response.status === 400) {
                 sensorConnected = false;
                 insertSensorDisconnectLog(startTime, endTime);
             }
@@ -120,6 +120,7 @@ async function checkGatewayConnection() {
                 let gatewayLogName = log.device_label.split('_BB')[0];
                 if (log.name.toLowerCase() === 'gateway_disconnect' && gatewayLogTimestamp > CMSInitializeTime) {
                     let gatewayLog = {
+                        device_id: log.device_uid,
                         gateway_name: gatewayLogName,
                         gateway_timestamp: bangkokTimeString(gatewayLogTimestamp),
                         gateway_event: log.name
@@ -133,6 +134,35 @@ async function checkGatewayConnection() {
         gatewayDisconnectLog = null;
         gatewayErrorMessage = error.message;
     });
+}
+
+async function querySQL(query) {
+    return new Promise((resolve, reject) => {
+        sql.query(query, (err, result) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(result.recordset);
+        });
+    });
+}
+
+async function queryGatewayDisconnectLog(queryStartTime = 0, queryEndTime = 0) {
+    let logQuery = "SELECT * FROM dbo.gateway_disconnect_log"
+    if (queryStartTime > 0 && endTime > 0) {
+        logQuery += " WHERE disconnectTime BETWEEN '" + bangkokTimeString(queryStartTime) + "' AND '" + bangkokTimeString(queryEndTime) + "'";
+    }
+    logQuery += " ORDER BY disconnectTime DESC";
+    return querySQL(logQuery);
+}
+
+async function getSensorDisconnectLog(queryStartTime = 0, queryEndTime = 0) {
+    let logQuery = "SELECT * FROM dbo.sensor_disconnect_log"
+    if (queryStartTime > 0 && endTime > 0) {
+        logQuery += " WHERE disconnectEndTime BETWEEN '" + bangkokTimeString(queryStartTime) + "' AND '" + bangkokTimeString(queryEndTime) + "'";
+    }
+    logQuery += " ORDER BY disconnectEndTime DESC";
+    return querySQL(logQuery);
 }
 
 function checkAllConnection() {
@@ -175,3 +205,43 @@ exports.checkGatewayConnection = function (_req, res) {
         });
     }
 };
+
+exports.queryGatewayDisconnectLog = function (req, res) {
+    let queryStartTime = req.query.start;
+    let queryEndTime = req.query.end;
+    if (queryStartTime === undefined || queryEndTime === undefined) {
+        queryStartTime = 0;
+        queryEndTime = 0;
+    }
+    queryGatewayDisconnectLog(queryStartTime, queryEndTime).then(function (result) {
+        res.status(200).send({
+            gatewayDisconnectLog: result,
+            queryTime: bangkokTimeString(new Date().getTime() / 1000)
+        });
+    }).catch(function (error) {
+        res.status(500).send({
+            error: "Error while getting gateway disconnect log",
+            message: error.message
+        });
+    });
+}
+
+exports.querySensorDisconnectLog = function (req, res) {
+    let queryStartTime = req.query.start;
+    let queryEndTime = req.query.end;
+    if (queryStartTime === undefined || queryEndTime === undefined) {
+        queryStartTime = 0;
+        queryEndTime = 0;
+    }
+    getSensorDisconnectLog(queryStartTime, queryEndTime).then(function (result) {
+        res.status(200).send({
+            sensorDisconnectLog: result,
+            queryTime: bangkokTimeString(new Date().getTime() / 1000)
+        });
+    }).catch(function (error) {
+        res.status(500).send({
+            error: "Error while getting sensor disconnect log",
+            message: error.message
+        });
+    });
+}

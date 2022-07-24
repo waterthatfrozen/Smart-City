@@ -14,7 +14,7 @@ exports.getNasaData = function (req, res) {
             LONGITUDE = 100.605089,
             PARAMETERS = "T2M,T2MDEW,T2MWET,QV2M,RH2M,PRECTOTCORR,PS,WS10M,WD10M,WS50M,WD50M,ALLSKY_SFC_SW_DWN,CLRSKY_SFC_SW_DWN,ALLSKY_SFC_UVA,ALLSKY_SFC_UVB,ALLSKY_SFC_UV_INDEX",
             COMMUNITY = "RE";
-        const url = "https://power.larc.nasa.gov/api/temporal/daily/point";
+        const url = "https://power.larc.nasa.gov/api/temporal/hourly/point";
         axios.get(url, {
             params: {
                 start: START,
@@ -172,3 +172,37 @@ exports.getZoneLightData = function (req, res) {
         });
     }
 };
+
+exports.getIlluminanceSensorDatabyDevice = function (req, res) {
+    if (!req.query.device_id) {
+        res.status(400).send({
+            message: 'Please provide a device id'
+        });
+    } else {
+        const base_url = process.env.CMS_BASE_URL;
+        const auth = {
+            "username": process.env.CMS_UNAME,
+            "password": process.env.CMS_PWD,
+            "cms_uid": process.env.CMS_UID
+        };
+        axios.post(base_url + "/token", auth).then(response => {
+            const token = response.data.token,
+                head = {
+                    "Authorization": "Bearer " + token
+                };
+            axios.get(base_url + "/reports/devices/" + req.query.device_id + "/objects/illuminance", {
+                headers: head,
+                params: {
+                    from: Math.round(new Date("2022-02-04 17:00:00 +07").getTime() / 1000),
+                    to: Math.round(new Date().getTime() / 1000)
+                }
+            }).then(response2 => {
+                res.status(200).send(response2.data.values);
+            }).catch(error => {
+                res.status(500).send(error);
+            })
+        }).catch(error => {
+            res.status(500).send(error);
+        });
+    }
+}

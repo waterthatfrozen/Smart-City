@@ -10,7 +10,7 @@ const SIDEBAR_LINK = [{
         },
         {
             link: '/maps-view',
-            text: 'Light Maps View'
+            text: 'Device Maps'
         },
         {
             link: '/device-connection',

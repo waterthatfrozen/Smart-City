@@ -4,9 +4,6 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-    <meta name="generator" content="Hugo 0.88.1">
     <title>Smart City Dashboard</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/dashboard/">
@@ -20,18 +17,7 @@
         integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
         crossorigin="" />
     <link rel="stylesheet" href="css/dashboard.css">
-    <style type="text/css">
-        body {
-            height: 100vh;
-            margin: 0;
-            padding: 0;
-        }
-
-        #map {
-            padding-top: 100px;
-            min-height: 92.5vh;
-        }
-    </style>
+    <link rel="stylesheet" href="css/maps.css">
     <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"
@@ -45,6 +31,7 @@
         crossorigin=""></script>
     <script src="js/datetime-update.js" defer></script>
     <script src="js/sidebar.js" defer></script>
+    <script src="js/light-map.js" defer></script>
 </head>
 
 <body class="h-100">
@@ -67,23 +54,153 @@
     <div class="container-fluid">
         <div class="row">
             <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-
             </nav>
 
-            <main class="col-md-9 ms-sm-auto p-0 col-lg-10">
+            <main class="col-md-9 d-md-block ms-sm-auto p-0 col-lg-10">
+                <div class="container">
+                    <div
+                        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-1 mb-2">
+                        <h4 id="header">Device Map</h4>
+                        <div class="btn-group">
+                            <button type="button" disabled class="btn btn-sm btn-secondary" id="mapLoadingIndicator">
+                                <div class="spinner-grow spinner-grow-sm" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div> Loading Devices...
+                            </button>
+                            <button class="btn btn-sm btn-secondary"
+                                onclick="window.location.reload();">Refresh</button>
+                        </div>
+                    </div>
+                </div>
                 <div id="map"></div>
+                <div class="container">
+                    <div
+                        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-1 mb-2">
+                        <h4 id="header">Device Lists</h4>
+                    </div>
+                    <div class="accordion pb-4" id="deviceAccordionPane">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="gatewayAccordionHeading">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#gatewayAccordionCollapse" aria-expanded="false"
+                                    aria-controls="gatewayAccordionCollapse">
+                                    Gateway Devices
+                                </button>
+                            </h2>
+                            <div id="gatewayAccordionCollapse" class="accordion-collapse collapse"
+                                aria-labelledby="gatewayAccordionHeading">
+                                <div class="accordion-body" id="gatewayAccordionBody">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover" id="gatewayDeviceTable">
+                                            <caption id="gatewayDeviceCaption">Loading Gateway Devices...</caption>
+                                            <thead class="table-dark">
+                                                <tr>
+                                                    <th scope="col">#</th>
+                                                    <th scope="col">Gateway Name</th>
+                                                    <th scope="col">Device ID</th>
+                                                    <th scope="col">Gateway MAC Address</th>
+                                                    <th scope="col">Gateway Connection</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr id="gatewayDeviceLoadingIndicator">
+                                                    <td colspan="5" id="table-loading-block">
+                                                        <div id="table-loading-spinner"
+                                                            class="spinner-grow spinner-grow-sm" role="status">
+                                                            <span class="visually-hidden">Loading...</span>
+                                                        </div> Loading Gateway Devices...
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="envSensorAccordionHeading">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#envSensorAccordionCollapse" aria-expanded="false"
+                                    aria-controls="envSensorAccordionCollapse">
+                                    Environmental Sensors
+                                </button>
+                            </h2>
+                            <div id="envSensorAccordionCollapse" class="accordion-collapse collapse"
+                                aria-labelledby="envSensorAccordionHeading">
+                                <div class="accordion-body" id="envSensorAccordionBody">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover" id="envSensorDeviceTable">
+                                            <caption id="envSensorDeviceCaption">Loading Environmental Sensor Devices...
+                                            </caption>
+                                            <thead class="table-dark">
+                                                <tr>
+                                                    <th scope="col">#</th>
+                                                    <th scope="col">Sensor Name</th>
+                                                    <th scope="col">Device ID</th>
+                                                    <th scope="col">Gateway Used</th>
+                                                    <th scope="col">Sensor Connection</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr id="envSensorDeviceLoadingIndicator">
+                                                    <td colspan="5" id="table-loading-block">
+                                                        <div id="table-loading-spinner"
+                                                            class="spinner-grow spinner-grow-sm" role="status">
+                                                            <span class="visually-hidden">Loading...</span>
+                                                        </div> Loading Environmental Sensor Devices...
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="lightDeviceAccordionHeading">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#lightDeviceAccordionCollapse" aria-expanded="false"
+                                    aria-controls="lightDeviceAccordionCollapse">
+                                    Lighting Devices
+                                </button>
+                            </h2>
+                            <div id="lightDeviceAccordionCollapse" class="accordion-collapse collapse"
+                                aria-labelledby="lightDeviceAccordionHeading">
+                                <div class="accordion-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover" id="lightDeviceTable">
+                                            <caption id="lightDeviceCaption">Loading Lighting Devices...
+                                            </caption>
+                                            <thead class="table-dark">
+                                                <tr>
+                                                    <th scope="col">#</th>
+                                                    <th scope="col">Device Name</th>
+                                                    <th scope="col">Device ID</th>
+                                                    <th scope="col">Zone Name</th>
+                                                    <th scope="col">Gateway Used</th>
+                                                    <th scope="col">Device Connection</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr id="lightDeviceLoadingIndicator">
+                                                    <td colspan="6" id="table-loading-block">
+                                                        <div id="table-loading-spinner"
+                                                            class="spinner-grow spinner-grow-sm" role="status">
+                                                            <span class="visually-hidden">Loading...</span>
+                                                        </div> Loading Lighting Devices...
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </main>
         </div>
     </div>
-    <script>
-        var map = L.map('map').setView([14.067453, 100.605089], 16);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-        L.marker([14.067453, 100.605089]).addTo(map)
-            .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
-            .openPopup();
-    </script>
 </body>
 
 </html>

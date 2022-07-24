@@ -1,8 +1,7 @@
 const axios = require('axios').default;
 
 exports.setLightDimming = function (req, res) {
-    const accept_dimming_value = [0, 25, 50, 75, 100];
-    if (!req.body.device_id || !accept_dimming_value.includes(req.body.dimming_value)) {
+    if (!req.body.device_id || !(req.body.dimming_value >= 0 && req.body.dimming_value <= 100)) {
         res.status(400).send({
             message: 'Please provide a device id, and valid dimming value'
         });
