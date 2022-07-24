@@ -108,7 +108,7 @@ function timestampPanel(gatewayName, connectionStatus, timestampLabel, timestamp
                     <div class="card-body">
                         <h4 class="card-title">${icon}<br/>${gatewayName}</h4>
                         <p class="card-text">
-                        Status: <strong>${connectionStatus.toUpperCase()}</strong>
+                        Status: <span class="fw-bold">${connectionStatus.toUpperCase()}</span>
                         <br/>${timestampLabel}: ${timestamp}
                         </p>
                     </div>

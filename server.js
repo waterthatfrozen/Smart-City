@@ -115,24 +115,6 @@ app.get('/sensor-connection', (_req, res) => {
     res.status(200).sendFile(PATH + '/sensor-connection.html');
 });
 
-app.get('/dashboard', (req, res) => {
-    checkTokenValid(req, res, () => {
-        res.status(200).sendFile(PATH + '/dashboard.html');
-    });
-});
-
-app.get('/maps-view', (req, res) => {
-    checkTokenValid(req, res, () => {
-        res.status(200).sendFile(PATH + '/maps-view.html');
-    });
-});
-
-app.get('/device-connection', (req, res) => {
-    checkTokenValid(req, res, () => {
-        res.status(200).sendFile(PATH + '/device-connection.html');
-    });
-});
-
 // Test API
 app.get('/api/helloWorld', (req, res) => {
     playgroundAPI.helloWorld(req, res);
@@ -189,6 +171,10 @@ app.get('/api/getZoneLightData', (req, res) => {
     getDataAPI.getZoneLightData(req, res);
 });
 
+app.get('/api/getIlluminanceSensorDatabyDevice', (req, res) => {
+    getDataAPI.getIlluminanceSensorDatabyDevice(req, res);
+});
+
 // GET SUPPORT DATA REQUEST (api/get-support-data)
 app.get('/api/getServiceStatus', (req, res) => {
     getSupportDataAPI.getServiceStatus(req, res);
@@ -215,12 +201,25 @@ app.get('/api/getDeviceInfo', (req, res) => {
     getDeviceAPI.getDeviceInfo(req, res);
 });
 
+app.get('/api/getZoneIlluminanceSensorDeviceList', (req, res) => {
+    getDeviceAPI.getZoneIlluminanceSensorDeviceList(req, res);
+});
+
+// GET CONNECTION STATUS (api/disconnect-detection)
 app.get('/api/checkSensorConnection', (req, res) => {
     disconnectDetection.checkSensorConnection(req, res);
 });
 
 app.get('/api/checkGatewayConnection', (req, res) => {
     disconnectDetection.checkGatewayConnection(req, res);
+});
+
+app.get('/api/querySensorDisconnectLog', (req, res) => {
+    disconnectDetection.querySensorDisconnectLog(req, res);
+});
+
+app.get('/api/queryGatewayDisconnectLog', (req, res) => {
+    disconnectDetection.queryGatewayDisconnectLog(req, res);
 });
 
 // LOGIN REQUEST
@@ -260,8 +259,18 @@ app.post('/api/setLightDimming', (req, res) => {
 });
 
 // Response 401
-app.get('/401', (req, res) => {
+app.get('/401', (_req, res) => {
     res.status(401).sendFile(PATH + '/401.html');
+});
+
+app.get('/404', (_req, res) => {
+    res.status(404).sendFile(PATH + '/404.html');
+});
+
+app.get('/:htmlfile', (req, res) => {
+    checkTokenValid(req, res, () => {
+        res.status(200).sendFile(PATH + '/' + req.params.htmlfile + '.html');
+    });
 });
 
 // Response a 404 with 404.html
