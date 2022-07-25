@@ -203,9 +203,13 @@ function mapsMain() {
             allEnvSensorList = envSensorList;
             envSensorList.forEach(element => {
                 var markerColor = element.connected ? "green" : "black";
+                var gatewayName = allGatewayList.find(gateway => gateway.device_mac_address === element.gateway_mac_address).device_label;
                 L.marker([element.latitude, element.longitude], {
                     icon: mapIconColor(markerColor)
-                }).bindPopup(element.device_label).addTo(envSensorMarker);
+                }).bindPopup(`<b>${element.device_label.toUpperCase()}</b><br/>
+                Device ID: ${element.device_id}<br/>
+                Gateway Used: ${gatewayName}<br/>` +
+                    connectionString(element.connected)).addTo(envSensorMarker);
             });
         });
         getGatewayList().then(gatewayList => {
@@ -214,16 +218,24 @@ function mapsMain() {
                 var markerColor = element.connected ? "blue" : "red";
                 L.marker([element.latitude, element.longitude], {
                     icon: mapIconColor(markerColor)
-                }).bindPopup(`<b>${element.device_label}</b><br>${element.device_mac_address}`).addTo(gatewayMarker);
+                }).bindPopup(`<b>${element.device_label.toUpperCase()}</b><br/>
+                Device ID: ${element.device_id}<br/>
+                Device MAC Address: ${element.device_mac_address}<br/>` +
+                    connectionString(element.connected)).addTo(gatewayMarker);
             });
         });
         getLightDeviceList().then(function (lightDeviceList) {
             allLightDeviceList = lightDeviceList;
             lightDeviceList.forEach(function (lightDevice) {
                 var markerColor = lightDevice.connected ? "yellow" : "grey";
+                var gatewayName = allGatewayList.find(gateway => gateway.device_mac_address === lightDevice.gateway_mac_address).device_label;
                 L.marker([lightDevice.latitude, lightDevice.longitude], {
                     icon: mapIconColor(markerColor)
-                }).bindPopup(lightDevice.device_label).addTo(zoneLightMarker[lightDevice.zone_id - 1]);
+                }).bindPopup(`<b>${lightDevice.device_label.toUpperCase()}</b><br/>
+                Device ID: ${lightDevice.device_id}<br/>
+                Zone Name: ${lightDevice.zone_name}<br/>
+                Gateway Used: ${gatewayName}<br/>` +
+                    connectionString(lightDevice.connected)).addTo(zoneLightMarker[lightDevice.zone_id - 1]);
             });
         }).then(function () {
             var number = 1;
