@@ -72,4 +72,4 @@ function illuminanceMain(){
 }
 
 $(document).ready(illuminanceMain);
-setInterval(illuminanceMain, 10 * 60 * 1000); // 10 minutes
+setInterval(illuminanceMain, 15 * 60 * 1000); // 15 minutes

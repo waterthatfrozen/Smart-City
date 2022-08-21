@@ -7,7 +7,7 @@ const {
 // Light Device: 1.1, 1.6, 1.12, 2.1, 2.13, 2.25, 3.1, 3.15, 3.29, 4.1, 4.8, 5.1, 5.22, 5.44, 5.66, 6.1, 6.14, 6.27
 const deviceIDPrefixes = ["B1000026B0", "B100002602", "B10000262A", "B100002609", "B100002619", "B100002357", "B10000268F", "B100004F7F", "B100002614", "B10000D2D6", "B10000D2D3", "B10000D2D2", "B10000C382", "B10000D2E7", "B10000BC45", "B10000BC4A", "B10000BC3E", "B10000D2C8"];
 // Interval at 15 minutes
-const intervalDuration = 60 * 10;
+const intervalDuration = 60 * 15;
 const base_url = process.env.CMS_BASE_URL;
 let lastSensorValue = [];
 let currentTimestamp = 0;
