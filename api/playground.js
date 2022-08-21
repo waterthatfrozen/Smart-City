@@ -47,17 +47,17 @@ exports.testSelectData = function (req, res) {
 };
 
 exports.testInsertData = function (req, res) {
-    if (!req.body.message) {
+    if (!req.body) {
         res.status(400).send({
             message: "message is required"
         });
     } else {
         try {
-            var insertMessage = req.body.message;
-            // replace ' with '' in insertMessage
-            insertMessage = insertMessage.replace(/'/g, "''");
+            var insertMessage = req.body;
             console.log(insertMessage);
-            var insertQuery = "INSERT INTO dbo.test_message (messageText) VALUES ('" + insertMessage + "')";
+            // replace ' with '' in insertMessage
+            // insertMessage = insertMessage.replace(/'/g, "''");
+            var insertQuery = "INSERT INTO dbo.test_message (messageText) VALUES ('" + JSON.stringify(insertMessage) + "')";
             sql.query(insertQuery, function (err, result) {
                 if (err) {
                     throw err;

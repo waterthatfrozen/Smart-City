@@ -33,6 +33,7 @@ const getDataAPI = require('./api/get-data'),
 
 // Environmental Sensor Disconnect Detection
 const disconnectDetection = require('./api/disconnect-detection');
+const illuminanceCollection = require('./api/illuminance-collection');
 
 const tokenMaxAge = 6 * 60 * 60 * 1000;
 
@@ -203,6 +204,11 @@ app.get('/api/getDeviceInfo', (req, res) => {
 
 app.get('/api/getZoneIlluminanceSensorDeviceList', (req, res) => {
     getDeviceAPI.getZoneIlluminanceSensorDeviceList(req, res);
+});
+
+// GET ILLUMINANCE SENSOR DATA REQUEST (api/illumiance-collection)
+app.get('/api/getLastLumianceSensorValue', (req, res) => {
+    illuminanceCollection.getLastLumianceSensorValue(req, res);
 });
 
 // GET CONNECTION STATUS (api/disconnect-detection)
