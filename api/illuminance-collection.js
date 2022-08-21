@@ -5,11 +5,12 @@ const {
 
 // Selected Device
 // Light Device: 1.1, 1.6, 1.12, 2.1, 2.13, 2.25, 3.1, 3.15, 3.29, 4.1, 4.8, 5.1, 5.22, 5.44, 5.66, 6.1, 6.14, 6.27
-const deviceIDPrefixes = ["B1000026B0", "B100002602", "B10000262A", "B100002609", "B100002619", "B100002613", "B10000268F", "B100004F7F", "B100002614", "B10000D2D6", "B10000D2D3", "B10000D2D2", "B10000C382", "B10000D2E7", "B10000BC45", "B10000BC4A", "B10000BC3E", "B10000D2C8"];
+const deviceIDPrefixes = ["B1000026B0", "B100002602", "B10000262A", "B100002609", "B100002619", "B100002357", "B10000268F", "B100004F7F", "B100002614", "B10000D2D6", "B10000D2D3", "B10000D2D2", "B10000C382", "B10000D2E7", "B10000BC45", "B10000BC4A", "B10000BC3E", "B10000D2C8"];
 // Interval at 15 minutes
-const intervalDuration = 60 * 15; 
+const intervalDuration = 60 * 10;
 const base_url = process.env.CMS_BASE_URL;
-let lastSensorValue = null;
+let lastSensorValue = [];
+let currentTimestamp = 0;
 
 async function getToken() {
     try {
@@ -26,22 +27,22 @@ async function getToken() {
 }
 
 async function getDeviceLabel(deviceID) {
-    const deviceInfoResponse = await axios.get("https://siit-smart-city.azurewebsites.net/api/getDeviceInfo", {
-        params: {
-            device_id: deviceID
-        }
-    });
-    return deviceInfoResponse.data.device_label;
+    try {
+        const deviceInfoResponse = await axios.get("https://siit-smart-city.azurewebsites.net/api/getDeviceInfo?device_id="+deviceID);
+        return deviceInfoResponse.data.device_label;
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 
 async function getDeviceGatewayMAC(deviceID) {
-    const deviceInfoResponse = await axios.get("https://siit-smart-city.azurewebsites.net/api/getDeviceInfo", {
-        params: {
-            device_id: deviceID
-        }
-    });
-    return deviceInfoResponse.data.gateway_MAC;
+    try {
+        const deviceInfoResponse = await axios.get("https://siit-smart-city.azurewebsites.net/api/getDeviceInfo?device_id="+deviceID);
+        return deviceInfoResponse.data.gateway_MAC;
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 async function sendGetSensorCommand(deviceID, gatewayMAC) {
@@ -90,7 +91,7 @@ async function getLuminanceSensorValue(deviceID) {
     if (status === 200 && Math.abs(illuminanceTimestamp - currentTime) <= 3600) {
         illuminanceValue = parseInt(valueResponse.resources[0].value);
         illuminanceTimestamp = valueResponse.time_stamp;
-    }else{
+    } else {
         illuminanceTimestamp = currentTime;
     }
     illuminanceTimestamp = bangkokTimeString(illuminanceTimestamp);
@@ -103,6 +104,7 @@ async function getLuminanceSensorValue(deviceID) {
 }
 
 async function getAllLuminanceSensorValue() {
+    console.log("Calling new set of data");
     let illuminanceValues = [];
     // Send command to read value from illuminance Sensor
     for (const deviceID of deviceIDPrefixes) {
@@ -120,12 +122,15 @@ async function getAllLuminanceSensorValue() {
         illuminanceValues.push(currentValue);
     }
     lastSensorValue = illuminanceValues;
+    currentTimestamp = Math.round(new Date().getTime() / 1000);
     return illuminanceValues;
 }
 
-
 exports.getLastLumianceSensorValue = function (_req, res) {
-    res.status(200).send(lastSensorValue);
+    res.status(200).send({
+        data: lastSensorValue,
+        timestamp: currentTimestamp
+    });
 };
 
 getAllLuminanceSensorValue();
