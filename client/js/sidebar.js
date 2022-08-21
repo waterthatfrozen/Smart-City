@@ -9,6 +9,10 @@ const SIDEBAR_LINK = [{
             text: 'Zone Overview'
         },
         {
+            link: '#',
+            text: 'Illuminance Sensor Report'
+        },
+        {
             link: '/maps-view',
             text: 'Device Maps'
         },

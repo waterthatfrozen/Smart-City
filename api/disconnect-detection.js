@@ -245,3 +245,5 @@ exports.querySensorDisconnectLog = function (req, res) {
         });
     });
 }
+
+exports.bangkokTimeString = bangkokTimeString;
