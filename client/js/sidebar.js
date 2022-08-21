@@ -9,7 +9,7 @@ const SIDEBAR_LINK = [{
             text: 'Zone Overview'
         },
         {
-            link: '#',
+            link: '/illuminance-sensor',
             text: 'Illuminance Sensor Report'
         },
         {
