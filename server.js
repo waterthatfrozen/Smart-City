@@ -26,14 +26,17 @@ sql.connect(sqlConfig, function (err) {
 });
 
 // require API
-const getDataAPI = require('./api/get-data'),
-    getSupportDataAPI = require('./api/get-support-data'),
-    getDeviceAPI = require('./api/get-device'),
-    playgroundAPI = require('./api/playground');
+const getDataAPI = require('./api/get-data');
+const getSupportDataAPI = require('./api/get-support-data');
+const getDeviceAPI = require('./api/get-device');
+const playgroundAPI = require('./api/playground');
 
 // Environmental Sensor Disconnect Detection
 const disconnectDetection = require('./api/disconnect-detection');
 const illuminanceCollection = require('./api/illuminance-collection');
+
+// IoT Sensor Measurement Collection
+const iotSensorAPI = require('./api/iot-sensor');
 
 const tokenMaxAge = 6 * 60 * 60 * 1000;
 
@@ -144,24 +147,12 @@ app.post('/api/testSendData', (req, res) => {
 
 // GET REQUEST
 // GET DATA REQUEST (api/get-data)
-app.get('/get-nasa-data', (req, res) => {
-    getDataAPI.getNasaData(req, res);
-});
-
 app.get('/api/getNasaData', (req, res) => {
     getDataAPI.getNasaData(req, res);
 });
 
-app.get('/get-env-sensor-data', (req, res) => {
-    getDataAPI.getEnvSensorData(req, res);
-});
-
 app.get('/api/getEnvSensorData', (req, res) => {
     getDataAPI.getEnvSensorData(req, res);
-});
-
-app.get('/get-env-sensor-hourly-data', (req, res) => {
-    getDataAPI.getEnvSensorHourlyData(req, res);
 });
 
 app.get('/api/getEnvSensorHourlyData', (req, res) => {
@@ -227,6 +218,16 @@ app.get('/api/querySensorDisconnectLog', (req, res) => {
 app.get('/api/queryGatewayDisconnectLog', (req, res) => {
     disconnectDetection.queryGatewayDisconnectLog(req, res);
 });
+
+// RECORD IoT SENSOR VALUE (api/iot-sensors)
+app.post('/api/recordIoTSensorValue', (req, res) => {
+    iotSensorAPI.recordIoTSensorValue(req, res);
+});
+
+app.get('/api/getLastRecordedData', (req, res) => {
+    iotSensorAPI.getLastRecordedData(req, res);
+});
+
 
 // LOGIN REQUEST
 app.post('/login', (req, res) => {
