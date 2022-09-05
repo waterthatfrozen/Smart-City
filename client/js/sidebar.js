@@ -25,7 +25,7 @@ const SIDEBAR_LINK = [{
             text: 'Device Events'
         },
         {
-            link: '#',
+            link: '#', 
             text: 'CMS System Status'
         }
     ]
@@ -40,6 +40,12 @@ const SIDEBAR_LINK = [{
     }, {
         link: '#',
         text: 'Link 3'
+    }]
+},{
+    heading: 'IoT Sensors',
+    links: [{
+        link: '/iot-sensors',
+        text: 'Sensor Value'
     }]
 }];
 
