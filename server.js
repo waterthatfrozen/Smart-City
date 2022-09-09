@@ -228,6 +228,10 @@ app.get('/api/getLastRecordedData', (req, res) => {
     iotSensorAPI.getLastRecordedData(req, res);
 });
 
+app.get('/api/getRecordedData', (req, res) => {
+    iotSensorAPI.getRecordedData(req, res);
+});
+
 
 // LOGIN REQUEST
 app.post('/login', (req, res) => {
