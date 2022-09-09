@@ -34,30 +34,24 @@ const SIDEBAR_LINK = [{
     links: [{
         link: '#',
         text: 'Set Dimming Value'
-    }, {
-        link: '#',
-        text: 'Link 2'
-    }, {
-        link: '#',
-        text: 'Link 3'
     }]
 },{
     heading: 'IoT Sensors',
     links: [{
         link: '/iot-sensors',
-        text: 'Sensor Value'
+        text: 'Sensor Record'
     }]
 }];
 
 function sidebar_link(hreflink, text) {
-    return '<li class="nav-item"><a class="nav-link" href="' + hreflink + '">' + text + '</a></li>';
+    return '<li class="nav-item"><a class="nav-link py-1" href="' + hreflink + '">' + text + '</a></li>';
 }
 
 function sidebar_division(sidebar_heading, sidebar_links) {
     var sidebar_div =
-        `<h6 class = "sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+        `<h6 class = "sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 text-muted">
             <span>${sidebar_heading}</span></h6>
-            <ul class = "nav flex-column mb-auto">`;
+            <ul class = "nav flex-column mb-1">`;
     for (const element of sidebar_links) {
         sidebar_div += sidebar_link(element.link, element.text);
     }
