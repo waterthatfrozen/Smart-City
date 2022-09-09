@@ -96,5 +96,33 @@ function getLastRecordedData(_req,res){
     }
 }
 
+function getRecordedData(req,res){
+    if(req.query.start == null || req.query.end == null || req.query.thing_id == null){
+        res.status(400).send({
+            status: 400,
+            message: "start, end, and thing_id query parameters are required"
+        });
+    }else{
+        let start = req.query.start;
+        // transform UNIX start to YYYY-MM-DD HH:MM:SS.mmm format
+        let startDatetimeString = transformDatetime(new Date(start * 1000));
+        let end = req.query.end;
+        // transform UNIX end to YYYY-MM-DD HH:MM:SS.mmm format
+        let endDatetimeString = transformDatetime(new Date(end * 1000));
+        let query = `SELECT * FROM dbo.sensor_measurement WHERE measurementTimestamp BETWEEN '${startDatetimeString}' AND '${endDatetimeString}' AND thingID = N'${req.query.thing_id}'`;
+        sql.query(query, (err, result) => {
+            if (err) {
+                throw new Error(err);
+            } else {
+                res.status(200).send({
+                    status: 200,
+                    data: result.recordset
+                });
+            }
+        });
+    }
+}
+
 exports.recordIoTSensorValue = recordIoTSensorValue;
 exports.getLastRecordedData = getLastRecordedData;
+exports.getRecordedData = getRecordedData;
