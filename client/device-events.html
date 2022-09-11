@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.88.1">
-    <title>Smart City Dashboard</title>
+    <title>Template | Smart City</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/dashboard/">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,14 +26,13 @@
         integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <script src="js/datetime-update.js" defer></script>
-    <script src="js/dashboard.js" defer></script>
     <script src="js/sidebar.js" defer></script>
+    <script src="js/device-events.js" defer></script>
 </head>
-
 <body>
 
     <header class="navbar navbar-dark sticky-top bg-success flex-md-nowrap p-0 shadow">
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/device-events">Smart City Dashboard</a>
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/dashboard">Smart City Dashboard</a>
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
             data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
             aria-label="Toggle navigation">
@@ -65,43 +64,54 @@
                     <button class="btn btn-sm btn-secondary" onclick="window.location.reload();">Refresh</button>
                 </div>
             </div>
-            <div class="row row-cols-2 row-cols-md-4 g-3 m-1" id="env-sensor-value-container">
-                <!-- loading indicator -->
-                <div class="w-100" id="env-sensor-loading-container">
-                    <table class="table">
-                        <thead class="thead-light">
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Device</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Time</th>
-                        </tr>
+                <!-- Create Responsive Table -->
+                <div class="table-responsive rounded-3">
+                    <table class="table table-striped table-hover" id="value-table">
+                        <thead class="table-dark">
+                            <tr id="value-table-header">
+                                <th>Device No.</th>
+                                <th>Gateway</th>
+                                <th>Time Disconnected</th>
+                                
+                            </tr>
                         </thead>
-                        <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                            <td>@fat</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td>Larry</td>
-                            <td>the Bird</td>
-                            <td>@twitter</td>
-                        </tr>
+                        <tbody id="table-body">
+                            <tr class="bg-secondary" id="value-loading">
+                                <td colspan="3" class="text-white p-3">
+                                    <div class="spinner-grow spinner-grow-sm" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div> Loading data...</td>
+                            </tr>
+                            <tr class="bg-danger">
+                                <td colspan="3" class="text-white p-3" id="value-error" hidden><i class="bi bi-exclamation-circle-fill"></i> An error occurred.</td>
+                            </tr>
+                            <tr class="bg-warning" id="value-nodata" hidden>
+                                <td colspan="3" class="p-3"><i class="bi bi-exclamation-circle-fill"></i> No data recorded.</td>
+                            </tr>
+                            <tr id="value-row">
+                                <td>1</td>
+                                <td>XXXX</td>
+                                <td>43</td>
+                                
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>XXXX</td>
+                                <td>43</td>
+                                
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>XXXX</td>
+                                <td>43</td>
+                                
+                            </tr>
                         </tbody>
+                        <caption>
+                            Last Updated on XX/XX/XXXX
+                        </caption>
                     </table>
                 </div>
-            </div>
-
-            
         </main>
     </div>
     </div>
