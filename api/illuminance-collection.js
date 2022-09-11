@@ -46,7 +46,6 @@ async function getDeviceGatewayMAC(deviceID) {
 }
 
 async function sendGetSensorCommand(deviceID, gatewayMAC) {
-    console.log("Sending get illuminance command to " + deviceID);
     const token = await getToken();
     const head = {
         "Authorization": "Bearer " + token
@@ -125,6 +124,66 @@ async function getAllLuminanceSensorValue() {
     currentTimestamp = Math.round(new Date().getTime() / 1000);
     return illuminanceValues;
 }
+
+async function getLuminanceSensorValueByDeviceIDandRange(device_id, start, end){
+    const url = base_url + `/reports/devices/${device_id}/objects/illuminance?from=${start}&to=${end}`;
+    const token = await getToken();
+    const head = {
+        "Authorization": "Bearer " + token
+    };
+    let valueResponse = await axios.get(url, {
+        headers: head
+    });
+    let status = valueResponse.status;
+    valueResponse = valueResponse.data.values;
+    let illuminanceValues = [];
+    if (status === 200) {
+        valueResponse = valueResponse.slice(1);
+        for (const value of valueResponse) {
+            illuminanceValues.push({
+                timestamp: bangkokTimeString(new Date(value[0]).getTime() / 1000),
+                sensor_value: parseInt(value[1])
+            });
+        }
+    }
+    let response = {
+        sensor_device_id: device_id,
+        sensor_values: illuminanceValues,
+        unit: "lx"
+    };
+    return response;
+}
+
+async function getSensorValueByDeviceIDandRange(req,res){
+    if (req.query.device_id === undefined || req.query.start === undefined || req.query.end === undefined) {
+        res.status(400).send({message: "Missing device ID, start, or end query parameter"});
+    } else {
+        let response = await getLuminanceSensorValueByDeviceIDandRange(req.query.device_id, req.query.start, req.query.end);
+        res.status(200).send(response);
+    }
+}
+
+async function getSensorValuebyRange(req, res){
+    if (req.query.start === undefined || req.query.end === undefined) {
+        res.status(400).send({message: "Missing start or end query parameter"});
+    }else{
+        let start = req.query.start;
+        let end = req.query.end;
+        let illuminanceValues = [];
+        for (const deviceID of deviceIDPrefixes) {
+            let currentDeviceID = deviceID + "0CE500";
+            let currentValue = await getLuminanceSensorValueByDeviceIDandRange(currentDeviceID, start, end);
+            let currentLightDeviceID = deviceID + "0CEF00";
+            currentValue["light_device_id"] = currentLightDeviceID;
+            currentValue["light_device_name"] = await getDeviceLabel(currentLightDeviceID);
+            illuminanceValues.push(currentValue);
+        }
+        res.status(200).send(illuminanceValues);
+    }
+}
+
+exports.getSensorValuebyRange = getSensorValuebyRange;
+exports.getSensorValueByDeviceIDandRange = getSensorValueByDeviceIDandRange;
 
 exports.getLastLumianceSensorValue = function (_req, res) {
     res.status(200).send({

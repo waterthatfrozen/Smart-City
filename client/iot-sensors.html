@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.88.1">
-    <title>Template | Smart City</title>
+    <title>IoT Sensor Data | Smart City</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/dashboard/">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -56,7 +56,7 @@
                 class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-1 mb-2 border-bottom">
                 <h2 id="header">IoT Sensor Values</h2>
                 <div class="btn-group">
-                    <button type="button" disabled class="btn btn-sm btn-secondary" id="env-sensor-timestamp">
+                    <button type="button" disabled class="btn btn-sm btn-secondary" id="loading-timestamp">
                         <div class="spinner-grow spinner-grow-sm" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div> Loading timestamp...
@@ -66,57 +66,44 @@
             </div>
                 <!-- Create Responsive Table -->
                 <div class="table-responsive rounded-3">
-                    <table class="table table-striped" id="value-table">
-                        <thead class="table-dark">
-                            <tr id="value-table-header">
-                                <th>Log No.</th>
-                                <th>Device ID</th>
+                    <table class="table table-striped" id="value-table" aria-describedby="table-caption">
+                            <tr id="value-table-header" class="table-dark">
+                                <th class="col-w100px">Timestamp</th>
                                 <th>Temperature</th>
                                 <th>Humidity</th>
-                                <th>Pressure</th>
-                                <th>Timestamp</th>
+                                <th>Air Pressure</th>
+                                <th>Light Intensity</th>
+                                <th>Infrared</th>
+                                <th>UV Index</th>
+                                <th>Microwave Doppler</th>
+                                <th>V MQ2</th>
+                                <th>V MQ4</th>
+                                <th>V MQ7</th>
+                                <th>V MQ8</th>
+                                <th>PM 1(Env)</th>
+                                <th>PM 1(Stand)</th>
+                                <th>PM 2.5(Env)</th>
+                                <th>PM 2.5(Stand)</th>
+                                <th>PM 10(Env)</th>
+                                <th>PM 10(Stand)</th>
                             </tr>
                         </thead>
                         <tbody id="table-body">
-                            <tr class="bg-secondary" id="value-loading">
-                                <td colspan="6" class="text-white p-3">
+                            <tr id="value-loading">
+                                <td colspan="18" class="text-white p-3 bg-secondary">
                                     <div class="spinner-grow spinner-grow-sm" role="status">
                                     <span class="visually-hidden">Loading...</span>
                                   </div> Loading data...</td>
                             </tr>
                             <tr class="bg-danger">
-                                <td colspan="6" class="text-white p-3" id="value-error" hidden><i class="bi bi-exclamation-circle-fill"></i> An error occurred.</td>
+                                <td colspan="18" class="text-white p-3" id="value-error" hidden><i class="bi bi-exclamation-circle-fill"></i> An error occurred.</td>
                             </tr>
                             <tr class="bg-warning" id="value-nodata" hidden>
-                                <td colspan="6" class="p-3"><i class="bi bi-exclamation-circle-fill"></i> No data recorded.</td>
-                            </tr>
-                            <tr id="value-row">
-                                <td>1</td>
-                                <td>XXXX</td>
-                                <td>43</td>
-                                <td>325</td>
-                                <td>345</td>
-                                <td>576</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>XXXX</td>
-                                <td>43</td>
-                                <td>325</td>
-                                <td>345</td>
-                                <td>576</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>XXXX</td>
-                                <td>43</td>
-                                <td>325</td>
-                                <td>345</td>
-                                <td>576</td>
+                                <td colspan="18" class="p-3 text-white"><i class="bi bi-exclamation-circle-fill"></i> No data recorded.</td>
                             </tr>
                         </tbody>
-                        <caption>
-                            Currently Under Development, Please Check Back Later
+                        <caption id="table-caption">
+                            Loading IoT Sensor Data...
                         </caption>
                     </table>
                 </div>
