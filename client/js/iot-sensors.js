@@ -16,7 +16,6 @@ function valueNodataDisplayHidden(visibility){
 }
 
 function valueRow(data){
-    // degree symbol: &#176;
     return `
     <tr>
         <td class="col-w100px">${new Date(data.measurementTimestamp).toLocaleString()}</td>
@@ -42,10 +41,8 @@ function valueRow(data){
 }
 
 async function getIoTSensorData(){
-    // const end = new Date().getTime() / 1000;
-    // const start = end - (60 * 60 * 24);
-    const start = 1659510600;
-    const end = 1659512500;
+    const end = new Date().getTime() / 1000;
+    const start = end - (60 * 60 * 24);
     let result = null;
     await fetch('/api/getRecordedData?thing_id=62e93e0a64bebd0001c2bc02&start='+start+'&end='+end, {
         method: 'GET',
@@ -75,7 +72,7 @@ function sensor_main(){
             });
         }
         $("#loading-timestamp").text(`As of ${datetimeTransform(new Date())}`);
-        $("#table-caption").text(`${sensorData.length} records Loaded, Last Updated: ${datetimeTransform(new Date())}`);
+        $("#table-caption").text(`${sensorData.length} records in past 24 hours loaded, Last Updated: ${datetimeTransform(new Date())}`);
     }).catch((error) => {
         valueErrorDisplay(error);
         $("#loading-timestamp").text('Error on loading data.');
