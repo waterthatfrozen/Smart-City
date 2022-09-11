@@ -15,18 +15,6 @@ const SIDEBAR_LINK = [{
         {
             link: '/maps-view',
             text: 'Device Maps'
-        },
-        {
-            link: '/device-connection',
-            text: 'Gateway and Sensor Status'
-        },
-        {
-            link: '#',
-            text: 'Device Events'
-        },
-        {
-            link: '#', 
-            text: 'CMS System Status'
         }
     ]
 }, {
@@ -41,6 +29,20 @@ const SIDEBAR_LINK = [{
         link: '/iot-sensors',
         text: 'Sensor Record'
     }]
+},{
+    heading: 'SYSTEM STATUS',
+    links: [{
+        link: '/device-connection',
+        text: 'Gateway and Sensor Status'
+    },
+    {
+        link: '#',
+        text: 'Device Events'
+    },
+    {
+        link: '/service-status', 
+        text: 'CMS Services Status'
+    }]
 }];
 
 function sidebar_link(hreflink, text) {
@@ -51,7 +53,7 @@ function sidebar_division(sidebar_heading, sidebar_links) {
     var sidebar_div =
         `<h6 class = "sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 text-muted">
             <span>${sidebar_heading}</span></h6>
-            <ul class = "nav flex-column mb-1">`;
+            <ul class = "nav flex-column mb-0">`;
     for (const element of sidebar_links) {
         sidebar_div += sidebar_link(element.link, element.text);
     }
@@ -64,9 +66,8 @@ function footer() {
         <li class="nav-item nav-link smaller-font text-muted">
             &copy; 2022 Copyright Reserved.<br />
             SIIT, Thammasat University.<br />
-            <a class="text-decoration-none text-muted" href="http://github.com/waterthatfrozen/">Project
-                Information</a> |
-            <a class="text-decoration-none text-muted" href="#">Privacy Statement</a>
+            <a class="text-decoration-none text-muted" href="http://github.com/waterthatfrozen/Smart-City">Project
+                Information</a>
         </li>
     </ul>`;
 }
