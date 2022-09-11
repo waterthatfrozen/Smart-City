@@ -202,6 +202,14 @@ app.get('/api/getLastLumianceSensorValue', (req, res) => {
     illuminanceCollection.getLastLumianceSensorValue(req, res);
 });
 
+app.get('/api/getSensorValuebyRange', (req, res) => {
+    illuminanceCollection.getSensorValuebyRange(req, res);
+});
+
+app.get('/api/getSensorValueByDeviceIDandRange', (req, res) => {
+    illuminanceCollection.getSensorValueByDeviceIDandRange(req, res);
+});
+
 // GET CONNECTION STATUS (api/disconnect-detection)
 app.get('/api/checkSensorConnection', (req, res) => {
     disconnectDetection.checkSensorConnection(req, res);

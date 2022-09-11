@@ -109,7 +109,7 @@ function getRecordedData(req,res){
         let end = req.query.end;
         // transform UNIX end to YYYY-MM-DD HH:MM:SS.mmm format
         let endDatetimeString = transformDatetime(new Date(end * 1000));
-        let query = `SELECT * FROM dbo.sensor_measurement WHERE measurementTimestamp BETWEEN '${startDatetimeString}' AND '${endDatetimeString}' AND thingID = N'${req.query.thing_id}'`;
+        let query = `SELECT * FROM dbo.sensor_measurement WHERE measurementTimestamp BETWEEN '${startDatetimeString}' AND '${endDatetimeString}' AND thingID = N'${req.query.thing_id}' ORDER BY measurementTimestamp DESC`;
         sql.query(query, (err, result) => {
             if (err) {
                 throw new Error(err);
