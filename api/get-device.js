@@ -52,7 +52,13 @@ exports.getZoneLightDeviceList = function (req, res) {
             axios.get(base_url + "/zones/" + req.query.zone_id + "/1/devices", {
                 headers: head
             }).then(response2 => {
-                res.status(200).send(response2.data.devices);
+                let result = [];
+                response2.data.devices.forEach(device => {
+                    if(device.device_type_id === 27036){
+                        result.push(device);
+                    }
+                });
+                res.status(200).send(result);
             }).catch(error => {
                 res.status(500).send(error);
             });

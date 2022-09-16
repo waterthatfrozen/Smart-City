@@ -38,6 +38,9 @@ const illuminanceCollection = require('./api/illuminance-collection');
 // IoT Sensor Measurement Collection
 const iotSensorAPI = require('./api/iot-sensor');
 
+// Lighting Device Report
+const lightingDeviceReport = require('./api/device-report');
+
 const tokenMaxAge = 6 * 60 * 60 * 1000;
 
 function checkTokenValid(req, res, next) {
@@ -240,6 +243,23 @@ app.get('/api/getRecordedData', (req, res) => {
     iotSensorAPI.getRecordedData(req, res);
 });
 
+// LIGHTING DEVICE REPORT (api/device-report)
+// continue here
+app.get('/api/getAllLightDevices', (req, res) => {
+    lightingDeviceReport.getAllLightDevices(req, res);
+});
+
+app.get('/api/getLightControlReportbyDeviceandRange', (req, res) => {
+    lightingDeviceReport.getLightControlReportbyDeviceandRange(req, res);
+});
+
+app.get('/api/getLightPowerStatusReportbyDeviceandRange', (req, res) => {
+    lightingDeviceReport.getLightPowerStatusReportbyDeviceandRange(req, res);
+});
+
+app.get('/api/getLastLightPowerReportbyDevice', (req, res) => {
+    lightingDeviceReport.getLastLightPowerReportbyDevice(req, res);
+});
 
 // LOGIN REQUEST
 app.post('/login', (req, res) => {
