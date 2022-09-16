@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.88.1">
+    <title>Smart City Dashboard</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/dashboard/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"
+        defer>
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="js/datetime-update.js" defer></script>
+    <script src="js/set-dimmimg-value.js" defer></script>
+    <script src="js/sidebar.js" defer></script>
+</head>
+
+<body>
+
+    <header class="navbar navbar-dark sticky-top bg-success flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/dashboard">Smart City Dashboard</a>
+        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
+            data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="form-control bg-dark text-white w-100" id="datetime-display">&nbsp;</div>
+        <div class="navbar-nav">
+            <div class="nav-item text-nowrap">
+                <a class="nav-link px-3" href="/logout" id="sign-out">Sign out</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"></nav>
+        </div>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div
+                class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-1 mb-2 border-bottom">
+                <h2 id="header">Set Dimming Value</h2>
+                <div class="btn-group">
+                    
+                    <button type="button" disabled class="btn btn-sm btn-secondary" id="env-sensor-timestamp">
+                        <div class="spinner-grow spinner-grow-sm" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div> Loading timestamp...
+                    </button>
+                    <button class="btn btn-sm btn-secondary" onclick="window.location.reload();">Refresh</button>
+                </div>
+            </div>
+            
+            <div class="row row-cols-2 row-cols-md-3 g-3 ">
+                <div class="col">
+                    <h4><class="label label-default">Device List</h4>
+                </div>
+
+                <div class="col">
+                    <div class="form-floating">
+                        <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
+                        <option selected>Zone 1</option>
+                        <option value="1">Zone 2</option>
+                        <option value="2">Zone 3</option>
+                        <option value="3">Zone 4</option>
+                        </select>
+                        <label for="floatingSelect">Open this to select zone</label>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="form-floating">
+                        <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
+                        <option selected>Device 1</option>
+                        <option value="1">Device 2</option>
+                        <option value="2">Device 3</option>
+                        <option value="3">Device 4</option>
+                        </select>
+                        <label for="floatingSelect">Open this to select device</label>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row row-cols-2 row-cols-md-3 g-3 my-2 pb-2 border-bottom">
+                <div class="col">
+                    <h4 class="label label-default">Device Info</h4>
+                </div>
+
+                <div class="col">
+                    <div class="card" id="devicename">
+                        <div class="card-body">
+                            <p class="card-text">
+                            Name: <span class="fw-bold">${connectionStatus()}</span>
+                            <br/>
+                            ID: <span class="fw-bold">${connectionStatus.toUpperCase()}</span>
+                            
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card" id="currentvalue">
+                        <div class="card-body">
+                            <p class="card-text">
+                            Current Dimming Value: <span class="fw-bold">${connectionStatus()}</span>
+                            <br/>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-2 row-cols-md-2 g-3 ">
+
+                <div class="col justify-content-between">
+                    <div class="row row-cols-5 h-100">
+                        <div class="col"><button class="btn btn-light w-100 h-100">0</button></div>
+                        <div class="col"><button class="btn btn-light w-100 h-100">25</button></div>
+                        <div class="col"><button class="btn btn-light w-100 h-100">50</button></div>
+                        <div class="col"><button class="btn btn-light w-100 h-100">75</button></div>
+                        <div class="col"><button class="btn btn-light w-100 h-100">100</button></div>
+                    </div>
+                    
+                </div>
+                
+                <div class="col">
+                    <!-- <div class = ""> -->
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="floatingInput" placeholder="Dimming Value">
+                        <button class="btn btn-success  h-100">Confirm</button>
+                    </div>
+                    
+                    <!-- </div> -->
+                </div>
+            </div>
+            </main>
+            </div>
+            </body>
+            </html>

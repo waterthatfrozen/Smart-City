@@ -5,7 +5,7 @@ const SIDEBAR_LINK = [{
             text: 'System Overview'
         },
         {
-            link: '#',
+            link: '/zone-overview',
             text: 'Zone Overview'
         },
         {
@@ -32,7 +32,7 @@ const SIDEBAR_LINK = [{
 }, {
     heading: 'CONTROL',
     links: [{
-        link: '#',
+        link: '/set-dimming-value',
         text: 'Set Dimming Value'
     }, {
         link: '#',
