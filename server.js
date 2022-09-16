@@ -26,13 +26,20 @@ sql.connect(sqlConfig, function (err) {
 });
 
 // require API
-const getDataAPI = require('./api/get-data'),
-    getSupportDataAPI = require('./api/get-support-data'),
-    getDeviceAPI = require('./api/get-device'),
-    playgroundAPI = require('./api/playground');
+const getDataAPI = require('./api/get-data');
+const getSupportDataAPI = require('./api/get-support-data');
+const getDeviceAPI = require('./api/get-device');
+const playgroundAPI = require('./api/playground');
 
 // Environmental Sensor Disconnect Detection
 const disconnectDetection = require('./api/disconnect-detection');
+const illuminanceCollection = require('./api/illuminance-collection');
+
+// IoT Sensor Measurement Collection
+const iotSensorAPI = require('./api/iot-sensor');
+
+// Lighting Device Report
+const lightingDeviceReport = require('./api/device-report');
 
 const tokenMaxAge = 6 * 60 * 60 * 1000;
 
@@ -143,24 +150,12 @@ app.post('/api/testSendData', (req, res) => {
 
 // GET REQUEST
 // GET DATA REQUEST (api/get-data)
-app.get('/get-nasa-data', (req, res) => {
-    getDataAPI.getNasaData(req, res);
-});
-
 app.get('/api/getNasaData', (req, res) => {
     getDataAPI.getNasaData(req, res);
 });
 
-app.get('/get-env-sensor-data', (req, res) => {
-    getDataAPI.getEnvSensorData(req, res);
-});
-
 app.get('/api/getEnvSensorData', (req, res) => {
     getDataAPI.getEnvSensorData(req, res);
-});
-
-app.get('/get-env-sensor-hourly-data', (req, res) => {
-    getDataAPI.getEnvSensorHourlyData(req, res);
 });
 
 app.get('/api/getEnvSensorHourlyData', (req, res) => {
@@ -205,6 +200,19 @@ app.get('/api/getZoneIlluminanceSensorDeviceList', (req, res) => {
     getDeviceAPI.getZoneIlluminanceSensorDeviceList(req, res);
 });
 
+// GET ILLUMINANCE SENSOR DATA REQUEST (api/illumiance-collection)
+app.get('/api/getLastLumianceSensorValue', (req, res) => {
+    illuminanceCollection.getLastLumianceSensorValue(req, res);
+});
+
+app.get('/api/getSensorValuebyRange', (req, res) => {
+    illuminanceCollection.getSensorValuebyRange(req, res);
+});
+
+app.get('/api/getSensorValueByDeviceIDandRange', (req, res) => {
+    illuminanceCollection.getSensorValueByDeviceIDandRange(req, res);
+});
+
 // GET CONNECTION STATUS (api/disconnect-detection)
 app.get('/api/checkSensorConnection', (req, res) => {
     disconnectDetection.checkSensorConnection(req, res);
@@ -220,6 +228,37 @@ app.get('/api/querySensorDisconnectLog', (req, res) => {
 
 app.get('/api/queryGatewayDisconnectLog', (req, res) => {
     disconnectDetection.queryGatewayDisconnectLog(req, res);
+});
+
+// RECORD IoT SENSOR VALUE (api/iot-sensors)
+app.post('/api/recordIoTSensorValue', (req, res) => {
+    iotSensorAPI.recordIoTSensorValue(req, res);
+});
+
+app.get('/api/getLastRecordedData', (req, res) => {
+    iotSensorAPI.getLastRecordedData(req, res);
+});
+
+app.get('/api/getRecordedData', (req, res) => {
+    iotSensorAPI.getRecordedData(req, res);
+});
+
+// LIGHTING DEVICE REPORT (api/device-report)
+// continue here
+app.get('/api/getAllLightDevices', (req, res) => {
+    lightingDeviceReport.getAllLightDevices(req, res);
+});
+
+app.get('/api/getLightControlReportbyDeviceandRange', (req, res) => {
+    lightingDeviceReport.getLightControlReportbyDeviceandRange(req, res);
+});
+
+app.get('/api/getLightPowerStatusReportbyDeviceandRange', (req, res) => {
+    lightingDeviceReport.getLightPowerStatusReportbyDeviceandRange(req, res);
+});
+
+app.get('/api/getLastLightPowerReportbyDevice', (req, res) => {
+    lightingDeviceReport.getLastLightPowerReportbyDevice(req, res);
 });
 
 // LOGIN REQUEST

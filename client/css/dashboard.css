@@ -146,3 +146,10 @@ footer{
     border-radius: 0;
 }  
 
+.bg-purple{
+    background-color: purple;
+}
+
+.col-w100px{
+    width: 100px;
+}

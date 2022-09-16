@@ -9,24 +9,12 @@ const SIDEBAR_LINK = [{
             text: 'Zone Overview'
         },
         {
+            link: '/illuminance-sensor',
+            text: 'Illuminance Sensor Report'
+        },
+        {
             link: '/maps-view',
             text: 'Device Maps'
-        },
-        {
-            link: '/device-connection',
-            text: 'Gateway and Sensor Status'
-        },
-        {
-            link: '/device-events',
-            text: 'Device Events'
-        },
-        {
-            link: '#',
-            text: 'CMS System Status'
-        },
-        {
-            link: '/test',
-            text: 'Test'
         }
     ]
 }, {
@@ -34,12 +22,26 @@ const SIDEBAR_LINK = [{
     links: [{
         link: '/set-dimming-value',
         text: 'Set Dimming Value'
-    }, {
+    }]
+},{
+    heading: 'IoT Sensors',
+    links: [{
+        link: '/iot-sensors',
+        text: 'Sensor Record'
+    }]
+},{
+    heading: 'SYSTEM STATUS',
+    links: [{
+        link: '/device-connection',
+        text: 'Gateway and Sensor Status'
+    },
+    {
         link: '#',
-        text: 'Link 2'
-    }, {
-        link: '#',
-        text: 'Link 3'
+        text: 'Device Events'
+    },
+    {
+        link: '/service-status', 
+        text: 'CMS Services Status'
     }]
 }, {
     heading: 'IoT',
@@ -50,14 +52,14 @@ const SIDEBAR_LINK = [{
 }];
 
 function sidebar_link(hreflink, text) {
-    return '<li class="nav-item"><a class="nav-link" href="' + hreflink + '">' + text + '</a></li>';
+    return '<li class="nav-item"><a class="nav-link py-1" href="' + hreflink + '">' + text + '</a></li>';
 }
 
 function sidebar_division(sidebar_heading, sidebar_links) {
     var sidebar_div =
-        `<h6 class = "sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+        `<h6 class = "sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 text-muted">
             <span>${sidebar_heading}</span></h6>
-            <ul class = "nav flex-column mb-auto">`;
+            <ul class = "nav flex-column mb-0">`;
     for (const element of sidebar_links) {
         sidebar_div += sidebar_link(element.link, element.text);
     }
@@ -70,9 +72,8 @@ function footer() {
         <li class="nav-item nav-link smaller-font text-muted">
             &copy; 2022 Copyright Reserved.<br />
             SIIT, Thammasat University.<br />
-            <a class="text-decoration-none text-muted" href="http://github.com/waterthatfrozen/">Project
-                Information</a> |
-            <a class="text-decoration-none text-muted" href="#">Privacy Statement</a>
+            <a class="text-decoration-none text-muted" href="http://github.com/waterthatfrozen/Smart-City">Project
+                Information</a>
         </li>
     </ul>`;
 }
