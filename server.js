@@ -6,6 +6,7 @@ const http = require('http'),
     dotenv = require('dotenv'),
     axios = require('axios'),
     sql = require('mssql'),
+    fs = require('fs'),
     app = express();
 dotenv.config();
 
@@ -308,7 +309,14 @@ app.get('/404', (_req, res) => {
 
 app.get('/:htmlfile', (req, res) => {
     checkTokenValid(req, res, () => {
-        res.status(200).sendFile(PATH + '/' + req.params.htmlfile + '.html');
+        if (fs.access(PATH + '/' + req.params.htmlfile + '.html', fs.constants.F_OK, (err) => {
+            console.log(err);
+            if (err) {
+                res.status(404).redirect('/404');
+            } else {
+                res.status(200).sendFile(PATH + '/' + req.params.htmlfile + '.html');
+            }
+        }));
     });
 });
 
