@@ -20,8 +20,8 @@ const SIDEBAR_LINK = [{
 }, {
     heading: 'CONTROL',
     links: [{
-        link: '/set-dimming-value',
-        text: 'Set Dimming Value'
+        link: '/per-device-control',
+        text: 'Per Device Control'
     }]
 },{
     heading: 'IoT Sensors',
@@ -42,12 +42,6 @@ const SIDEBAR_LINK = [{
     {
         link: '/service-status', 
         text: 'CMS Services Status'
-    }]
-}, {
-    heading: 'IoT',
-    links: [{
-        link: '/iot-sensors',
-        text: 'IoT Value'
     }]
 }];
 

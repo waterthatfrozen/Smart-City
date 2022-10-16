@@ -164,7 +164,7 @@ async function getLastLightPowerReportbyDevice(req,res){
                         let report_timestamp = data[object_idx].time_stamp;
                         let report_result = {
                             device_id: device_id,
-                            timestamp: bangkokTimeString(new Date(report_timestamp).getTime()/ 1000),  
+                            timestamp: bangkokTimeString(new Date(report_timestamp).getTime()),  
                             light_dimming_value: report_row[report_row.findIndex(rsc => rsc.resource_id === 5851)].value,
                             active_power: report_row[report_row.findIndex(rsc => rsc.resource_id === 5800)].value.toFixed(2),
                             active_energy: (report_row[report_row.findIndex(rsc => rsc.resource_id === 27004)].value/1000).toFixed(2),
