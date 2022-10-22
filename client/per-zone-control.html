@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.88.1">
-    <title>Per Device Control | Smart Lighting Dashboard</title>
+    <title>Per Zone Control | Smart City Dashboard</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/dashboard/">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,7 +26,7 @@
         integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <script src="js/datetime-update.js" defer></script>
-    <script src="js/per-device-control.js" defer></script>
+    <script src="js/per-zone-control.js" defer></script>
     <script src="js/sidebar.js" defer></script>
 </head>
 
@@ -55,11 +55,11 @@
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div
                 class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-1 mb-2 border-bottom">
-                <h2 id="header">Per Device Control</h2>
+                <h2 id="header">Per Zone Control</h2>
                 <button class="btn btn-sm btn-secondary" onclick="window.location.reload();">Refresh</button>
             </div>
 
-            <h4 class="pt-2">Device List</h4>
+            <h4 class="pt-2">Zone List</h4>
             <div class="row row-cols-2 g-3 mb-3">
                 <div class="col">
                     <div class="form-floating">
@@ -69,73 +69,85 @@
                         <label for="zoneSelection">Click this to select zone</label>
                     </div>
                 </div>
-                <div class="col">
-                    <div class="form-floating">
-                        <select class="form-select" id="deviceSelection" aria-label="Select Device" disabled>
-                            <option selected disabled>- Select Zone First -</option>
-                        </select>
-                        <label for="deviceSelection">Click this to select device</label>
-                    </div>
-                </div>
             </div>
 
-            <h4 class="pt-2">Current Device Status</h4>
+            <h4 class="pt-2">Devices in Zone List</h4>
             <div>
-                <p>
-                    Current Selected Device: <span id="currentSelectedDevice">---</span><br/>
-                    Current Connection Status: <span id="currentConnectionStatus">---</span><br/>
-                    Current Report Timestamp: <span id="currentReportTimestamp">---</span><br/>
-                </p>
+                <p>Current Selected Zone: <span id="currentSelectedZone">---</span><br />
+                    Current Report Timestamp: <span id="currentReportTimestamp">---</span></p>
             </div>
-            <div class="row row-cols-2 row-cols-md-4 g-3 mb-3" id="currentDeviceReportContainer">
+            <div class="row row-cols-1 row-cols-md-3 g-3 mb-3" id="currentZoneReportContainer">
                 <div class="col">
                     <div class="card">
                         <div class="card-body">
-                            <h6 class="card-title">Active Energy</h6>
-                            <h4 class="card-subtitle" id="currentActiveEnergyValue">---</h4>
+                            <h6 class="card-title">Average Active Energy</h6>
+                            <h4 class="card-subtitle" id="currentAverageActiveEnergyValue">---</h4>
                         </div>
                     </div>
                 </div>
                 <div class="col">
                     <div class="card">
                         <div class="card-body">
-                            <h6 class="card-title">Active Power</h6>
-                            <h4 class="card-subtitle" id="currentActivePowerValue">---</h4>
+                            <h6 class="card-title">Average Active Power</h6>
+                            <h4 class="card-subtitle" id="currentAverageActivePowerValue">---</h4>
                         </div>
                     </div>
                 </div>
                 <div class="col">
                     <div class="card">
                         <div class="card-body">
-                            <h6 class="card-title">V RMS</h6>
-                            <h4 class="card-subtitle" id="currentVRMSValue">---</h4>
+                            <h6 class="card-title">Average V RMS</h6>
+                            <h4 class="card-subtitle" id="currentAverageVRMSValue">---</h4>
                         </div>
                     </div>
                 </div>
-                <div class="col">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title">Current Dimming Value</h6>
-                            <h4 class="card-subtitle" id="currentDimmingValue">---</h4>
-                        </div>
-                    </div>
-                </div>
+            </div>
+            <div>
+                <table class="table table-responsive table-hover table-striped">
+                    <caption>Devices in Current Selected Zone</caption>
+                    <thead>
+                        <tr class="table-dark">
+                            <th scope="col">#</th>
+                            <th scope="col">Device Name</th>
+                            <th scope="col">Device ID</th>
+                            <th scope="col">Gateway Used</th>
+                            <th scope="col">Connection Status</th>
+                            <th scope="col">Current Dimming Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="currentZoneDevice">
+                        <tr>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <h4 class="pt-2">Set New Dimming Value</h4>
-            <div class="row row-cols-1 row-cols-md-2 mb-4 pb-3">
-                <div class="col ">
+            <div class="row row-cols-2 row-cols-md-2 g-3 mb-4 pb-3">
+                <div class="col justify-content-between">
                     <div class="row row-cols-5 g-2">
-                        <div class="col"><button class="btn btn-primary w-100" id="setDimming0" disabled>0%</button></div>
-                        <div class="col"><button class="btn btn-primary w-100" id="setDimming25" disabled>25%</button></div>
-                        <div class="col"><button class="btn btn-primary w-100" id="setDimming50" disabled>50%</button></div>
-                        <div class="col"><button class="btn btn-primary w-100" id="setDimming75" disabled>75%</button></div>
-                        <div class="col"><button class="btn btn-primary w-100" id="setDimming100" disabled>100%</button></div>
+                        <div class="col"><button class="btn btn-primary w-100" id="setDimming0" disabled>0%</button>
+                        </div>
+                        <div class="col"><button class="btn btn-primary w-100" id="setDimming25" disabled>25%</button>
+                        </div>
+                        <div class="col"><button class="btn btn-primary w-100" id="setDimming50" disabled>50%</button>
+                        </div>
+                        <div class="col"><button class="btn btn-primary w-100" id="setDimming75" disabled>75%</button>
+                        </div>
+                        <div class="col"><button class="btn btn-primary w-100" id="setDimming100" disabled>100%</button>
+                        </div>
                     </div>
                 </div>
-                <div class="col my-2 my-md-0">
+                <div class="col">
                     <div class="input-group">
-                        <input type="number" class="form-control" id="newDimmingValue" placeholder="Dimming Value" min="0" max="100" value="0" disabled>
+                        <input type="number" class="form-control" id="newDimmingValue" placeholder="Dimming Value"
+                            min="0" max="100" value="0" disabled>
                         <button class="btn btn-success" type="button" id="setDimmingCustom" disabled>Confirm</button>
                     </div>
                 </div>
@@ -145,30 +157,36 @@
             <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
                 <div class="toast-container">
 
-                    <div class="toast align-items-center text-white bg-secondary border-0" role="alert" aria-live="assertive" aria-atomic="true" id="onProgressToast">
+                    <div class="toast align-items-center text-white bg-secondary border-0" role="alert"
+                        aria-live="assertive" aria-atomic="true" id="onProgressToast">
                         <div class="d-flex">
-                          <div class="toast-body">
-                            <span><i class="bi bi-send"></i> Sending new dimming value command...</span>
-                          </div>
-                          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            <div class="toast-body">
+                                <span><i class="bi bi-send"></i> Sending new dimming value command...</span>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                                aria-label="Close"></button>
                         </div>
                     </div>
 
-                    <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" id="successToast">
+                    <div class="toast align-items-center text-white bg-success border-0" role="alert"
+                        aria-live="assertive" aria-atomic="true" id="successToast">
                         <div class="d-flex">
-                          <div class="toast-body">
-                            <span><i class="bi bi-check-circle"></i> Successfully sent the command </span>
-                          </div>
-                          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            <div class="toast-body">
+                                <span><i class="bi bi-check-circle"></i> Successfully sent the command </span>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                                aria-label="Close"></button>
                         </div>
                     </div>
-                    
-                    <div class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" id="failedToast">
+
+                    <div class="toast align-items-center text-white bg-danger border-0" role="alert"
+                        aria-live="assertive" aria-atomic="true" id="failedToast">
                         <div class="d-flex">
-                          <div class="toast-body">
-                            <span><i class="bi bi-x-circle"></i> Failed to send the command </span>
-                          </div>
-                          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            <div class="toast-body">
+                                <span><i class="bi bi-x-circle"></i> Failed to send the command </span>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                                aria-label="Close"></button>
                         </div>
                     </div>
 

@@ -164,7 +164,7 @@ async function getLastLightPowerReportbyDevice(req,res){
                         let report_timestamp = data[object_idx].time_stamp;
                         let report_result = {
                             device_id: device_id,
-                            timestamp: bangkokTimeString(new Date(report_timestamp).getTime()),  
+                            timestamp: report_timestamp,  
                             light_dimming_value: report_row[report_row.findIndex(rsc => rsc.resource_id === 5851)].value,
                             active_power: report_row[report_row.findIndex(rsc => rsc.resource_id === 5800)].value.toFixed(2),
                             active_energy: (report_row[report_row.findIndex(rsc => rsc.resource_id === 27004)].value/1000).toFixed(2),
@@ -184,10 +184,71 @@ async function getLastLightPowerReportbyDevice(req,res){
     }
 }
 
+async function getCurrentDeviceConnection(req,res){
+    let deviceMAC = req.query.deviceMAC;
+    let gatewayMAC = req.query.gatewayMAC;
+    if (!deviceMAC || !gatewayMAC) {
+        res.status(400).send("Please provide device MAC and gateway MAC");
+    }else{
+        try{
+            const token = await getToken();
+            const head = {
+                "Authorization": "Bearer " + token
+            };
+            const url = `${base_url}/network/gateways/${gatewayMAC}/nodes/${deviceMAC}`;
+            await axios.get(url, {
+                headers: head
+            }).then(response => {
+                if (response.status === 200) {
+                    let data = response.data.nodes;
+                    res.status(200).send(data[0]);
+                }
+            }).catch(error => {
+                res.status(500).send({error: error});
+            });
+        }catch(error){
+            res.status(500).send({error: error});
+        }
+    }
+}
+
+async function sendGetPowerCommand(req,res) {
+    let deviceID = req.query.deviceID;
+    let gatewayMAC = req.query.gatewayMAC;
+    if (!deviceID || !gatewayMAC) {
+        res.status(400).send("Please provide device ID and gateway MAC");
+    }else{
+        const token = await getToken();
+        const head = {
+            "Authorization": "Bearer " + token
+        };
+        const url = base_url + "/devices/commands/id/" + deviceID;
+        await axios.put(url, {
+            "command_name": "get_power",
+            "gateway_mac": gatewayMAC,
+            "objects": [],
+            "instance_id": 0,
+            "object_id": null
+        }, {
+            headers: head
+        }).then(response => {
+            if (response.status === 200) {
+                res.status(200).send({status: "success"});
+            } else {
+                res.status(500).send({status: "failed"});
+            }
+        }).catch(_error => {
+            res.status(500).send({status: "failed"});
+        });
+    }
+}
+
 // Function exports
 module.exports = {
     getLightControlReportbyDeviceandRange,
     getAllLightDevices,
     getLightPowerStatusReportbyDeviceandRange,
-    getLastLightPowerReportbyDevice
+    getLastLightPowerReportbyDevice,
+    getCurrentDeviceConnection,
+    sendGetPowerCommand
 };

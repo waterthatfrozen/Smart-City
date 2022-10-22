@@ -1,49 +1,32 @@
 const zoneSelection = $("#zoneSelection");
-const deviceSelection = $("#deviceSelection");
 const currentDeviceReportContainer = $("#currentDeviceReportContainer");
 const toastElList = [].slice.call(document.querySelectorAll('.toast'));
 const toastList = toastElList.map(function (toastEl) {
     return new bootstrap.Toast(toastEl)
 });
-let currentZoneID = null;
+console.log(toastList);
 
 async function setZoneListSelection() {
     try {
         await fetch('/api/getZoneList', {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: { 'Content-Type': 'application/json' }
         }).then(response => {
-            if (response.status === 200) {
-                return response.json();
-            }
+            if (response.status === 200) { return response.json(); }
         }).then(data => {
             let zoneList = [];
-            data.map((zone) => {
-                if (zone.parent_oid === 3) {
-                    zoneList.push({
-                        zone_id: zone.zone_id,
-                        zone_name: zone.name
-                    });
-                }
-            });
-            zoneList.sort((a, b) => {
-                return a.zone_id - b.zone_id;
-            });
+            data.map((zone) => { if (zone.parent_oid === 3) { zoneList.push({ zone_id: zone.zone_id, zone_name: zone.name }); } });
+            zoneList.sort((a, b) => { return a.zone_id - b.zone_id; });
             zoneList = zoneList.slice(0, 6);
             return zoneList;
         }).then((zoneList) => {
+            console.log(zoneList);
             zoneSelection.empty();
             zoneSelection.append(`<option>Select Zone</option>`);
-            zoneList.map((zone) => {
-                zoneSelection.append(`<option value="${zone.zone_id}">${zone.zone_name}</option>`);
-            });
+            zoneList.map((zone) => { zoneSelection.append(`<option value="${zone.zone_id}">${zone.zone_name}</option>`); });
             zoneSelection.attr('disabled', false);
         });
-    } catch (error) {
-        console.log(error);
-    }
+    } catch (error) { console.log(error); }
 }
 
 function resetDeviceInfoDisplay() {
@@ -53,7 +36,6 @@ function resetDeviceInfoDisplay() {
     $("#currentVRMSValue").text("---");
     $("#currentSelectedDevice").text("---");
     $("#currentReportTimestamp").text("---");
-    $("#currentConnectionStatus").text("---");
 }
 
 function loadingDeviceInfoDisplay() {
@@ -63,7 +45,6 @@ function loadingDeviceInfoDisplay() {
     $("#currentVRMSValue").text("Loading...");
     $("#currentSelectedDevice").text("Loading...");
     $("#currentReportTimestamp").text("Loading...");
-    $("#currentConnectionStatus").text("Loading...");
 }
 
 function enableAllButtons() {
@@ -103,7 +84,6 @@ async function setDeviceListSelection(currentZoneID) {
         resetDeviceListSelection();
         resetDeviceInfoDisplay();
         disableAllButtons();
-        if(currentZoneID === "Select Zone") {deviceSelection.append(`<option selected disabled>- Select Zone First -</option>`); return;}
         await fetch(`/api/getZoneLightDeviceList?zone_id=${currentZoneID}`, {
             method: 'GET',
             headers: {
@@ -119,21 +99,21 @@ async function setDeviceListSelection(currentZoneID) {
                 if (device.device_type_id === 27036) {
                     deviceList.push({
                         device_id: device.device_uid,
-                        device_name: device.device_label,
-                        device_mac: device.MAC,
-                        gateway_mac: device.gateway_MAC
+                        device_name: device.device_label
                     });
                 }
             });
+            console.log(deviceList);
             deviceList.sort((a, b) => {
                 return a.device_name.localeCompare(b.device_name);
             });
             return deviceList;
         }).then((deviceList) => {
+            console.log(deviceList);
             deviceSelection.empty();
             deviceSelection.append(`<option value="">Select Device</option>`);
             deviceList.map((device) => {
-                deviceSelection.append(`<option value='${JSON.stringify(device)}'>${device.device_name}</option>`);
+                deviceSelection.append(`<option value="${device.device_id}">${device.device_name}</option>`);
             });
             deviceSelection.attr('disabled', false);
         });
@@ -142,23 +122,10 @@ async function setDeviceListSelection(currentZoneID) {
     }
 }
 
-async function sendGetPowerCommand(currentDeviceID, currentGatewayMAC){
-    await fetch(`/api/sendGetPowerCommand?deviceID=${currentDeviceID}&gatewayMAC=${currentGatewayMAC}`,{
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(response => {
-        console.log(response.json());
-    });
-}
-
-async function setDeviceInfo(currentDeviceID, currentDeviceLabel, currentGatewayMAC, isNewValue) {
+async function setDeviceInfo(currentDeviceID, currentDeviceLabel) {
     try {
-        console.log(isNewValue);
         loadingDeviceInfoDisplay();
         disableAllButtons();
-        await sendGetPowerCommand(currentDeviceID, currentGatewayMAC);
         await fetch(`/api/getLastLightPowerReportbyDevice?device_id=${currentDeviceID}`, {
             method: 'GET',
             headers: {
@@ -169,10 +136,9 @@ async function setDeviceInfo(currentDeviceID, currentDeviceLabel, currentGateway
                 return response.json();
             }
         }).then(data => {
+            console.log(data);
             $("#currentSelectedDevice").text(`${currentDeviceLabel} (Device ID: ${currentDeviceID})`);
-            $("#currentReportTimestamp").text(`${datetimeTransform(new Date(data.report.timestamp*1000))}`);
-            if(isNewValue.isNew){ $("#currentDimmingValue").text(isNewValue.newValue + data.units.light_dimming_value);}
-            else{ $("#currentDimmingValue").text(data.report.light_dimming_value + data.units.light_dimming_value);}
+            $("#currentReportTimestamp").text(`${datetimeTransform(data.report.timestamp)}`);
             $("#currentDimmingValue").text(data.report.light_dimming_value + data.units.light_dimming_value);
             $("#currentActiveEnergyValue").text(data.report.active_energy + " " + data.units.active_energy);
             $("#currentActivePowerValue").text(data.report.active_power + " " + data.units.active_power);
@@ -180,30 +146,6 @@ async function setDeviceInfo(currentDeviceID, currentDeviceLabel, currentGateway
             enableAllButtons();
         });
     } catch (error) {
-        console.log(error);
-    }
-}
-
-async function setConnectionStatusDisplay(currentDeviceMAC, currentGatewayMAC){
-    try{
-        await fetch(`/api/getCurrentDeviceConnection?deviceMAC=${currentDeviceMAC}&gatewayMAC=${currentGatewayMAC}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(response => {
-            if (response.status === 200) {
-                return response.json();
-            }
-        }).then(data => {
-            $("#currentConnectionStatus").html(connectionString(data.status));
-            if(data.status === "disconnected"){disableAllButtons();}
-            return data.status;
-        }).then((status) => {
-            console.log(status);
-            return status;
-        });
-    }catch(error){
         console.log(error);
     }
 }
@@ -218,20 +160,13 @@ function displayToast(toastType) {
     }
 }
 
-function connectionString(connected) {
-    if (connected) {
-        return "<span class='text-success'><i class='bi bi-cloud-check-fill'></i> Connected</span>";
-    } else {
-        return "<span class='text-danger fw-bold'><i class='bi bi-cloud-slash-fill'></i> Disconnected</span>";
-    }
-}
-
-async function setNewDimmingValue(currentDeviceID, currentDeviceLabel, currentDeviceMAC, currentGatewayMAC, newDimmingValue) {
+async function setNewDimmingValue(currentDeviceID, newDimmingValue) {
     try {
         disableAllButtons();
         resetDeviceInfoDisplay();
         displayToast("onProgress");
         newDimmingValue = parseInt(newDimmingValue);
+        console.log(newDimmingValue,typeof newDimmingValue, currentDeviceID);
         await fetch(`/api/setLightDimming`,{
             method: 'POST',
             headers: {
@@ -245,14 +180,16 @@ async function setNewDimmingValue(currentDeviceID, currentDeviceLabel, currentDe
             if (response.status === 200) {
                 return response.json();
             }
-        }).then(_data => {
-            sendGetPowerCommand(currentDeviceID, currentGatewayMAC);
-            resetDeviceListSelection();
-            setDeviceListSelection(currentZoneID);
-        }).then(_data => {
+        }).then(data => {
             displayToast("success");
-        }).catch(_error => {
+            console.log(data);
+        }).catch(error => {
             displayToast("failed");
+            console.log(error);
+        }).finally(() => {
+            setTimeout(() => {
+                setDeviceInfo(currentDeviceID);
+            }, 2000);
         });
     }
     catch (error) {
@@ -261,36 +198,28 @@ async function setNewDimmingValue(currentDeviceID, currentDeviceLabel, currentDe
 }
 
 function dimming_main() {
+    let currentZoneID = null;
     let currentDeviceID = null;
     let currentDeviceLabel = null;
-    let currentDeviceMAC = null;
-    let currentGatewayMAC = null;
-    let currentSelection = null;
     setZoneListSelection();
     zoneSelection.on('change', function () {
         currentZoneID = $(this).val();
         setDeviceListSelection(currentZoneID);
     });
     deviceSelection.on('change', function () {
-        currentSelection = $(this).val();
-        if(currentSelection === ""){resetDeviceInfoDisplay(); return;}
-        currentSelection = JSON.parse(currentSelection);
-        currentDeviceID = currentSelection.device_id;
-        currentDeviceMAC = currentSelection.device_mac;
-        currentGatewayMAC = currentSelection.gateway_mac;
+        currentDeviceID = $(this).val();
         currentDeviceLabel = $(this).find(':selected').text();
-        setDeviceInfo(currentDeviceID, currentDeviceLabel, currentGatewayMAC, {isNew: false, newValue: null});
-        setConnectionStatusDisplay(currentDeviceMAC, currentGatewayMAC);
+        setDeviceInfo(currentDeviceID, currentDeviceLabel);
     });
-    $("#setDimming0").on('click', () => { setNewDimmingValue(currentDeviceID, currentDeviceLabel, currentDeviceMAC, currentGatewayMAC, 0); });
-    $("#setDimming25").on('click', () => { setNewDimmingValue(currentDeviceID,currentDeviceLabel, currentDeviceMAC, currentGatewayMAC, 25); });
-    $("#setDimming50").on('click', () => { setNewDimmingValue(currentDeviceID, currentDeviceLabel, currentDeviceMAC, currentGatewayMAC, 50); });
-    $("#setDimming75").on('click', () => { setNewDimmingValue(currentDeviceID, currentDeviceLabel, currentDeviceMAC, currentGatewayMAC, 75); });
-    $("#setDimming100").on('click', () => { setNewDimmingValue(currentDeviceID, currentDeviceLabel, currentDeviceMAC, currentGatewayMAC, 100); });
+    $("#setDimming0").on('click', () => { setNewDimmingValue(currentDeviceID, 0); });
+    $("#setDimming25").on('click', () => { setNewDimmingValue(currentDeviceID, 25); });
+    $("#setDimming50").on('click', () => { setNewDimmingValue(currentDeviceID, 50); });
+    $("#setDimming75").on('click', () => { setNewDimmingValue(currentDeviceID, 75); });
+    $("#setDimming100").on('click', () => { setNewDimmingValue(currentDeviceID, 100); });
     $("#setDimmingCustom").on('click', () => {
         let newDimmingValue = $("#newDimmingValue").val();
         if (newDimmingValue >= 0 && newDimmingValue <= 100) {
-            setNewDimmingValue(currentDeviceID, currentDeviceLabel, currentDeviceMAC, currentGatewayMAC, newDimmingValue);
+            setNewDimmingValue(currentDeviceID, newDimmingValue);
         }
     });
 }
