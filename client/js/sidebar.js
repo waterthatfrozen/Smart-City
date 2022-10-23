@@ -44,7 +44,7 @@ const SIDEBAR_LINK = [{
         text: 'CMS Services Status'
     }]
 }, {
-    heading: 'Table',
+    heading: 'Table & Graph',
     links: [{
         link: '/system-overview-t',
         text: 'System Overview_T'
@@ -52,6 +52,18 @@ const SIDEBAR_LINK = [{
     {
         link: '/zone-overview-t',
         text: 'Zone Overview_T'
+    },
+    {
+        link: '/illuminance-g', 
+        text: 'Illuminance_G'
+    },
+    {
+        link: '/disconnectlog-t', 
+        text: 'DisconnectLog_T'
+    },
+    {
+        link: '/export-csv', 
+        text: 'Export_CSV'
     }]
 }];
 
