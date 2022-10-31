@@ -3,6 +3,7 @@ const PARAMS_TITLE = ["Timestamp", "Temperature", "Humidity", "Wind Velocity", "
 const PARAMS_UNIT = ["", "°C", "%", "m/s", "°", "klx", "", "W/m<sup>2</sup>", "W/m<sup>2</sup>"];
 const GRAPHS_TITLE = ["Temperature in the past 2 hours (°C)", "Humidity in the past 2 hours (%)", "Illuminance in the past 2 hours (klx)", "Rain Level in the past 2 hours"];
 const GRAPHS_PARAMS = ["temperature", "humidity", "illuminance", "rain_level"];
+const PARAMS_ICON = [`<i class="bi bi-thermometer-half"></i>`, `<i class="bi bi-droplet-half"></i>`, `<i class="bi bi-wind"></i>`, `<i class="bi bi-compass"></i>`, `<i class="bi bi-lightbulb"></i>`, `<i class="bi bi-cloud-rain"></i>`, `<i class="bi bi-brightness-high"></i>`, `<i class="bi bi-brightness-high"></i>`];
 var chartConfig = [];
 var paramsIndex = [];
 var envSensorData = [];
@@ -105,16 +106,34 @@ async function fetchEnvSensorData() {
     });
 }
 
-function envSensorValuePanel(title, subtitle, value, unit) {
+function envSensorValuePanel(titleIcon ,title, trend, value, unit, trendColor) {
     if (value == null) {
         value = "N/A";
+    }
+    let trendIcon = "";
+    switch (trend) {
+        case "up": trendIcon = '<i class="bi bi-arrow-up"></i> Increasing'; break;
+        case "down": trendIcon = '<i class="bi bi-arrow-down"></i> Decreasing'; break;
+        case "equal": trendIcon = '<i class="bi bi-dash"></i> No change'; break;
+        default: trendIcon = '<i class="bi bi-dash"></i> -'; break;
+    }
+    let trendColorClass = "";
+    switch (trendColor) {
+        case "green": trendColorClass = "text-success"; break;
+        case "red": trendColorClass = "text-danger"; break;
+        case "yellow": trendColorClass = "text-warning"; break;
+        case "gray": trendColorClass = "text-secondary"; break;
+        case "blue": trendColorClass = "text-primary"; break;
+        default: trendColorClass = "text-secondary"; break;
     }
     return `<div class="col">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">${title}</h5>
-                        <h6 class="card-subtitle mb-2">${subtitle}</h6>
-                        <p class="card-text display-5">${value}<small class="h4"> ${unit}</small></p>
+                        <h5 class="card-title"><span class="fs-6 pe-1">${titleIcon}</span>${title}</h5>
+                        <h6 class="card-subtitle mb-2"><span class="${trendColorClass}">${trendIcon}</span></h6>
+                        <p class="card-text display-5">
+                            ${value}<small class="h4"> ${unit}</small>
+                        </p>
                     </div>
                 </div>
             </div>`;
@@ -171,7 +190,23 @@ function main() {
             envSensorValueContainer.html("");
             for (var i = 1; i < PARAMS.length; i++) {
                 var row = envSensorData[i];
-                envSensorValueContainer.append(envSensorValuePanel(PARAMS_TITLE[i], "", row[0][row[0].length - 1], PARAMS_UNIT[i]));
+                var trend = "equal";
+                var trendColor = "gray";
+                if (row[0].length > 1) {
+                    var lastValue = row[0][row[0].length - 1];
+                    var secondLastValue = row[0][row[0].length - 2];
+                    if (lastValue > secondLastValue) {
+                        trend = "up";
+                        trendColor = "green";
+                    } else if (lastValue < secondLastValue) {
+                        trend = "down";
+                        trendColor = "red";
+                    } else {
+                        trend = "equal";
+                        trendColor = "gray";
+                    }
+                }
+                envSensorValueContainer.append(envSensorValuePanel(PARAMS_ICON[i-1], PARAMS_TITLE[i], trend, row[0][row[0].length - 1], PARAMS_UNIT[i], trendColor));
             }
             envSensorTimestamp.text(timestampStringMessage);
             // graph panel

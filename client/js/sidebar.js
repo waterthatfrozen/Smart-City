@@ -7,7 +7,7 @@ const SIDEBAR_LINK = [{
 }, {
     heading: 'CONTROL',
     links: [{ link: '/per-device-control', text: 'Per Device Control' },
-        { link: '#', text: 'Per Zone Control'}]
+        { link: '/per-zone-control', text: 'Per Zone Control'}]
 },{
     heading: 'IoT Sensors',
     links: [{ link: '/iot-sensors', text: 'Sensor Record' }]
@@ -40,8 +40,9 @@ function sidebar_division(sidebar_heading, sidebar_links) {
 function footer() {
     return `
     <ul class="nav flex-column mt-3 justify-content-between">
+        <li class="ms-3"><img src="https://graduateadmissions.siit.tu.ac.th/plugin/img/siitlogo.png" style="height: 20px;" alt="logo"></li>
         <li class="nav-item nav-link smallest-font text-muted">
-        &copy; 2022 SIIT, Thammasat University. Supported by Thammasat University and Thailand Science Research and Innovation Fundamental Fund, TUFF19/2564 and TUFF24/2565<br/></span>
+        &copy; 2022 SIIT, Thammasat University. <br/> Supported by Thammasat University & Thailand Science Research and Innovation Fundamental Fund, TUFF19/2564 and TUFF24/2565<br/></span>
         </li>
     </ul>`;
 }
@@ -54,8 +55,7 @@ function sidebar_main() {
     navMenu.append(footer());
     $("header").html(`
         <span class="navbar-brand col-md-3 col-lg-2 px-3 mx-0 me-0">
-            <img src="https://graduateadmissions.siit.tu.ac.th/plugin/img/siitlogo.png" style="height: 20px;" alt="logo">
-            <a class="text-white text-decoration-none" href="/dashboard">Smart Lighting</a>
+            <a class="text-white text-decoration-none" href="/dashboard">Smart Lighting Dashboard</a>
         </span>
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
             data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
