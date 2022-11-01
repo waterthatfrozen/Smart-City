@@ -4,6 +4,7 @@ const PARAMS_UNIT = ["", "°C", "%", "m/s", "°", "klx", "", "W/m<sup>2</sup>", 
 const GRAPHS_TITLE = ["Temperature in the past 2 hours (°C)", "Humidity in the past 2 hours (%)", "Illuminance in the past 2 hours (klx)", "Rain Level in the past 2 hours"];
 const GRAPHS_PARAMS = ["temperature", "humidity", "illuminance", "rain_level"];
 const PARAMS_ICON = [`<i class="bi bi-thermometer-half"></i>`, `<i class="bi bi-droplet-half"></i>`, `<i class="bi bi-wind"></i>`, `<i class="bi bi-compass"></i>`, `<i class="bi bi-lightbulb"></i>`, `<i class="bi bi-cloud-rain"></i>`, `<i class="bi bi-brightness-high"></i>`, `<i class="bi bi-brightness-high"></i>`];
+const EXCLUDE_PARAMS_COMPARISON = ["wind_direction"];
 var chartConfig = [];
 var paramsIndex = [];
 var envSensorData = [];
@@ -115,7 +116,7 @@ function envSensorValuePanel(titleIcon ,title, trend, value, unit, trendColor) {
         case "up": trendIcon = '<i class="bi bi-arrow-up"></i> Increasing'; break;
         case "down": trendIcon = '<i class="bi bi-arrow-down"></i> Decreasing'; break;
         case "equal": trendIcon = '<i class="bi bi-dash"></i> No change'; break;
-        default: trendIcon = '<i class="bi bi-dash"></i> -'; break;
+        default: trendIcon = '<i class="bi bi-dash"></i>'; break;
     }
     let trendColorClass = "";
     switch (trendColor) {
@@ -190,9 +191,9 @@ function main() {
             envSensorValueContainer.html("");
             for (var i = 1; i < PARAMS.length; i++) {
                 var row = envSensorData[i];
-                var trend = "equal";
+                var trend = "";
                 var trendColor = "gray";
-                if (row[0].length > 1) {
+                if (row[0].length > 1 && EXCLUDE_PARAMS_COMPARISON.indexOf(PARAMS[i]) == -1) {
                     var lastValue = row[0][row[0].length - 1];
                     var secondLastValue = row[0][row[0].length - 2];
                     if (lastValue > secondLastValue) {
@@ -203,7 +204,6 @@ function main() {
                         trendColor = "red";
                     } else {
                         trend = "equal";
-                        trendColor = "gray";
                     }
                 }
                 envSensorValueContainer.append(envSensorValuePanel(PARAMS_ICON[i-1], PARAMS_TITLE[i], trend, row[0][row[0].length - 1], PARAMS_UNIT[i], trendColor));
