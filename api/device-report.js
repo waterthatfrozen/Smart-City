@@ -144,11 +144,11 @@ async function getLightPowerStatusReportbyDeviceandRange(req,res) {
                         let report_result = [];
                         data.map((row) => {
                             let report_row = {
-                                timestamp: bangkokTimeString(new Date(row[0]).getTime()/ 1000),
-                                light_dimming_value: row[2],
-                                active_power: row[3].toFixed(2),
-                                active_energy: (row[5]/1000).toFixed(2),
-                                v_rms: row[7].toFixed(2)
+                                timestamp: (new Date(row[0]).getTime())/ 1000,
+                                light_dimming_value: parseInt(row[2]),
+                                active_power: parseFloat(row[3].toFixed(2)),
+                                active_energy: parseFloat((row[5]/1000).toFixed(2)),
+                                v_rms: parseFloat(row[7].toFixed(2))
                             };
                             report_result.push(report_row);
                         });
@@ -191,10 +191,10 @@ async function getLastLightPowerReportbyDevice(req,res){
                         let report_result = {
                             device_id: device_id,
                             timestamp: report_timestamp,  
-                            light_dimming_value: report_row[report_row.findIndex(rsc => rsc.resource_id === 5851)].value,
-                            active_power: report_row[report_row.findIndex(rsc => rsc.resource_id === 5800)].value.toFixed(2),
-                            active_energy: (report_row[report_row.findIndex(rsc => rsc.resource_id === 27004)].value/1000).toFixed(2),
-                            v_rms: report_row[report_row.findIndex(rsc => rsc.resource_id === 27002)].value.toFixed(2)
+                            light_dimming_value: parseInt(report_row[report_row.findIndex(rsc => rsc.resource_id === 5851)].value),
+                            active_power: parseFloat(report_row[report_row.findIndex(rsc => rsc.resource_id === 5800)].value.toFixed(2)),
+                            active_energy: parseFloat((report_row[report_row.findIndex(rsc => rsc.resource_id === 27004)].value/1000).toFixed(2)),
+                            v_rms: parseFloat(report_row[report_row.findIndex(rsc => rsc.resource_id === 27002)].value.toFixed(2))
                         };
                         res.status(200).send({report: report_result,units: units});
                     }else{
