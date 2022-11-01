@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.88.1">
+    <title>Per Zone Control | Smart City Dashboard</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/dashboard/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"
+        defer>
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="js/datetime-update.js" defer></script>
+    <script src="js/per-zone-control.js" defer></script>
+    <script src="js/sidebar.js" defer></script>
+</head>
+
+<body>
+
+    <header class="navbar navbar-dark sticky-top bg-success flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/dashboard">Smart Lighting Dashboard</a>
+        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
+            data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="form-control bg-dark text-white w-100" id="datetime-display">&nbsp;</div>
+        <div class="navbar-nav">
+            <div class="nav-item text-nowrap">
+                <a class="nav-link px-3" href="/logout" id="sign-out">Sign out</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"></nav>
+        </div>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div
+                class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-1 mb-2 border-bottom">
+                <h2 id="header">Per Zone Control</h2>
+                <button class="btn btn-sm btn-secondary" onclick="window.location.reload();">Refresh</button>
+            </div>
+
+            <h4 class="pt-2">Zone List</h4>
+            <div class="row row-cols-2 g-3 mb-3">
+                <div class="col">
+                    <div class="form-floating">
+                        <select class="form-select" id="zoneSelection" aria-label="Select Zone" disabled>
+                            <option selected disabled>Loading...</option>
+                        </select>
+                        <label for="zoneSelection">Click this to select zone</label>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="pt-2">Devices in Zone List</h4>
+            <div>
+                <p>Current Selected Zone: <span id="currentSelectedZone">---</span><br />
+                    Current Report Timestamp: <span id="currentReportTimestamp">---</span></p>
+            </div>
+            <div class="row row-cols-1 row-cols-md-3 g-3 mb-3" id="currentZoneReportContainer">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Average Active Energy</h6>
+                            <h4 class="card-subtitle" id="currentAverageActiveEnergyValue">---</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Average Active Power</h6>
+                            <h4 class="card-subtitle" id="currentAverageActivePowerValue">---</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Average V RMS</h6>
+                            <h4 class="card-subtitle" id="currentAverageVRMSValue">---</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <table class="table table-responsive table-hover table-striped">
+                    <caption>Devices in Current Selected Zone</caption>
+                    <thead>
+                        <tr class="table-dark">
+                            <th scope="col">#</th>
+                            <th scope="col">Device Name</th>
+                            <th scope="col">Device ID</th>
+                            <th scope="col">Gateway Used</th>
+                            <th scope="col">Connection Status</th>
+                            <th scope="col">Current Dimming Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="currentZoneDevice">
+                        <tr>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4 class="pt-2">Set New Dimming Value</h4>
+            <div class="row row-cols-2 row-cols-md-2 g-3 mb-4 pb-3">
+                <div class="col justify-content-between">
+                    <div class="row row-cols-5 g-2">
+                        <div class="col"><button class="btn btn-primary w-100" id="setDimming0" disabled>0%</button>
+                        </div>
+                        <div class="col"><button class="btn btn-primary w-100" id="setDimming25" disabled>25%</button>
+                        </div>
+                        <div class="col"><button class="btn btn-primary w-100" id="setDimming50" disabled>50%</button>
+                        </div>
+                        <div class="col"><button class="btn btn-primary w-100" id="setDimming75" disabled>75%</button>
+                        </div>
+                        <div class="col"><button class="btn btn-primary w-100" id="setDimming100" disabled>100%</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="newDimmingValue" placeholder="Dimming Value"
+                            min="0" max="100" value="0" disabled>
+                        <button class="btn btn-success" type="button" id="setDimmingCustom" disabled>Confirm</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toast -->
+            <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+                <div class="toast-container">
+
+                    <div class="toast align-items-center text-white bg-secondary border-0" role="alert"
+                        aria-live="assertive" aria-atomic="true" id="onProgressToast">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <span><i class="bi bi-send"></i> Sending new dimming value command...</span>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                                aria-label="Close"></button>
+                        </div>
+                    </div>
+
+                    <div class="toast align-items-center text-white bg-success border-0" role="alert"
+                        aria-live="assertive" aria-atomic="true" id="successToast">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <span><i class="bi bi-check-circle"></i> Successfully sent the command </span>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                                aria-label="Close"></button>
+                        </div>
+                    </div>
+
+                    <div class="toast align-items-center text-white bg-danger border-0" role="alert"
+                        aria-live="assertive" aria-atomic="true" id="failedToast">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <span><i class="bi bi-x-circle"></i> Failed to send the command </span>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                                aria-label="Close"></button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+</body>
+
+</html>

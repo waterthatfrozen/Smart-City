@@ -1,8 +1,8 @@
-const PARAMS = ["gw_timestamp", "temperature", "humidity", "wind_velocity", "wind_direction", "illuminance", "air_pressure", "ultra_violet_a", "ultra_violet_b"];
-const PARAMS_TITLE = ["Timestamp", "Temperature", "Humidity", "Wind Velocity", " Wind Direction", "Illuminance", "Air Pressure", "Ultra Violet A", "Ultra Violet B"];
-const PARAMS_UNIT = ["", "°C", "%", "m/s", "°", "klx", "hPa", "W/m<sup>2</sup>", "W/m<sup>2</sup>"];
-const GRAPHS_TITLE = ["Temperature in the past 2 hours (°C)", "Humidity in the past 2 hours (%)", "Illuminance in the past 2 hours (klx)", "Air Pressure in the past 2 hours (hPa)"];
-const GRAPHS_PARAMS = ["temperature", "humidity", "illuminance", "air_pressure"];
+const PARAMS = ["gw_timestamp", "temperature", "humidity", "wind_velocity", "wind_direction", "illuminance", "rain_level", "ultra_violet_a", "ultra_violet_b"];
+const PARAMS_TITLE = ["Timestamp", "Temperature", "Humidity", "Wind Velocity", " Wind Direction", "Illuminance", "Rain Level", "Ultra Violet A", "Ultra Violet B"];
+const PARAMS_UNIT = ["", "°C", "%", "m/s", "°", "klx", "", "W/m<sup>2</sup>", "W/m<sup>2</sup>"];
+const GRAPHS_TITLE = ["Temperature in the past 2 hours (°C)", "Humidity in the past 2 hours (%)", "Illuminance in the past 2 hours (klx)", "Rain Level in the past 2 hours"];
+const GRAPHS_PARAMS = ["temperature", "humidity", "illuminance", "rain_level"];
 var chartConfig = [];
 var paramsIndex = [];
 var envSensorData = [];
@@ -83,6 +83,7 @@ async function fetchEnvSensorData() {
     await fetch("/API/getEnvSensorData?start=" + start + "&end=" + end).then(response =>
         response.json()
     ).then(data => {
+        console.log(data);
         data = data.values;
         if (data.length == 0) {
             errorDisplay("No data found");

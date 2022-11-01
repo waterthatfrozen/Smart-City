@@ -20,6 +20,11 @@ main{
     font-size: 0.8rem;
 }
 
+.smallest-font{
+    font-size: 0.7rem;
+    word-wrap: break-word;
+}
+
 footer{
     text-align: center;
 }

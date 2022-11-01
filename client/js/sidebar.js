@@ -10,7 +10,7 @@ const SIDEBAR_LINK = [{
         },
         {
             link: '/illuminance-sensor',
-            text: 'Illuminance Sensor Report'
+            text: 'Illuminance Report'
         },
         {
             link: '/maps-view',
@@ -20,8 +20,11 @@ const SIDEBAR_LINK = [{
 }, {
     heading: 'CONTROL',
     links: [{
-        link: '/set-dimming-value',
-        text: 'Set Dimming Value'
+        link: '/per-device-control',
+        text: 'Per Device Control'
+    },{
+        link: '/#',
+        text: 'Per Zone Control'
     }]
 },{
     heading: 'IoT Sensors',
@@ -33,7 +36,7 @@ const SIDEBAR_LINK = [{
     heading: 'SYSTEM STATUS',
     links: [{
         link: '/device-connection',
-        text: 'Gateway and Sensor Status'
+        text: 'Gateway Status'
     },
     {
         link: '/device-events',
@@ -43,6 +46,7 @@ const SIDEBAR_LINK = [{
         link: '/service-status', 
         text: 'CMS Services Status'
     }]
+<<<<<<< HEAD
 }, {
     heading: 'Table & Graph',
     links: [{
@@ -65,15 +69,17 @@ const SIDEBAR_LINK = [{
         link: '/export-csv', 
         text: 'Export_CSV'
     }]
+=======
+>>>>>>> 4d806ee55e16e0c6c6d6bcb35f01650bca00260d
 }];
 
 function sidebar_link(hreflink, text) {
-    return '<li class="nav-item"><a class="nav-link py-1" href="' + hreflink + '">' + text + '</a></li>';
+    return '<li class="nav-item"><a class="nav-link py-0" href="' + hreflink + '">' + text + '</a></li>';
 }
 
 function sidebar_division(sidebar_heading, sidebar_links) {
     var sidebar_div =
-        `<h6 class = "sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 text-muted">
+        `<h6 class = "sidebar-heading d-flex justify-content-between align-items-center px-3 mt-3 text-muted">
             <span>${sidebar_heading}</span></h6>
             <ul class = "nav flex-column mb-0">`;
     for (const element of sidebar_links) {
@@ -85,16 +91,13 @@ function sidebar_division(sidebar_heading, sidebar_links) {
 
 function footer() {
     return `<ul class="nav flex-column mt-3 justify-content-between">
-        <li class="nav-item nav-link smaller-font text-muted">
-            &copy; 2022 Copyright Reserved.<br />
-            SIIT, Thammasat University.<br />
-            <a class="text-decoration-none text-muted" href="http://github.com/waterthatfrozen/Smart-City">Project
-                Information</a>
+        <li class="nav-item nav-link smallest-font text-muted">
+        &copy; 2022 SIIT, Thammasat University. Supported by Thammasat University and Thailand Science Research and Innovation Fundamental Fund, TUFF19/2564 and TUFF24/2565<br/></span>
         </li>
     </ul>`;
 }
 
-function main() {
+function sidebar_main() {
     var navMenu = $("#sidebarMenu");
     for (const element of SIDEBAR_LINK) {
         navMenu.append(sidebar_division(element.heading, element.links));
@@ -102,4 +105,4 @@ function main() {
     navMenu.append(footer());
 }
 
-$(document).ready(main);
+$(document).ready(sidebar_main);
