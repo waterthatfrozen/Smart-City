@@ -23,7 +23,7 @@ const SIDEBAR_LINK = [{
         link: '/per-device-control',
         text: 'Per Device Control'
     },{
-        link: '/#',
+        link: '/per-zone-control',
         text: 'Per Zone Control'
     }]
 },{
@@ -46,7 +46,6 @@ const SIDEBAR_LINK = [{
         link: '/service-status', 
         text: 'CMS Services Status'
     }]
-<<<<<<< HEAD
 }, {
     heading: 'Table & Graph',
     links: [{
@@ -69,8 +68,6 @@ const SIDEBAR_LINK = [{
         link: '/export-csv', 
         text: 'Export_CSV'
     }]
-=======
->>>>>>> 4d806ee55e16e0c6c6d6bcb35f01650bca00260d
 }];
 
 function sidebar_link(hreflink, text) {

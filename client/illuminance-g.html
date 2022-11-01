@@ -52,6 +52,7 @@
             <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"></nav>
         </div>
 
+
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div
                 class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-1 mb-2 border-bottom">
@@ -66,28 +67,22 @@
                 </div>
             </div>
 
-            <div class="row row-cols-2 row-cols-md-2 g-3 ">
+            <h4 class="pt-2">Device List</h4>
+            <div class="row row-cols-2 g-3 mb-3">
                 <div class="col">
                     <div class="form-floating">
-                        <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
-                        <option selected>Zone 1</option>
-                        <option value="1">Zone 2</option>
-                        <option value="2">Zone 3</option>
-                        <option value="3">Zone 4</option>
+                        <select class="form-select" id="zoneSelection" aria-label="Select Zone" disabled>
+                            <option selected disabled>Loading...</option>
                         </select>
-                        <label for="floatingSelect">Open this to select zone</label>
+                        <label for="zoneSelection">Click this to select zone</label>
                     </div>
                 </div>
-
                 <div class="col">
                     <div class="form-floating">
-                        <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
-                        <option selected>Device 1</option>
-                        <option value="1">Device 2</option>
-                        <option value="2">Device 3</option>
-                        <option value="3">Device 4</option>
+                        <select class="form-select" id="deviceSelection" aria-label="Select Device" disabled>
+                            <option selected disabled>- Select Zone First -</option>
                         </select>
-                        <label for="floatingSelect">Open this to select device</label>
+                        <label for="deviceSelection">Click this to select device</label>
                     </div>
                 </div>
             </div>

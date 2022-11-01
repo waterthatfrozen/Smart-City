@@ -64,12 +64,17 @@
                     <button class="btn btn-sm btn-secondary" onclick="window.location.reload();">Refresh</button>
                 </div>
             </div>
-            <select class="form-select mb-3" id="select-zone" aria-label="example">
-                <option selected="">Zone 1</option>
-                <option value="1">Zone 2</option>
-                <option value="2">Zone 3</option>
-                <option value="3">Zone 4</option>
-            </select>
+            <h4 class="pt-2">Zone List</h4>
+            <div class="row row-cols-2 g-3 mb-3">
+                <div class="col">
+                    <div class="form-floating">
+                        <select class="form-select" id="zoneSelection" aria-label="Select Zone" disabled>
+                            <option selected disabled>Loading...</option>
+                        </select>
+                        <label for="zoneSelection">Click this to select zone</label>
+                    </div>
+                </div>
+            </div>
                 <!-- Create Responsive Table -->
                 <div class="table-responsive rounded-3">
                     <table class="table table-striped" id="value-table" aria-describedby="table-caption">

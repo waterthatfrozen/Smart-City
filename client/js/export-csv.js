@@ -1,12 +1,24 @@
 const PARAMS = ["gw_timestamp", "temperature", "humidity", "wind_velocity", "wind_direction", "illuminance", "air_pressure", "ultra_violet_a", "ultra_violet_b"];
 const PARAMS_TITLE = ["Timestamp", "Temperature", "Humidity", "Wind Velocity", " Wind Direction", "Illuminance", "Air Pressure", "Ultra Violet A", "Ultra Violet B"];
 const PARAMS_UNIT = ["", "°C", "%", "m/s", "°", "klx", "hPa", "W/m<sup>2</sup>", "W/m<sup>2</sup>"];
-const GRAPHS_TITLE = ["Light ID:    Sensor ID:    Illuminance Value(lx)"];
-const GRAPHS_PARAMS = ["illuminance"];
+
 var chartConfig = [];
 var paramsIndex = [];
 var envSensorData = [];
 var error_flag = false;
+
+const data = [
+    {
+        gateway: "AAAA",
+        timeDisconnected: 20,
+        
+    }
+];
+
+
+function valueLoadingDisplayHidden(visibility){
+    $("#value-loading").prop("hidden", visibility);
+}
 
 PARAMS.forEach(function (_param, _index) {
     envSensorData.push([]);
