@@ -60,7 +60,7 @@ function mapIconColor(color) {
 }
 
 function insertTableRow(data) {
-    var row = "<tr>";
+    let row = "<tr>";
     data.forEach(element => {
         row += "<td>" + element + "</td>";
     });
@@ -77,20 +77,19 @@ async function getGatewayStatus() {
 
 async function getLightDeviceList() {
     const gatewayDisconnect = await getGatewayStatus();
-    const ZONEID = ["4", "5", "6", "7", "8", "9"];
+    const ZONE_ID = ["4", "5", "6", "7", "8", "9"];
     const EXCLUDED_DEVICE_LABEL = ["LIGHT_DALI1_26:C6-01"];
     const BASEAPI_URL = '/api/getZoneLightDeviceList?zone_id=';
-    var lightDeviceList = [];
-    for (const zone_id of ZONEID) {
+    let lightDeviceList = [];
+    let finishedZone = 0;
+    ZONE_ID.map( async (zone_id, index) => {
         const url = BASEAPI_URL + zone_id;
         const response = await fetch(url);
         const data = await response.json();
-        data.forEach(element => {
-            var gwconnect = true;
+        data.map(element => {
+            let gwconnect = true;
             gatewayDisconnect.forEach(disconnectGateway => {
-                if (disconnectGateway.device_id === element.gateway_device_uid || disconnectGateway.device_id === element.bb_gateway_device_uid) {
-                    gwconnect = false;
-                }
+                if (disconnectGateway.device_id === element.gateway_device_uid || disconnectGateway.device_id === element.bb_gateway_device_uid) { gwconnect = false; }
             });
             if (element.name === "LIGHT_DALI" && !EXCLUDED_DEVICE_LABEL.includes(element.device_label)) {
                 lightDeviceList.push({
@@ -106,16 +105,12 @@ async function getLightDeviceList() {
                 });
             }
         });
-    }
-    lightDeviceList.sort((a, b) => {
-        if (a.zone_id < b.zone_id) {
-            return -1;
-        } else if (a.zone_id > b.zone_id) {
-            return 1;
-        } else {
-            return a.device_label.localeCompare(b.device_label);
-        }
+        finishedZone++;
     });
+    while (finishedZone < ZONE_ID.length) {
+        console.log("Waiting for all zone to be finished");
+        await new Promise(r => setTimeout(r, 1000));
+    }
     return lightDeviceList;
 }
 
@@ -124,10 +119,10 @@ async function getGatewayList() {
     const BASEAPI_URL = '/api/getZoneDeviceList?zone_id=10';
     const response = await fetch(BASEAPI_URL);
     const data = await response.json();
-    var gatewayList = [];
+    let gatewayList = [];
     data.forEach(element => {
         if (element.name === "PE_GATEWAY_MINI_IOT") {
-            var gwconnect = true;
+            let gwconnect = true;
             gatewayDisconnect.forEach(disconnectGateway => {
                 if (disconnectGateway.gateway_name === element.device_label) {
                     gwconnect = false;
@@ -156,10 +151,10 @@ async function getEnvSensorList() {
     const BASEAPI_URL = '/api/getZoneDeviceList?zone_id=5';
     const response = await fetch(BASEAPI_URL);
     const data = await response.json();
-    var envSensorList = [];
+    let envSensorList = [];
     data.forEach(element => {
         if (element.name === "ENV_SENSOR") {
-            var gwconnect = true;
+            let gwconnect = true;
             gatewayDisconnect.forEach(disconnectGateway => {
                 if (disconnectGateway.gateway_name === element.device_label) {
                     gwconnect = false;
@@ -179,31 +174,24 @@ async function getEnvSensorList() {
     return envSensorList;
 }
 
-function mapsMain() {
-    var allEnvSensorList = [];
-    var allLightDeviceList = [];
-    var allGatewayList = [];
-    var gatewayMarker = L.layerGroup();
-    var envSensorMarker = L.layerGroup();
-    var zoneLightMarker = [L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup()];
-    var map = L.map('map').setView([14.070453, 100.606089], 16, {
-        minZoom: 15,
-        maxZoom: 18
-    });
+async function mapsMain() {
+    let allEnvSensorList = [];
+    let allLightDeviceList = [];
+    let allGatewayList = [];
+    let gatewayMarker = L.layerGroup();
+    let envSensorMarker = L.layerGroup();
+    let zoneLightMarker = [L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup(), L.layerGroup()];
+    let map = L.map('map').setView([14.070453, 100.606089], 16, { minZoom: 15, maxZoom: 18 });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
-    L.control.scale({
-        position: 'bottomleft',
-        imperial: false,
-        metric: true
-    }).addTo(map);
+    L.control.scale({ position: 'bottomleft', imperial: false, metric: true }).addTo(map);
     try {
         getEnvSensorList().then(envSensorList => {
             allEnvSensorList = envSensorList;
             envSensorList.forEach(element => {
-                var markerColor = element.connected ? "green" : "black";
-                var gatewayName = allGatewayList.find(gateway => gateway.device_mac_address === element.gateway_mac_address).device_label;
+                let markerColor = element.connected ? "green" : "black";
+                let gatewayName = allGatewayList.find(gateway => gateway.device_mac_address === element.gateway_mac_address).device_label;
                 L.marker([element.latitude, element.longitude], {
                     icon: mapIconColor(markerColor)
                 }).bindPopup(`<b>${element.device_label.toUpperCase()}</b><br/>
@@ -211,11 +199,18 @@ function mapsMain() {
                 Gateway Used: ${gatewayName}<br/>` +
                     connectionString(element.connected)).addTo(envSensorMarker);
             });
+            allEnvSensorList.map((envSensor,index) => {
+                let gatewayName = allGatewayList.find(gateway => gateway.device_mac_address === envSensor.gateway_mac_address).device_label;
+                let data = [index+1, envSensor.device_label.toUpperCase(), envSensor.device_id, gatewayName, connectionString(envSensor.connected)];
+                $("#envSensorDeviceTable").append(insertTableRow(data));
+            });
+            envSensorMarker.addTo(map);
+            envSensorCompletionDisplay();
         });
         getGatewayList().then(gatewayList => {
             allGatewayList = gatewayList;
             gatewayList.forEach(element => {
-                var markerColor = element.connected ? "blue" : "red";
+                let markerColor = element.connected ? "blue" : "red";
                 L.marker([element.latitude, element.longitude], {
                     icon: mapIconColor(markerColor)
                 }).bindPopup(`<b>${element.device_label.toUpperCase()}</b><br/>
@@ -223,12 +218,23 @@ function mapsMain() {
                 Device MAC Address: ${element.device_mac_address}<br/>` +
                     connectionString(element.connected)).addTo(gatewayMarker);
             });
+            allGatewayList.map((gateway, index) => {
+                let data = [index+1, gateway.device_label.toUpperCase(), gateway.device_id, gateway.device_mac_address, connectionString(gateway.connected)];
+                $("#gatewayDeviceTable").append(insertTableRow(data));
+            });
+            gatewayMarker.addTo(map);
+            gatewayCompletionDisplay();
         });
         getLightDeviceList().then(function (lightDeviceList) {
+            lightDeviceList.sort((a, b) => {
+                if (a.zone_id < b.zone_id) { return -1; }
+                else if (a.zone_id > b.zone_id) { return 1; }
+                else { return a.device_label.localeCompare(b.device_label); }
+            });
             allLightDeviceList = lightDeviceList;
             lightDeviceList.forEach(function (lightDevice) {
-                var markerColor = lightDevice.connected ? "yellow" : "grey";
-                var gatewayName = allGatewayList.find(gateway => gateway.device_mac_address === lightDevice.gateway_mac_address).device_label;
+                let markerColor = lightDevice.connected ? "yellow" : "grey";
+                let gatewayName = allGatewayList.find(gateway => gateway.device_mac_address === lightDevice.gateway_mac_address).device_label;
                 L.marker([lightDevice.latitude, lightDevice.longitude], {
                     icon: mapIconColor(markerColor)
                 }).bindPopup(`<b>${lightDevice.device_label.toUpperCase()}</b><br/>
@@ -237,29 +243,13 @@ function mapsMain() {
                 Gateway Used: ${gatewayName}<br/>` +
                     connectionString(lightDevice.connected)).addTo(zoneLightMarker[lightDevice.zone_id - 1]);
             });
-        }).then(function () {
-            var number = 1;
-            allGatewayList.forEach(function (gateway) {
-                var data = [number++, gateway.device_label.toUpperCase(), gateway.device_id, gateway.device_mac_address, connectionString(gateway.connected)];
-                $("#gatewayDeviceTable").append(insertTableRow(data));
-            });
-            gatewayCompletionDisplay();
-            number = 1;
-            allEnvSensorList.forEach(function (envSensor) {
-                var gatewayName = allGatewayList.find(gateway => gateway.device_mac_address === envSensor.gateway_mac_address).device_label;
-                var data = [number++, envSensor.device_label.toUpperCase(), envSensor.device_id, gatewayName, connectionString(envSensor.connected)];
-                $("#envSensorDeviceTable").append(insertTableRow(data));
-            });
-            envSensorCompletionDisplay();
-            number = 1;
-            allLightDeviceList.forEach(function (lightDevice) {
-                var gatewayName = allGatewayList.find(gateway => gateway.device_mac_address === lightDevice.gateway_mac_address).device_label;
-                var data = [number++, lightDevice.device_label.toUpperCase(), lightDevice.device_id, lightDevice.zone_name, gatewayName, connectionString(lightDevice.connected)];
+            allLightDeviceList.map((lightDevice,index) => {
+                let gatewayName = allGatewayList.find(gateway => gateway.device_mac_address === lightDevice.gateway_mac_address).device_label;
+                let data = [index+1, lightDevice.device_label.toUpperCase(), lightDevice.device_id, lightDevice.zone_name, gatewayName, connectionString(lightDevice.connected)];
                 $("#lightDeviceTable").append(insertTableRow(data));
             });
-            lightCompletionDisplay();
-
-            var overlayMaps = {
+            zoneLightMarker.map( (zone) => { zone.addTo(map); });
+            lightCompletionDisplay();let overlayMaps = {
                 "Gateways": gatewayMarker,
                 "Environmental Sensor": envSensorMarker,
                 "Light Device: Prachasanti": zoneLightMarker[0],
@@ -269,11 +259,6 @@ function mapsMain() {
                 "Light Device: Yung Thong - Inside": zoneLightMarker[4],
                 "Light Device: Pitaktham": zoneLightMarker[5]
             };
-            gatewayMarker.addTo(map);
-            envSensorMarker.addTo(map);
-            zoneLightMarker.forEach(function (element) {
-                element.addTo(map);
-            });
             L.control.layers(null, overlayMaps).addTo(map);
             mapCompletionDisplay();
         });

@@ -57,43 +57,71 @@
                 class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-1 mb-2 border-bottom">
                 <h2 id="header">Zone Overview</h2>
                 <div class="btn-group">
-                    
-                    <button type="button" disabled class="btn btn-sm btn-secondary" id="env-sensor-timestamp">
-                        <div class="spinner-grow spinner-grow-sm" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div> Loading timestamp...
-                    </button>
                     <button class="btn btn-sm btn-secondary" onclick="window.location.reload();">Refresh</button>
                 </div>
             </div>
-            <select class="form-select mb-3" id="select-zone" aria-label="example">
-                <option selected="">Zone 1</option>
-                <option value="1">Zone 2</option>
-                <option value="2">Zone 3</option>
-                <option value="3">Zone 4</option>
-            </select>
-            <div class="row row-cols-2 row-cols-md-4 g-3 m-1" id="env-sensor-value-container">
-                <!-- loading indicator -->
-                <div class="w-100" id="env-sensor-loading-container">
-                    <div class="card" id="env-sensor-loading-card">
-                        <div class="card-body">
-                            <p class="card-text" id="env-sensor-loading-text">
-                                <div id="env-sensor-loading-spinner" class="spinner-grow spinner-grow-sm" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div> Loading value...
-                            </p>
-                        </div>
+            <div class="row row-cols-2 g-3 mb-3">
+                <div class="col">
+                    <p>Please select a zone first</p>
+                    <div class="form-floating">
+                        <select class="form-select" id="zoneSelection" aria-label="Select Zone" disabled>
+                            <option selected disabled>Loading...</option>
+                        </select>
+                        <label for="zoneSelection">Select Device Zone</label>
                     </div>
                 </div>
             </div>
 
-            <div class="row row-cols-1 row-cols-md-2 g-3 m-1" id="env-sensor-graph-container">
-                <!-- loading indicator -->
-                <div class="w-100" id="graph-loading-container">
-                    <div class="card" id="graph-loading-card">
+            <div class="row row-cols-2 row-cols-md-4 g-3 mb-3" id="currentZoneReportContainer">
+                <div class="col">
+                    <div class="card">
                         <div class="card-body">
-                            <p class="card-text" id="graph-loading-text">
-                                <div id="graph-loading-spinner" class="spinner-grow spinner-grow-sm" role="status">
+                            <h6 class="card-title">Average Active Energy</h6>
+                            <h4 class="card-subtitle" id="currentAverageActiveEnergyValue">---</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Average Active Power</h6>
+                            <h4 class="card-subtitle" id="currentAverageActivePowerValue">---</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Average V RMS</h6>
+                            <h4 class="card-subtitle" id="currentAverageVRMSValue">---</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Average Current Power</h6>
+                            <h4 class="card-subtitle" id="currentAveragePowerValue">---</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- loading indicator -->
+            <div class="row row-cols-1 row-cols-md-2 g-3 mb-1" id="zoneGraphUtilContainer">
+                <div class="w-100" id="graphPreselectionContainer">
+                    <div class="card" id="graphPreselectionCard">
+                        <div class="card-body">
+                            <p class="card-text" id="graphPreselectionText">
+                                Please select the device zone first
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-100" id="graphLoadingContainer" hidden>
+                    <div class="card" id="graphLoadingCard">
+                        <div class="card-body">
+                            <p class="card-text" id="graphLoadingText">
+                                <div id="graphLoadingSpinner" class="spinner-grow spinner-grow-sm" role="status">
                                     <span class="visually-hidden">Loading...</span>
                                 </div> Loading graph...
                             </p>
@@ -101,6 +129,83 @@
                     </div>
                 </div>
             </div>
+            <div class="row row-cols-1 row-cols-md-2 g-3 mt-2 mb-1" id="zoneGraphContainer">
+                
+            </div>
+
+            <!-- loading indicator -->
+            <h6 class="mt-4">List of devices in the selected zone</h6>
+            <div class="table-responsive mb-3" id="zoneDeviceContainer">
+                <table class="table table-striped table-hover" id="zoneDeviceTable">
+                    <caption id="zoneDeviceCaption">Please select zone first</caption>
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Device Name</th>
+                            <th scope="col">Device ID</th>
+                            <th scope="col">Gateway Used</th>
+                            <th scope="col">Active Energy</th>
+                            <th scope="col">Active Power</th>
+                            <th scope="col">V RMS</th>
+                            <th scope="col">Current Power</th>
+                        </tr>
+                    </thead>
+                    <tr id="zoneDevicePreselection">
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr id="zoneDeviceLoadingIndicator" hidden>
+                        <td colspan="9" id="table-loading-block">
+                            <div id="table-loading-spinner"
+                                class="spinner-grow spinner-grow-sm" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div> Loading Lighting Devices...
+                        </td>
+                    </tr>
+                    <tbody id="zoneDeviceBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Toast -->
+            <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+                <div class="toast-container">
+
+                    <div class="toast align-items-center text-white bg-secondary border-0" role="alert" aria-live="assertive" aria-atomic="true" id="onProgressToast">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                            <span><i class="bi bi-send"></i> Fetching power usage data in the selected zone.</span>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+
+                    <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" id="successToast">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                            <span><i class="bi bi-check-circle"></i> Successfully fetched and displayed data.</span>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                    
+                    <div class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" id="failedToast">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                            <span><i class="bi bi-x-circle"></i> Failure during processing data, please refresh this page and try again. </span>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
         </main>
     </div>
     </div>
