@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Gateway and Sensor Connection | Smart City Dashboard</title>
+    <title>About Us | Smart City Dashboard</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/dashboard/">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,7 +23,6 @@
         integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <script src="js/datetime-update.js" defer></script>
-    <script src="js/device-connection.js" defer></script>
     <script src="js/sidebar.js" defer></script>
 </head>
 
@@ -51,50 +50,37 @@
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div
                 class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-1 mb-2 border-bottom">
-                <h2 id="header">Gateway Status</h2>
-                <div class="btn-group">
-                    <button type="button" disabled class="btn btn-sm btn-secondary" id="gw-timestamp">
-                        <div class="spinner-grow spinner-grow-sm" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div> Loading timestamp...
-                    </button>
-                    <button class="btn btn-sm btn-secondary" onclick="window.location.reload();">Refresh</button>
-                </div>
+                <h2 id="header">About Us</h2>
             </div>
-            <div class="row row-cols-1 row-cols-md-3 g-3 m-1" id="gw-connection-container">
-                <!-- loading indicator -->
-                <div class="w-100" id="gw-connection-loading-container">
-                    <div class="card" id="gw-connection-card">
-                        <div class="card-body">
-                            <p class="card-text" id="gw-connection-loading-text">
-                                <div id="gw-connection-loading-spinner" class="spinner-grow spinner-grow-sm"
-                                    role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div> Checking Gateways Connection...
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div
-                class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-1 mb-2 border-bottom">
-                <h2 id="header">Environmental Sensor Status</h2>
-            </div>
-            <div class="row row-cols-1 row-cols-md-2 g-3 m-1 pb-5" id="sensor-connection-container">
-                <!-- loading indicator -->
-                <div class="w-100" id="sensor-connection-loading-container">
-                    <div class="card" id="sensor-connection-card">
-                        <div class="card-body">
-                            <p class="card-text" id="sensor-connection-loading-text">
-                                <div id="sensor-connection-loading-spinner" class="spinner-grow spinner-grow-sm"
-                                    role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div> Checking Environmental Sensor Connection...
-                            </p>
-                        </div>
-                    </div>
-                </div>
+            <div class="row row-cols-1 px-3 py-2" id="author-container">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <h5>Project Information</h5>
+                        <p>
+                            Smart Lighting, Smart Campus in AI-Ready City
+                        </p>
+                    </li>
+                    <li class="list-group-item">
+                        <h5 class="pt-3">Senior Project Development Information</h5>
+                        <p>
+                            Under the project <span class="fst-italic">Smart Lighting: The Web Application and Data Analytics</span><br/>
+                            DES400 Senior Project Development, Semester 1, Academic Year 2022<br/>
+                            Digital Engineering Department, School of Information, Computer, and Communication Technology,<br/>
+                            Sirindhorn International Institute of Technology (SIIT), Thammasat University.<br/>
+                            Advisor: Dr. Somrudee Deepaisarn<br/>
+                            Project Members: Paphana Yiwsiw, Thanakit Lerttomolsakul, Sirada Chaisawat, and Leeyakorn Cheewakriengkrai
+                        </p>
+                    </li>
+                    <li class="list-group-item">
+                        <h5 class="pt-3">Copyright and Funding</h5>
+                        <p>
+                            &copy; 2022 Sirindhorn International Institute of Technology (SIIT), Thammasat University.<br/>
+                            The financial support provided by the Thammasat University Research fund <br/>
+                            under the Thailand Science Research and Innovation Fundamental Fund (TSRI), Contract No. TUFF19/2564 and TUFF24/2565,<br/>
+                            for the project of “AI Ready City Networking in RUN”, based on the RUN Digital Cluster collaboration scheme.
+                        </p>
+                    </li>
+                </ul>
             </div>
         </main>
     </div>

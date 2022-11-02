@@ -12,6 +12,7 @@ const {
     bangkokTimeString
 } = require('./disconnect-detection');
 const ZONE_ID = [4, 5, 6, 7, 8, 9];
+const ZONE_NAME = ["Prachasanti", "Sanya-Thammasak", "Talad Wicha", "Yung Thong - Outside", "Yung Thong - Inside", "Pitaktham"];
 const base_url = process.env.CMS_BASE_URL;
 
 async function getToken() {
@@ -29,22 +30,47 @@ async function getToken() {
 }
 
 async function getAllLightDevices(_req,res){   
+    console.log("Getting all light devices");
     let allLightDevices = [];
+    let finished = 0;
     try {
-        ZONE_ID.map(async (zone_id) => {
+        ZONE_ID.forEach(async (zone_id) => {
             await axios.get(`http://siit-smart-city.azurewebsites.net/api/getZoneLightDeviceList?zone_id=${zone_id}`).then((result) => {
                 return result.data;
-            }).then((devices) => {
-                devices.map(async (device) => {
-                    if(device.device_type_id === 27036){
-                        allLightDevices.push({device_id: device.device_uid, device_name: device.device_label,zone_id: zone_id});
+            }).then(async (devices) => {
+                await devices.map(async (device) => {
+                    if(await device.device_type_id === 27036){
+                        allLightDevices.push({
+                            zone_id: zone_id,
+                            zone_name: ZONE_NAME[ZONE_ID.indexOf(zone_id - 4)],
+                            device_id: device.device_uid, 
+                            device_name: device.device_label,
+                            device_mac: device.MAC,
+                            base_device_id: device.base_device_uid,
+                            gateway_mac: device.gateway_MAC,
+                            gateway_device_id: device.gateway_device_uid,
+                            bb_gateway_device_id: device.bb_gateway_device_uid,
+                            latitude: device.assigned_lat,
+                            longitude: device.assigned_lon,
+                        });
                     }
                 });
-            });
-        });
-        setTimeout(() => {
-            res.status(200).send({devices: allLightDevices});
-        }, 5000);
+            }).then(() =>{ finished++; }).catch((error) => { console.log(error); throw error; });
+        }, this);
+        let interval = setInterval(async () => {
+            if(finished === ZONE_ID.length){
+                clearInterval(interval);
+                allLightDevices = allLightDevices.sort((a, b) => {
+                    if (a.zone_id < b.zone_id) { return -1; }
+                    else if (a.zone_id > b.zone_id) { return 1; } 
+                    else { return a.device_name.localeCompare(b.device_name); }
+                });
+                res.status(200).send({devices: allLightDevices, totalDevices: allLightDevices.length});
+                console.log("Finished getting all light devices");
+            }else{
+                console.log("Waiting for all light devices");
+            }
+        }, 1000);
     } catch (error) {
         res.status(500).send(error);
     }
@@ -118,11 +144,11 @@ async function getLightPowerStatusReportbyDeviceandRange(req,res) {
                         let report_result = [];
                         data.map((row) => {
                             let report_row = {
-                                timestamp: bangkokTimeString(new Date(row[0]).getTime()/ 1000),
-                                light_dimming_value: row[2],
-                                active_power: row[3].toFixed(2),
-                                active_energy: (row[5]/1000).toFixed(2),
-                                v_rms: row[7].toFixed(2)
+                                timestamp: (new Date(row[0]).getTime())/ 1000,
+                                light_dimming_value: parseInt(row[2]),
+                                active_power: parseFloat(row[3].toFixed(2)),
+                                active_energy: parseFloat((row[5]/1000).toFixed(2)),
+                                v_rms: parseFloat(row[7].toFixed(2))
                             };
                             report_result.push(report_row);
                         });
@@ -165,10 +191,10 @@ async function getLastLightPowerReportbyDevice(req,res){
                         let report_result = {
                             device_id: device_id,
                             timestamp: report_timestamp,  
-                            light_dimming_value: report_row[report_row.findIndex(rsc => rsc.resource_id === 5851)].value,
-                            active_power: report_row[report_row.findIndex(rsc => rsc.resource_id === 5800)].value.toFixed(2),
-                            active_energy: (report_row[report_row.findIndex(rsc => rsc.resource_id === 27004)].value/1000).toFixed(2),
-                            v_rms: report_row[report_row.findIndex(rsc => rsc.resource_id === 27002)].value.toFixed(2)
+                            light_dimming_value: parseInt(report_row[report_row.findIndex(rsc => rsc.resource_id === 5851)].value),
+                            active_power: parseFloat(report_row[report_row.findIndex(rsc => rsc.resource_id === 5800)].value.toFixed(2)),
+                            active_energy: parseFloat((report_row[report_row.findIndex(rsc => rsc.resource_id === 27004)].value/1000).toFixed(2)),
+                            v_rms: parseFloat(report_row[report_row.findIndex(rsc => rsc.resource_id === 27002)].value.toFixed(2))
                         };
                         res.status(200).send({report: report_result,units: units});
                     }else{
