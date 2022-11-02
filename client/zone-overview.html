@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.88.1">
-    <title>IoT Sensor Data | Smart City</title>
+    <title>Smart City Dashboard</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/dashboard/">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,9 +26,10 @@
         integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <script src="js/datetime-update.js" defer></script>
+    <script src="js/zone-overview.js" defer></script>
     <script src="js/sidebar.js" defer></script>
-    <script src="js/iot-sensors.js" defer></script>
 </head>
+
 <body>
 
     <header class="navbar navbar-dark sticky-top bg-success flex-md-nowrap p-0 shadow">
@@ -54,9 +55,10 @@
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div
                 class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-1 mb-2 border-bottom">
-                <h2 id="header">IoT Sensor Values</h2>
+                <h2 id="header">Zone Overview</h2>
                 <div class="btn-group">
-                    <button type="button" disabled class="btn btn-sm btn-secondary" id="loading-timestamp">
+                    
+                    <button type="button" disabled class="btn btn-sm btn-secondary" id="env-sensor-timestamp">
                         <div class="spinner-grow spinner-grow-sm" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div> Loading timestamp...
@@ -64,49 +66,41 @@
                     <button class="btn btn-sm btn-secondary" onclick="window.location.reload();">Refresh</button>
                 </div>
             </div>
-                <!-- Create Responsive Table -->
-                <div class="table-responsive rounded-3">
-                    <table class="table table-striped" id="value-table" aria-describedby="table-caption">
-                            <tr id="value-table-header" class="table-dark">
-                                <th class="col-w100px">Timestamp</th>
-                                <th>Temperature</th>
-                                <th>Humidity</th>
-                                <th>Air Pressure</th>
-                                <th>Light Intensity</th>
-                                <th>Infrared</th>
-                                <th>UV Index</th>
-                                <th>Microwave Doppler</th>
-                                <th>V MQ2</th>
-                                <th>V MQ4</th>
-                                <th>V MQ7</th>
-                                <th>V MQ8</th>
-                                <th>PM 1(Env)</th>
-                                <th>PM 1(Stand)</th>
-                                <th>PM 2.5(Env)</th>
-                                <th>PM 2.5(Stand)</th>
-                                <th>PM 10(Env)</th>
-                                <th>PM 10(Stand)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-body">
-                            <tr id="value-loading">
-                                <td colspan="18" class="text-white p-3 bg-secondary">
-                                    <div class="spinner-grow spinner-grow-sm" role="status">
+            <select class="form-select mb-3" id="select-zone" aria-label="example">
+                <option selected="">Zone 1</option>
+                <option value="1">Zone 2</option>
+                <option value="2">Zone 3</option>
+                <option value="3">Zone 4</option>
+            </select>
+            <div class="row row-cols-2 row-cols-md-4 g-3 m-1" id="env-sensor-value-container">
+                <!-- loading indicator -->
+                <div class="w-100" id="env-sensor-loading-container">
+                    <div class="card" id="env-sensor-loading-card">
+                        <div class="card-body">
+                            <p class="card-text" id="env-sensor-loading-text">
+                                <div id="env-sensor-loading-spinner" class="spinner-grow spinner-grow-sm" role="status">
                                     <span class="visually-hidden">Loading...</span>
-                                  </div> Loading data...</td>
-                            </tr>
-                            <tr class="bg-danger">
-                                <td colspan="18" class="text-white p-3" id="value-error" hidden><i class="bi bi-exclamation-circle-fill"></i> An error occurred.</td>
-                            </tr>
-                            <tr class="bg-info" id="value-nodata" hidden>
-                                <td colspan="18" class="p-3 text-white"><i class="bi bi-exclamation-circle-fill"></i> No data recorded.</td>
-                            </tr>
-                        </tbody>
-                        <caption id="table-caption">
-                            Loading IoT Sensor Data...
-                        </caption>
-                    </table>
+                                </div> Loading value...
+                            </p>
+                        </div>
+                    </div>
                 </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 g-3 m-1" id="env-sensor-graph-container">
+                <!-- loading indicator -->
+                <div class="w-100" id="graph-loading-container">
+                    <div class="card" id="graph-loading-card">
+                        <div class="card-body">
+                            <p class="card-text" id="graph-loading-text">
+                                <div id="graph-loading-spinner" class="spinner-grow spinner-grow-sm" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div> Loading graph...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
     </div>

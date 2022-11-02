@@ -52,3 +52,14 @@ main {
 .restricted {
     max-width: 500px !important;
 }
+
+.smaller-font {
+    font-size: smaller;
+    word-wrap: break-word;
+    line-height: 0.4rem;
+}
+
+.smallest-font{
+    font-size: 0.4rem;
+    word-wrap: break-word;
+}
