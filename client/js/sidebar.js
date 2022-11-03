@@ -1,6 +1,7 @@
-const SIDEBAR_LINK = [{
+const SIDEBAR_LINK = [
+{
     heading: 'OVERVIEW',
-    links: [{link: '/dashboard', text: 'System Overview' },
+    links: [{ link: '/dashboard', text: 'System Overview' },
         { link: '/zone-overview', text: 'Zone Overview' },
         { link: '/illuminance-sensor', text: 'Illuminance Report' },
         { link: '/maps-view', text: 'Device Maps' }]
@@ -9,13 +10,20 @@ const SIDEBAR_LINK = [{
     links: [{ link: '/per-device-control', text: 'Per Device Control' },
         { link: '/per-zone-control', text: 'Per Zone Control'}]
 },{
-    heading: 'IoT Sensors',
+    heading: 'IoT SENSORS',
     links: [{ link: '/iot-sensors', text: 'Sensor Record' }]
 },{
     heading: 'SYSTEM STATUS',
-    links: [{ link: '/device-connection', text: 'Gateway Status'},
-        { link: '#', text: 'Device Events' },
-        { link: '/service-status',  text: 'CMS Services Status'}]
+    links: [{ link: '/device-connection', text: 'Gateway Status' },
+    { link: '/device-events', text: 'Device Events' },
+    { link: '/service-status', text: 'CMS Services Status' }]
+}, {
+    heading: 'TABLE & GRAPH',
+    links: [{ link: '/system-overview-t', text: 'System Overview_T' },
+    { link: '/zone-overview-t', text: 'Zone Overview_T' },
+    { link: '/illuminance-g', text: 'Illuminance_G' },
+    { link: '/disconnectlog-t', text: 'DisconnectLog_T' },
+    { link: '/export-csv', text: 'Export_CSV' }]
 },{
     heading: 'ABOUT',
     links: [{ link: '/about-us', text: 'About Us' }]
