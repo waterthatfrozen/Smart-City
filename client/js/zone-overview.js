@@ -1,125 +1,237 @@
-const PARAMS = ["gw_timestamp", "temperature", "humidity", "wind_velocity"];
-const PARAMS_TITLE = ["Timestamp", "Active Power", "Energy Active", "V RMS"];
-const PARAMS_UNIT = ["", "W", "Wh", "V"];
-const GRAPHS_TITLE = ["Active Power (W)", "Energy Active (Wh)", "Illuminance in the past 2 hours (klx)", "Air Pressure in the past 2 hours (hPa)"];
-const GRAPHS_PARAMS = ["temperature", "humidity", "illuminance", "air_pressure"];
-var chartConfig = [];
-var paramsIndex = [];
-var envSensorData = [];
-var error_flag = false;
-
-PARAMS.forEach(function (_param, _index) {
-    envSensorData.push([]);
+const zoneSelection = $("#zoneSelection"),
+    zoneTimestamp = $("#zoneTimestamp"),
+    zonePreselectionTimestamp = $("#zonePreselectionTimestamp"),
+    currentAverageActiveEnergyValue = $("#currentAverageActiveEnergyValue"), 
+    currentAverageActivePowerValue = $("#currentAverageActivePowerValue"),
+    currentAverageVRMSValue = $("#currentAverageVRMSValue"),
+    currentAveragePowerValue = $("#currentAveragePowerValue"),
+    zoneGraphContainer = $("#zoneGraphContainer"),
+    graphPreselectionContainer = $("#graphPreselectionContainer"),
+    graphLoadingContainer = $("#graphLoadingContainer"),
+    zoneDevicePreselection = $("#zoneDevicePreselection"),
+    zoneDeviceLoadingIndicator = $("#zoneDeviceLoadingIndicator"),
+    zoneDeviceTable = $("#zoneDeviceTable"),
+    zoneDeviceBody = $("#zoneDeviceBody"),
+    zoneDeviceCaption = $("#zoneDeviceCaption");
+const toastElList = [].slice.call(document.querySelectorAll('.toast'));
+const toastList = toastElList.map(function (toastEl) {
+    return new bootstrap.Toast(toastEl)
 });
 
-async function errorDisplay(error) {
-    $("#env-sensor-timestamp").text("Error on loading data");
-    $("#env-sensor-loading-container").addClass("w-100");
-    $("#env-sensor-loading-card").html('<div class="card-body"><p class="card-text" id="env-sensor-loading-text"></p></div>');
-    $("#env-sensor-loading-text").html("<strong>Error on loading data to display</strong><br/>Environmental sensor might be disconnect from the system, please contact system administrator immediately.<br/>Error: " + error);
-    $("#env-sensor-loading-card").addClass("alert-danger");
-    $("#env-sensor-graph-container").html("");
-    error_flag = true;
+let currentZoneID = null;
+let currentZoneDeviceList = null;
+let allZoneList = [];
+let allDeviceList = [];
+let allGatewayList = [];
+
+function preSelectionHidden(hidden) {
+    zonePreselectionTimestamp.attr('hidden', hidden);
+    graphPreselectionContainer.attr('hidden', hidden);
+    zoneDevicePreselection.attr('hidden', hidden);
+    zoneDeviceCaption.text("Please select a zone first");
+    if(!hidden){
+        currentAverageActiveEnergyValue.text("---");
+        currentAverageActivePowerValue.text("---");
+        currentAverageVRMSValue.text("---");
+        currentAveragePowerValue.text("---");
+    }
 }
 
-async function cleanEnvSensorData() {
-    // set new date format
-    envSensorData[0].forEach(function (param, index) {
-        envSensorData[0][index] = param.map(function (row) {
-            var daterow = row.split(/[- :]/);
-            return new Date(daterow[0], daterow[1] - 1, daterow[2], daterow[3], daterow[4], daterow[5]);
-        });
+function loadingHidden(hidden) {
+    zoneTimestamp.attr('hidden', hidden);
+    graphLoadingContainer.attr('hidden', hidden);
+    zoneDeviceLoadingIndicator.attr('hidden', hidden);
+    zoneDeviceCaption.text("Finished loading device list in this zone");
+    if(!hidden){
+        currentAverageActiveEnergyValue.text("Loading...");
+        currentAverageActivePowerValue.text("Loading...");
+        currentAverageVRMSValue.text("Loading...");
+        currentAveragePowerValue.text("Loading...");
+        zoneDeviceCaption.text("Loading device list...");
+    }
+}
+
+function displayToast(toastType) {
+    if (toastType === "onProgress") {
+        toastList[toastList.findIndex(x => x._element.id === "onProgressToast")].show();
+    }else if (toastType === "success") {
+        toastList[toastList.findIndex(x => x._element.id === "successToast")].show();
+    } else if (toastType === "failed") {
+        toastList[toastList.findIndex(x => x._element.id === "failedToast")].show();
+    }
+}
+
+function setValueDisplay(activeEnergy, activePower, vRMS, power){
+    currentAverageActiveEnergyValue.text(activeEnergy);
+    currentAverageActivePowerValue.text(activePower);
+    currentAverageVRMSValue.text(vRMS);
+    currentAveragePowerValue.text(power);
+}
+
+function insertTableRow(data) {
+    let row = "<tr>";
+    data.forEach(element => {
+        row += "<td>" + element + "</td>";
     });
+    row += "</tr>";
+    return row;
+}
 
-    // wind direction round to 360
-    var wind_direction_idx = PARAMS.indexOf("wind_direction");
-    if (wind_direction_idx != -1) {
-        envSensorData[wind_direction_idx].forEach(function (row, index) {
-            envSensorData[wind_direction_idx][index] = row.map(function (value) {
-                return Math.floor(value % 360);
+async function setZoneListSelection() {
+    try {
+        await fetch('/api/getZoneList', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            if (response.status === 200) {
+                return response.json();
+            }
+        }).then(data => {
+            let zoneList = [];
+            data.map((zone) => {
+                if (zone.parent_oid === 3) {
+                    zoneList.push({
+                        zoneID: zone.zone_id,
+                        zoneName: zone.name
+                    });
+                }
             });
-        });
-    }
-    // illuminance from lux to kilolux
-    var illuminance_idx = PARAMS.indexOf("illuminance");
-    if (illuminance_idx != -1) {
-        envSensorData[illuminance_idx].forEach(function (row, index) {
-            envSensorData[illuminance_idx][index] = row.map(function (value) {
-                return (value / 1000).toFixed(2);
+            zoneList.sort((a, b) => {
+                return a.zoneID - b.zoneID;
             });
-        });
-    }
-    // round wind velocity and ultraviolet to 2 decimal
-    var wind_velocity_idx = PARAMS.indexOf("wind_velocity");
-    var ultravioleta_idx = PARAMS.indexOf("ultra_violet_a");
-    var ultravioletb_idx = PARAMS.indexOf("ultra_violet_b");
-    if (wind_velocity_idx != -1) {
-        envSensorData[wind_velocity_idx].forEach(function (row, index) {
-            envSensorData[wind_velocity_idx][index] = row.map(function (value) {
-                return value.toFixed(2);
+            zoneList = zoneList.slice(0, 6);
+            allZoneList = zoneList;
+            return zoneList;
+        }).then((zoneList) => {
+            zoneSelection.empty();
+            zoneSelection.append(`<option>Select Zone</option>`);
+            zoneList.map((zone) => {
+                zoneSelection.append(`<option value="${zone.zoneID}">${zone.zoneName}</option>`);
             });
+            zoneSelection.attr('disabled', false);
+        }).catch(error => {
+            console.error(error);
+            throw error;
         });
-    }
-    if (ultravioleta_idx != -1) {
-        envSensorData[ultravioleta_idx].forEach(function (row, index) {
-            envSensorData[ultravioleta_idx][index] = row.map(function (value) {
-                return value.toFixed(2);
-            });
-        });
-    }
-    if (ultravioletb_idx != -1) {
-        envSensorData[ultravioletb_idx].forEach(function (row, index) {
-            envSensorData[ultravioletb_idx][index] = row.map(function (value) {
-                return value.toFixed(2);
-            });
-        });
+    } catch (error) {
+        console.error(error);
+        throw error;
     }
 }
 
-async function fetchEnvSensorData() {
-    const currentTime = Math.round(new Date().getTime() / 1000),
-        start = currentTime - (60 * 60 * 2),
-        end = currentTime;
-    await fetch("/API/getEnvSensorData?start=" + start + "&end=" + end).then(response =>
-        response.json()
-    ).then(data => {
-        data = data.values;
-        if (data.length == 0) {
-            errorDisplay("No data found");
-            throw new Error("No data found");
+async function getGatewayList() {
+    try{
+        await fetch('/api/getZoneDeviceList?zone_id=10', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        }).then(async response => {
+            if(response.status === 200){
+                let data = await response.json();
+                return data;
+            }
+        }).then(async data => {
+            data.map((gateway) => {
+                if(gateway.name === "PE_GATEWAY_MINI_IOT"){
+                    allGatewayList.push({
+                        gatewayName: gateway.device_label,
+                        gatewayMAC: gateway.MAC
+                    });
+                }
+            });
+            allGatewayList.sort((a, b) => {
+                return a.gatewayName.localeCompare(b.gatewayName);
+            });
+        }).catch(error => {
+            console.error(error);
+            throw error;
+        });
+    }catch(error){
+        console.error(error);
+        throw error;
+    }
+}
+
+async function getAllLightDevices(){
+    try{
+        await fetch('/api/getAllLightDevices',{
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        }).then(async response => {
+            if(response.status === 200){
+                let data = await response.json();
+                return data;
+            }
+        }).then(async data => {
+            data = data.devices;
+            data.map(async (device) => {
+                allDeviceList.push({
+                    deviceName: device.device_name,
+                    deviceID: device.device_id,
+                    deviceMAC: device.device_mac,
+                    zoneID: device.zone_id,
+                    gatewayMAC: device.gateway_mac,
+                    gatewayName: allGatewayList.find(gateway => gateway.gatewayMAC === device.gateway_mac).gatewayName,
+                });
+            });
+            allDeviceList.sort((a, b) => {
+                return a.deviceName.localeCompare(b.deviceName);
+            });
+        }).catch(error => {
+            console.error(error);
+            throw error;
+        });
+    }catch(error){
+        console.error(error);
+        throw error;
+    }
+}
+
+async function sendGetPowerCommand(currentDeviceID, currentGatewayMAC){
+    await fetch(`/api/sendGetPowerCommand?deviceID=${currentDeviceID}&gatewayMAC=${currentGatewayMAC}`,{
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
         }
-        var dataHeader = data[0];
-        var dataBody = data.slice(1);
-        PARAMS.forEach(function (param, _index) {
-            paramsIndex.push(dataHeader.indexOf(param));
-        });
-        envSensorData.forEach(function (param, index) {
-            param.push(dataBody.map(function (row) {
-                return row[paramsIndex[index]];
-            }));
-        });
-        cleanEnvSensorData();
     }).catch(error => {
-        errorDisplay(error);
+        console.error(error);
+        throw error;
     });
 }
 
-function envSensorValuePanel(title, subtitle, value, unit) {
-    if (value == null) {
-        value = "N/A";
-    }
-    return `<div class="col">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">${title}</h5>
-                        <h6 class="card-subtitle mb-2">${subtitle}</h6>
-                        <p class="card-text display-5">${value}<small class="h4"> ${unit}</small></p>
-                    </div>
-                </div>
-            </div>`;
+async function getDevicePowerInfo(currentDeviceID, currentGatewayMAC){
+    let data = null;
+    let endTime = parseInt(((new Date().getTime())/1000).toFixed(0));
+    let startTime = endTime - 7200;
+    console.log(startTime, endTime);
+    await sendGetPowerCommand(currentDeviceID, currentGatewayMAC);
+    setTimeout(() => {}, 1000);
+    await fetch(`/api/getLightPowerStatusReportbyDeviceandRange?device_id=${currentDeviceID}&start=${startTime}&end=${endTime}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+    }).then(async response => {
+        if(response.status === 200){
+            data = await response.json();
+        }
+    }).catch(error => {
+        console.error(error);
+        throw error;
+    });
+    return data;
 }
 
-function envSensorGraphPanel(title, footer, label, xValue, yValue) {
+function connectionString(connected) {
+    if (connected) {
+        return "<span class='text-success'><i class='bi bi-cloud-check-fill'></i> Connected</span>";
+    } else {
+        return "<span class='text-danger fw-bold'><i class='bi bi-cloud-slash-fill'></i> Disconnected</span>";
+    }
+}
+
+let chartConfig = [];
+
+function graphPanel(title, footer, label, xValue, yValue) {
     chartConfig.push({
         type: 'line',
         data: {
@@ -159,38 +271,130 @@ function envSensorGraphPanel(title, footer, label, xValue, yValue) {
     </div>`;
 }
 
-function main() {
-    var envSensorValueContainer = $("#env-sensor-value-container");
-    var envSensorTimestamp = $("#env-sensor-timestamp");
-    var envSensorGraphContainer = $("#env-sensor-graph-container");
-    var timestampStringMessage = "";
-    fetchEnvSensorData().then(() => {
-        if (!error_flag) {
-            timestampStringMessage = "As of " + datetimeTransform(envSensorData[0][0][envSensorData[0][0].length - 1]);
-            envSensorValueContainer.html("");
-            for (var i = 1; i < PARAMS.length; i++) {
-                var row = envSensorData[i];
-                envSensorValueContainer.append(envSensorValuePanel(PARAMS_TITLE[i], "", row[0][row[0].length - 1], PARAMS_UNIT[i]));
-            }
-            envSensorTimestamp.text(timestampStringMessage);
-            // graph panel
-            envSensorGraphContainer.html("");
-            var timestampValue = envSensorData[0][0];
-            // get only the time portion of timestampValue
-            timestampValue = timestampValue.map(function (value) {
-                var currentValue = new Date(value);
-                var hours = currentValue.getHours() < 10 ? "0" + currentValue.getHours() : currentValue.getHours();
-                var minutes = currentValue.getMinutes() < 10 ? "0" + currentValue.getMinutes() : currentValue.getMinutes();
-                return hours + ":" + minutes;
+function calculateAverage(allPowerResults){
+    let average = { active_energy: 0, active_power: 0, v_rms: 0, light_dimming_value: 0 };
+    let zeroCount = { active_energy: 0, active_power: 0, v_rms: 0, light_dimming_value: 0 };
+    allPowerResults.map((powerResult) => {
+        average.active_energy += powerResult.active_energy;
+        average.active_power += powerResult.active_power;
+        average.v_rms += powerResult.v_rms;
+        average.light_dimming_value += powerResult.light_dimming_value;
+        if(powerResult.active_energy === 0) zeroCount.active_energy++;
+        if(powerResult.active_power === 0) zeroCount.active_power++;
+        if(powerResult.v_rms === 0) zeroCount.v_rms++;
+        if(powerResult.light_dimming_value === 0) zeroCount.light_dimming_value++;
+    });
+    let total = allPowerResults.length;
+    average.active_energy = zeroCount.v_rms !== total ? parseFloat((average.active_energy / (total - zeroCount.active_energy)).toFixed(2)) : 0;
+    average.active_power = zeroCount.v_rms !== total ?  parseFloat((average.active_power / (total - zeroCount.active_power)).toFixed(2)) : 0;
+    average.v_rms = zeroCount.v_rms !== total ? parseFloat((average.v_rms / (total - zeroCount.v_rms)).toFixed(2)) : 0;
+    average.light_dimming_value = zeroCount.light_dimming_value !== total ? parseInt((average.light_dimming_value / (total - zeroCount.light_dimming_value)).toFixed(2)) : 0;
+    return average;
+}
+
+async function main() {
+    try{
+    await getGatewayList();
+    await getAllLightDevices();
+    await setZoneListSelection();
+    zoneSelection.on('change', async function () {
+        currentZoneID = $(this).val();
+        zoneSelection.attr('disabled', true);
+        if (currentZoneID !== "Select Zone" && currentZoneID !== null) {
+            currentZoneID = parseInt(currentZoneID);
+            preSelectionHidden(true);
+            loadingHidden(false);
+            displayToast("onProgress");
+            currentZoneDeviceList = allDeviceList.filter(device => device.zoneID === currentZoneID);
+            zoneDeviceBody.empty();
+            zoneGraphContainer.empty();
+            let allTableRows = [];
+            let allLatestPowerResults = [];
+            let allPowerReportPast2Hours = [];
+            let powerUnit = null;
+            currentZoneDeviceList.map(async (device,index) => {
+                await getDevicePowerInfo(device.deviceID, device.gatewayMAC).then((powerInfo) => {
+                    console.log(device.deviceID, powerInfo);
+                    let powerReport, latestPowerReport, noData = powerInfo.report.length === 0;
+                    if(noData){
+                        console.log("No power report found for device: " + device.deviceID);
+                        latestPowerReport = { active_energy: 0, active_power: 0, v_rms: 0, light_dimming_value: 0 };
+                        powerUnit = { active_energy: "kWh", active_power: "W", v_rms: "V", light_dimming_value: "%" };
+                    }else{
+                        powerReport = powerInfo.report;
+                        allPowerReportPast2Hours.push(powerReport);
+                        latestPowerReport = powerReport[powerReport.length - 1];
+                        powerUnit = powerInfo.units;
+                    }
+                    allLatestPowerResults.push(latestPowerReport);
+                    console.log("Latest power report for device: " + device.deviceID, latestPowerReport);
+                    console.log(latestPowerReport.active_energy+" "+powerUnit.active_energy, latestPowerReport.active_power+" "+powerUnit.active_power, latestPowerReport.v_rms+" "+powerUnit.v_rms, latestPowerReport.light_dimming_value+powerUnit.light_dimming_value);
+                    console.log("Power unit for device: " + device.deviceID, powerUnit);
+                    let activeEnergyDisplay = noData ? "<span class='text-decoration-style-dotted' title='No data is returned back from CMS Server for this time period'><i class='bi bi-exclamation-circle-fill text-warning'></i> N/A</span>" : latestPowerReport.active_energy+" "+powerUnit.active_energy;
+                    let activePowerDisplay = noData ? "<span class='text-decoration-underline text-decoration-style-dotted' title='No data is returned back from CMS Server for this time period'><i class='bi bi-exclamation-circle-fill text-warning'></i> N/A</span>" : latestPowerReport.active_power+" "+powerUnit.active_power;
+                    let vRMSDisplay = noData ? "<span class='text-decoration-underline text-decoration-style-dotted' title='No data is returned back from CMS Server for this time period'><i class='bi bi-exclamation-circle-fill text-warning'></i> N/A</span>" : latestPowerReport.v_rms+" "+powerUnit.v_rms;
+                    let lightDimmingValueDisplay = noData ? "<span class='text-decoration-underline text-decoration-style-dotted' title='No data is returned back from CMS Server for this time period'><i class='bi bi-exclamation-circle-fill text-warning'></i> N/A</span>" : latestPowerReport.light_dimming_value+powerUnit.light_dimming_value;
+                    allTableRows.push([index+1, device.deviceName, device.deviceID, device.gatewayName, activeEnergyDisplay, activePowerDisplay, vRMSDisplay, lightDimmingValueDisplay]);
+                });
             });
-            for (const param in GRAPHS_PARAMS) {
-                var param_idx = PARAMS.indexOf(GRAPHS_PARAMS[param]);
-                envSensorGraphContainer.append(envSensorGraphPanel(GRAPHS_TITLE[param], timestampStringMessage, PARAMS_TITLE[param_idx], timestampValue, envSensorData[param_idx][0]));
-                var ctx = document.getElementById(PARAMS_TITLE[param_idx] + "-chart").getContext('2d');
-                var chart = new Chart(ctx, chartConfig[param]);
-            }
+            let checkInterval = setInterval(() => {
+                if(allTableRows.length === currentZoneDeviceList.length){
+                    clearInterval(checkInterval);
+                    allTableRows.sort((a, b) => { return a[0] - b[0] });
+                    allTableRows.map((row) => { zoneDeviceBody.append(insertTableRow(row)); });
+                    // calculate average for the last entry
+                    let average = calculateAverage(allLatestPowerResults);
+                    console.log(average);
+                    // set display
+                    setValueDisplay(average.active_energy+" "+powerUnit.active_energy, average.active_power+" "+powerUnit.active_power, average.v_rms+" "+powerUnit.v_rms, average.light_dimming_value+powerUnit.light_dimming_value);
+
+                    // calculate average for the last 2 hours
+                    let uniqueTime = [];
+                    allPowerReportPast2Hours = allPowerReportPast2Hours.flat();
+                    allPowerReportPast2Hours.map((powerReport) => {
+                        powerReport.timestamp = Math.floor(powerReport.timestamp / 600) * 600;
+                        if (!uniqueTime.includes(powerReport.timestamp)){ uniqueTime.push(powerReport.timestamp); }
+                    });
+                    uniqueTime.sort((a, b) => { return a - b });
+                    uniqueTime = uniqueTime.slice(uniqueTime.length - 12, uniqueTime.length);
+                    let xValue = [];
+                    let averageActiveEnergyPast2Hours = [];
+                    let averageActivePowerPast2Hours = [];
+                    uniqueTime.map((time) => {
+                        let powerReport = allPowerReportPast2Hours.filter(powerReport => powerReport.timestamp === time);
+                        let avg = calculateAverage(powerReport);
+                        averageActiveEnergyPast2Hours.push(avg.active_energy);
+                        averageActivePowerPast2Hours.push(avg.active_power);
+                        xValue.push(new Date(time * 1000).toLocaleTimeString( 'th-TH', { hour: '2-digit', minute: '2-digit'}));
+                    });
+
+                    // set chart
+                    let timestampStringMessage = "As of " + datetimeTransform(new Date().toISOString());
+
+                    zoneGraphContainer.append(graphPanel("Average active energy in the past 2 hours", timestampStringMessage, "AVG_ACTIVE_ENERGY", xValue, averageActiveEnergyPast2Hours));
+                    let ctx1 = document.getElementById("AVG_ACTIVE_ENERGY-chart").getContext('2d');
+                    let _chart1 = new Chart(ctx1, chartConfig[0]);
+
+                    zoneGraphContainer.append(graphPanel("Average active power in the past 2 hours", timestampStringMessage, "AVG_ACTIVE_POWER", xValue, averageActivePowerPast2Hours));
+                    let ctx2 = document.getElementById("AVG_ACTIVE_POWER-chart").getContext('2d');
+                    let _chart2 = new Chart(ctx2, chartConfig[1]);
+
+                    loadingHidden(true);
+                    displayToast("success");
+                    zoneSelection.attr('disabled', false);
+                }
+            }, 1000);
+        }else{
+            preSelectionHidden(false);
+            loadingHidden(true);
+            zoneSelection.attr('disabled', false);
         }
     });
+    }catch(err){
+        console.error(err);
+        displayToast("failed");
+        zoneSelection.attr('disabled', false);
+    }
 }
 
 $(document).ready(main);

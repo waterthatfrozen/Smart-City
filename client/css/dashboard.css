@@ -55,6 +55,9 @@ footer{
 
 .sidebar {
     position: fixed;
+    overflow-wrap: normal;
+    overflow: auto;
+    scrollbar-width: none;
     top: 0;
     /* rtl:raw:
     right: 0;
@@ -157,4 +160,8 @@ footer{
 
 .col-w100px{
     width: 100px;
+}
+
+.text-decoration-style-dotted{
+    text-decoration: dotted;
 }
