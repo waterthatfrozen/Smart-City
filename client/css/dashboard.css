@@ -161,3 +161,7 @@ footer{
 .col-w100px{
     width: 100px;
 }
+
+.text-decoration-style-dotted{
+    text-decoration: dotted;
+}
