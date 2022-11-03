@@ -12,7 +12,11 @@ const zoneSelection = $("#zoneSelection"),
     zoneDeviceLoadingIndicator = $("#zoneDeviceLoadingIndicator"),
     zoneDeviceTable = $("#zoneDeviceTable"),
     zoneDeviceBody = $("#zoneDeviceBody"),
-    zoneDeviceCaption = $("#zoneDeviceCaption");
+    zoneDeviceCaption = $("#zoneDeviceCaption"),
+    timeAverageActiveEnergy = $("#timeAverageActiveEnergy"),
+    timeAverageActivePower = $("#timeAverageActivePower"),
+    timeAverageVRMS = $("#timeAverageVRMS"),
+    timeAveragePower = $("#timeAveragePower");
 const toastElList = [].slice.call(document.querySelectorAll('.toast'));
 const toastList = toastElList.map(function (toastEl) {
     return new bootstrap.Toast(toastEl)
@@ -25,16 +29,30 @@ let allZoneList = [];
 let allDeviceList = [];
 let allGatewayList = [];
 
+function setValueDisplay(activeEnergy, activePower, vRMS, power){
+    currentAverageActiveEnergyValue.text(activeEnergy);
+    currentAverageActivePowerValue.text(activePower);
+    currentAverageVRMSValue.text(vRMS);
+    currentAveragePowerValue.text(power);
+}
+
+function setTimeAverageDisplay(timestamp){
+    timeAverageActiveEnergy.text(timestamp);
+    timeAverageActivePower.text(timestamp);
+    timeAverageVRMS.text(timestamp);
+    timeAveragePower.text(timestamp);
+}
+
 function preSelectionHidden(hidden) {
     zonePreselectionTimestamp.attr('hidden', hidden);
     graphPreselectionContainer.attr('hidden', hidden);
     zoneDevicePreselection.attr('hidden', hidden);
     zoneDeviceCaption.text("Please select a zone first");
     if(!hidden){
-        currentAverageActiveEnergyValue.text("---");
-        currentAverageActivePowerValue.text("---");
-        currentAverageVRMSValue.text("---");
-        currentAveragePowerValue.text("---");
+        setValueDisplay("---", "---", "---", "---");
+        setTimeAverageDisplay("---");
+        zoneGraphContainer.empty();
+        zoneDeviceBody.empty();
     }
 }
 
@@ -44,10 +62,8 @@ function loadingHidden(hidden) {
     zoneDeviceLoadingIndicator.attr('hidden', hidden);
     zoneDeviceCaption.text("Finished loading device list in this zone");
     if(!hidden){
-        currentAverageActiveEnergyValue.text("Loading...");
-        currentAverageActivePowerValue.text("Loading...");
-        currentAverageVRMSValue.text("Loading...");
-        currentAveragePowerValue.text("Loading...");
+        setValueDisplay("Loading...", "Loading...", "Loading...", "Loading...");
+        setTimeAverageDisplay("Loading...");
         zoneDeviceCaption.text("Loading device list...");
     }
 }
@@ -60,13 +76,6 @@ function displayToast(toastType) {
     } else if (toastType === "failed") {
         toastList[toastList.findIndex(x => x._element.id === "failedToast")].show();
     }
-}
-
-function setValueDisplay(activeEnergy, activePower, vRMS, power){
-    currentAverageActiveEnergyValue.text(activeEnergy);
-    currentAverageActivePowerValue.text(activePower);
-    currentAverageVRMSValue.text(vRMS);
-    currentAveragePowerValue.text(power);
 }
 
 function insertTableRow(data) {
@@ -319,10 +328,6 @@ async function main() {
                     clearInterval(checkInterval);
                     allTableRows.sort((a, b) => { return a[0] - b[0] });
                     allTableRows.map((row) => { zoneDeviceBody.append(insertTableRow(row)); });
-                    // calculate average for the last entry
-                    let average = calculateAverage(allLatestPowerResults);
-                    // set display
-                    setValueDisplay(average.active_energy+" "+powerUnit.active_energy, average.active_power+" "+powerUnit.active_power, average.v_rms+" "+powerUnit.v_rms, average.light_dimming_value+powerUnit.light_dimming_value);
 
                     // calculate average for the last 2 hours
                     let uniqueTime = [];
@@ -340,21 +345,35 @@ async function main() {
 
                     console.log("Unique time: ",uniqueTime);
                     console.log(allPowerReportPast2Hours);
+
+                    // get average for each unique time in the past 2 hours
                     let xValue = [];
                     let averageActiveEnergyPast2Hours = [];
                     let averageActivePowerPast2Hours = [];
+                    let averageVRMSPast2Hours = [];
+                    let averageLightDimmingValuePast2Hours = [];
                     uniqueTime.forEach((time) => {
                         let powerReport = allPowerReportPast2Hours.filter(powerReport => powerReport.timestamp === time);
                         let avg = calculateAverage(powerReport);
                         averageActiveEnergyPast2Hours.push(avg.active_energy);
                         averageActivePowerPast2Hours.push(avg.active_power);
+                        averageVRMSPast2Hours.push(avg.v_rms);
+                        averageLightDimmingValuePast2Hours.push(avg.light_dimming_value);
                         xValue.push(new Date(time * 1000).toLocaleTimeString( 'th-TH', { hour: '2-digit', minute: '2-digit'}));
                     });
                     console.log("xValue: ",xValue);
                     console.log("averageActiveEnergyPast2Hours: ",averageActiveEnergyPast2Hours);
                     console.log("averageActivePowerPast2Hours: ",averageActivePowerPast2Hours);
+                    let lastAverageActiveEnergy = averageActiveEnergyPast2Hours[averageActiveEnergyPast2Hours.length - 1];
+                    let lastAverageActivePower = averageActivePowerPast2Hours[averageActivePowerPast2Hours.length - 1];
+                    let lastAverageVRMS = averageVRMSPast2Hours[averageVRMSPast2Hours.length - 1];
+                    let lastAverageLightDimmingValue = averageLightDimmingValuePast2Hours[averageLightDimmingValuePast2Hours.length - 1];
+                    console.log("last unique time: ",uniqueTime[uniqueTime.length - 1]);
+                    // set display of average in the last 10 minutes
+                    setTimeAverageDisplay(xValue[xValue.length - 1]);
+                    setValueDisplay(lastAverageActiveEnergy+" "+powerUnit.active_energy, lastAverageActivePower+" "+powerUnit.active_power, lastAverageVRMS+" "+powerUnit.v_rms, lastAverageLightDimmingValue+powerUnit.light_dimming_value);
 
-                    // set chart
+                    // set chart display
                     chartConfig = [];
                     let timestampStringMessage = "As of " + datetimeTransform(new Date().toISOString());
                     zoneGraphContainer.append(graphPanel("Average active energy in the past 2 hours", timestampStringMessage, "AVG_ACTIVE_ENERGY", xValue, averageActiveEnergyPast2Hours));
