@@ -163,5 +163,5 @@ footer{
 }
 
 .text-decoration-style-dotted{
-    text-decoration: dotted;
+    text-decoration: dotted underline black 1px;
 }
