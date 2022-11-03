@@ -219,6 +219,7 @@ function main() {
                 var minutes = currentValue.getMinutes() < 10 ? "0" + currentValue.getMinutes() : currentValue.getMinutes();
                 return hours + ":" + minutes;
             });
+            chartConfig = [];
             for (const param in GRAPHS_PARAMS) {
                 var param_idx = PARAMS.indexOf(GRAPHS_PARAMS[param]);
                 envSensorGraphContainer.append(envSensorGraphPanel(GRAPHS_TITLE[param], timestampStringMessage, PARAMS_TITLE[param_idx], timestampValue, envSensorData[param_idx][0]));
