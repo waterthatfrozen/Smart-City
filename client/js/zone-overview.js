@@ -204,7 +204,9 @@ async function getDevicePowerInfo(currentDeviceID, currentGatewayMAC){
     let data = null;
     let endTime = parseInt(((new Date().getTime())/1000).toFixed(0));
     let startTime = endTime - 7200;
+    console.log(startTime, endTime);
     await sendGetPowerCommand(currentDeviceID, currentGatewayMAC);
+    setTimeout(() => {}, 1000);
     await fetch(`/api/getLightPowerStatusReportbyDeviceandRange?device_id=${currentDeviceID}&start=${startTime}&end=${endTime}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
@@ -282,10 +284,11 @@ function calculateAverage(allPowerResults){
         if(powerResult.v_rms === 0) zeroCount.v_rms++;
         if(powerResult.light_dimming_value === 0) zeroCount.light_dimming_value++;
     });
-    average.active_energy = parseFloat((average.active_energy / (allPowerResults.length - zeroCount.active_energy)).toFixed(2));
-    average.active_power = parseFloat((average.active_power / (allPowerResults.length - zeroCount.active_power)).toFixed(2));
-    average.v_rms = parseFloat((average.v_rms / (allPowerResults.length - zeroCount.v_rms)).toFixed(2));
-    average.light_dimming_value = parseInt((average.light_dimming_value / (allPowerResults.length - zeroCount.light_dimming_value)).toFixed(2));
+    let total = allPowerResults.length;
+    average.active_energy = zeroCount.v_rms !== total ? parseFloat((average.active_energy / (total - zeroCount.active_energy)).toFixed(2)) : 0;
+    average.active_power = zeroCount.v_rms !== total ?  parseFloat((average.active_power / (total - zeroCount.active_power)).toFixed(2)) : 0;
+    average.v_rms = zeroCount.v_rms !== total ? parseFloat((average.v_rms / (total - zeroCount.v_rms)).toFixed(2)) : 0;
+    average.light_dimming_value = zeroCount.light_dimming_value !== total ? parseInt((average.light_dimming_value / (total - zeroCount.light_dimming_value)).toFixed(2)) : 0;
     return average;
 }
 
@@ -306,17 +309,32 @@ async function main() {
             zoneDeviceBody.empty();
             zoneGraphContainer.empty();
             let allTableRows = [];
-            let allPowerResults = [];
+            let allLatestPowerResults = [];
             let allPowerReportPast2Hours = [];
             let powerUnit = null;
             currentZoneDeviceList.map(async (device,index) => {
-                await getDevicePowerInfo(device.deviceID, device.gatewayMAC).then(async (powerInfo) => {
-                    let powerReport = powerInfo.report;
-                    allPowerReportPast2Hours.push(powerReport);
-                    powerReport = powerReport[powerReport.length - 1];
-                    powerUnit = powerInfo.units;
-                    allPowerResults.push(powerReport);
-                    allTableRows.push([ index+1, device.deviceName, device.deviceID, device.gatewayName, powerReport.active_energy+" "+powerUnit.active_energy, powerReport.active_power+" "+powerUnit.active_power, powerReport.v_rms+" "+powerUnit.v_rms, powerReport.light_dimming_value+powerUnit.light_dimming_value ]);
+                await getDevicePowerInfo(device.deviceID, device.gatewayMAC).then((powerInfo) => {
+                    console.log(device.deviceID, powerInfo);
+                    let powerReport, latestPowerReport, noData = powerInfo.report.length === 0;
+                    if(noData){
+                        console.log("No power report found for device: " + device.deviceID);
+                        latestPowerReport = { active_energy: 0, active_power: 0, v_rms: 0, light_dimming_value: 0 };
+                        powerUnit = { active_energy: "kWh", active_power: "W", v_rms: "V", light_dimming_value: "%" };
+                    }else{
+                        powerReport = powerInfo.report;
+                        allPowerReportPast2Hours.push(powerReport);
+                        latestPowerReport = powerReport[powerReport.length - 1];
+                        powerUnit = powerInfo.units;
+                    }
+                    allLatestPowerResults.push(latestPowerReport);
+                    console.log("Latest power report for device: " + device.deviceID, latestPowerReport);
+                    console.log(latestPowerReport.active_energy+" "+powerUnit.active_energy, latestPowerReport.active_power+" "+powerUnit.active_power, latestPowerReport.v_rms+" "+powerUnit.v_rms, latestPowerReport.light_dimming_value+powerUnit.light_dimming_value);
+                    console.log("Power unit for device: " + device.deviceID, powerUnit);
+                    let activeEnergyDisplay = noData ? "<span class='text-decoration-style-dotted' title='No data is returned back from CMS Server for this time period'><i class='bi bi-exclamation-circle-fill text-warning'></i> N/A</span>" : latestPowerReport.active_energy+" "+powerUnit.active_energy;
+                    let activePowerDisplay = noData ? "<span class='text-decoration-underline text-decoration-style-dotted' title='No data is returned back from CMS Server for this time period'><i class='bi bi-exclamation-circle-fill text-warning'></i> N/A</span>" : latestPowerReport.active_power+" "+powerUnit.active_power;
+                    let vRMSDisplay = noData ? "<span class='text-decoration-underline text-decoration-style-dotted' title='No data is returned back from CMS Server for this time period'><i class='bi bi-exclamation-circle-fill text-warning'></i> N/A</span>" : latestPowerReport.v_rms+" "+powerUnit.v_rms;
+                    let lightDimmingValueDisplay = noData ? "<span class='text-decoration-underline text-decoration-style-dotted' title='No data is returned back from CMS Server for this time period'><i class='bi bi-exclamation-circle-fill text-warning'></i> N/A</span>" : latestPowerReport.light_dimming_value+powerUnit.light_dimming_value;
+                    allTableRows.push([index+1, device.deviceName, device.deviceID, device.gatewayName, activeEnergyDisplay, activePowerDisplay, vRMSDisplay, lightDimmingValueDisplay]);
                 });
             });
             let checkInterval = setInterval(() => {
@@ -325,7 +343,8 @@ async function main() {
                     allTableRows.sort((a, b) => { return a[0] - b[0] });
                     allTableRows.map((row) => { zoneDeviceBody.append(insertTableRow(row)); });
                     // calculate average for the last entry
-                    let average = calculateAverage(allPowerResults);
+                    let average = calculateAverage(allLatestPowerResults);
+                    console.log(average);
                     // set display
                     setValueDisplay(average.active_energy+" "+powerUnit.active_energy, average.active_power+" "+powerUnit.active_power, average.v_rms+" "+powerUnit.v_rms, average.light_dimming_value+powerUnit.light_dimming_value);
 
