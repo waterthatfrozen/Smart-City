@@ -198,12 +198,14 @@ async function getDevicePowerInfo(currentDeviceID, currentGatewayMAC){
     let data = null;
     let endTime = parseInt(((new Date().getTime())/1000).toFixed(0));
     let startTime = endTime - 7200;
-    await sendGetPowerCommand(currentDeviceID, currentGatewayMAC);
-    await fetch(`/api/getLightPowerStatusReportbyDeviceandRange?device_id=${currentDeviceID}&start=${startTime}&end=${endTime}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-    }).then(async response => {
-        if(response.status === 200){ data = await response.json(); }
+    await sendGetPowerCommand(currentDeviceID, currentGatewayMAC).then(async () => {
+        await fetch(`/api/getLightPowerStatusReportbyDeviceandRange?device_id=${currentDeviceID}&start=${startTime}&end=${endTime}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        }).then(async response => {
+            if(response.status === 200){ data = await response.json(); }
+        }).catch(error => { console.error(error); throw error; });
+        return data;
     }).catch(error => { console.error(error); throw error; });
     return data;
 }
@@ -365,13 +367,17 @@ async function main() {
                     console.log("averageActiveEnergyPast2Hours: ",averageActiveEnergyPast2Hours);
                     console.log("averageActivePowerPast2Hours: ",averageActivePowerPast2Hours);
                     let lastAverageActiveEnergy = averageActiveEnergyPast2Hours[averageActiveEnergyPast2Hours.length - 1];
+                    lastAverageActiveEnergy = lastAverageActiveEnergy === undefined ? "N/A" : lastAverageActiveEnergy+" "+powerUnit.active_energy;
                     let lastAverageActivePower = averageActivePowerPast2Hours[averageActivePowerPast2Hours.length - 1];
+                    lastAverageActivePower = lastAverageActivePower === undefined ? "N/A" : lastAverageActivePower+" "+powerUnit.active_power;
                     let lastAverageVRMS = averageVRMSPast2Hours[averageVRMSPast2Hours.length - 1];
+                    lastAverageVRMS = lastAverageVRMS === undefined ? "N/A" : lastAverageVRMS+" "+powerUnit.v_rms;
                     let lastAverageLightDimmingValue = averageLightDimmingValuePast2Hours[averageLightDimmingValuePast2Hours.length - 1];
+                    lastAverageLightDimmingValue = lastAverageLightDimmingValue === undefined ? "N/A" : lastAverageLightDimmingValue+" "+powerUnit.light_dimming_value;
                     console.log("last unique time: ",uniqueTime[uniqueTime.length - 1]);
                     // set display of average in the last 10 minutes
                     setTimeAverageDisplay(xValue[xValue.length - 1]);
-                    setValueDisplay(lastAverageActiveEnergy+" "+powerUnit.active_energy, lastAverageActivePower+" "+powerUnit.active_power, lastAverageVRMS+" "+powerUnit.v_rms, lastAverageLightDimmingValue+powerUnit.light_dimming_value);
+                    setValueDisplay(lastAverageActiveEnergy, lastAverageActivePower, lastAverageVRMS, lastAverageLightDimmingValue);
 
                     // set chart display
                     chartConfig = [];

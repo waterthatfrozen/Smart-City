@@ -182,8 +182,24 @@ async function getSensorValuebyRange(req, res){
     }
 }
 
+async function getAllIluminanceSensorDevices(_req,res){
+    let devices = [];
+    for (const deviceID of deviceIDPrefixes) {
+        let currentDeviceID = deviceID + "0CE500";
+        let currentLightDeviceID = deviceID + "0CEF00";
+        let currentLightDeviceName = await getDeviceLabel(currentLightDeviceID);
+        devices.push({
+            sensorDeviceID: currentDeviceID,
+            lightDeviceID: currentLightDeviceID,
+            lightDeviceName: currentLightDeviceName
+        });
+    }
+    res.status(200).send({illuminanceDevices: devices});
+}
+
 exports.getSensorValuebyRange = getSensorValuebyRange;
 exports.getSensorValueByDeviceIDandRange = getSensorValueByDeviceIDandRange;
+exports.getAllIluminanceSensorDevices = getAllIluminanceSensorDevices;
 
 exports.getLastLumianceSensorValue = function (_req, res) {
     res.status(200).send({

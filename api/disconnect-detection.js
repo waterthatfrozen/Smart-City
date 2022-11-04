@@ -216,7 +216,7 @@ exports.queryGatewayDisconnectLog = function (req, res) {
     queryGatewayDisconnectLog(queryStartTime, queryEndTime).then(function (result) {
         res.status(200).send({
             gatewayDisconnectLog: result,
-            queryTime: bangkokTimeString(new Date().getTime() / 1000)
+            queryTime: parseInt(((new Date().getTime()) / 1000).toFixed(0))
         });
     }).catch(function (error) {
         res.status(500).send({
@@ -236,7 +236,7 @@ exports.querySensorDisconnectLog = function (req, res) {
     getSensorDisconnectLog(queryStartTime, queryEndTime).then(function (result) {
         res.status(200).send({
             sensorDisconnectLog: result,
-            queryTime: bangkokTimeString(new Date().getTime() / 1000)
+            queryTime: parseInt(((new Date().getTime()) / 1000).toFixed(0))
         });
     }).catch(function (error) {
         res.status(500).send({

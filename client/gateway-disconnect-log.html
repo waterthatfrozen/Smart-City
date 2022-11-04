@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.88.1">
-    <title>Zone Overview | Smart City</title>
+    <title>Gateway Disconnection Log | Smart City</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/dashboard/">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,7 +27,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <script src="js/datetime-update.js" defer></script>
     <script src="js/sidebar.js" defer></script>
-    <script src="js/zone-overview-t.js" defer></script>
+    <script src="js/gateway-disconnect-log.js" defer></script>
 </head>
 <body>
 
@@ -54,9 +54,9 @@
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div
                 class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-1 mb-2 border-bottom">
-                <h2 id="header">Zone Overview</h2>
+                <h2 id="header">Gateway Disconnection Log</h2>
                 <div class="btn-group">
-                    <button type="button" disabled class="btn btn-sm btn-secondary" id="loading-timestamp">
+                    <button type="button" disabled class="btn btn-sm btn-secondary" id="queryTimestampText">
                         <div class="spinner-grow spinner-grow-sm" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div> Loading timestamp...
@@ -64,48 +64,21 @@
                     <button class="btn btn-sm btn-secondary" onclick="window.location.reload();">Refresh</button>
                 </div>
             </div>
-            <h4 class="pt-2">Zone List</h4>
-            <div class="row row-cols-2 g-3 mb-3">
-                <div class="col">
-                    <div class="form-floating">
-                        <select class="form-select" id="zoneSelection" aria-label="Select Zone" disabled>
-                            <option selected disabled>Loading...</option>
-                        </select>
-                        <label for="zoneSelection">Click this to select zone</label>
+            <p>Gateway disconnection log is sorted from newest to oldest.</p>
+            <div class="row row-cols-1 row-cols-md-3 g-3 mt-0 pb-3" id="gatewayDisconnectLogContainer">
+                <div class="w-100" id="logLoadingContainer">
+                    <div class="card" id="logLoadingCard">
+                        <div class="card-body">
+                            <p class="card-text" id="logLoadingText">
+                                <div id="logLoadingSpinner" class="spinner-grow spinner-grow-sm"
+                                    role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div> Loading all gateway disconnection log...
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
-                <!-- Create Responsive Table -->
-                <div class="table-responsive rounded-3">
-                    <table class="table table-striped" id="value-table" aria-describedby="table-caption">
-                            <tr id="value-table-header" class="table-dark">
-                                <th class="col-w100px">Timestamp</th>
-                                <th>Temperature</th>
-                                <th>Active Power</th>
-                                <th>Energy Active</th>
-                                <th>V RMS</th>
-                            
-                            </tr>
-                        </thead>
-                        <tbody id="table-body">
-                            <tr id="value-loading">
-                                <td colspan="18" class="text-white p-3 bg-secondary">
-                                    <div class="spinner-grow spinner-grow-sm" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div> Loading data...</td>
-                            </tr>
-                            <tr class="bg-danger">
-                                <td colspan="18" class="text-white p-3" id="value-error" hidden><i class="bi bi-exclamation-circle-fill"></i> An error occurred.</td>
-                            </tr>
-                            <tr class="bg-info" id="value-nodata" hidden>
-                                <td colspan="18" class="p-3 text-white"><i class="bi bi-exclamation-circle-fill"></i> No data recorded.</td>
-                            </tr>
-                        </tbody>
-                        <caption id="table-caption">
-                            Loading IoT Sensor Data...
-                        </caption>
-                    </table>
-                </div>
         </main>
     </div>
     </div>

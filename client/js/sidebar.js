@@ -16,13 +16,12 @@ const SIDEBAR_LINK = [
     heading: 'SYSTEM STATUS',
     links: [{ link: '/device-connection', text: 'Gateway Status' },
     { link: '/device-events', text: 'Device Events' },
+    { link: '/gateway-disconnect-log', text: 'Disconnection Log' },
     { link: '/service-status', text: 'CMS Services Status' }]
 }, {
     heading: 'TABLE & GRAPH',
     links: [{ link: '/system-overview-t', text: 'System Overview_T' },
-    { link: '/zone-overview-t', text: 'Zone Overview_T' },
     { link: '/illuminance-g', text: 'Illuminance_G' },
-    { link: '/disconnectlog-t', text: 'DisconnectLog_T' },
     { link: '/export-csv', text: 'Export_CSV' }]
 },{
     heading: 'ABOUT',

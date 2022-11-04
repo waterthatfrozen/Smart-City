@@ -134,32 +134,27 @@ async function getLightPowerStatusReportbyDeviceandRange(req,res) {
                 "Authorization": "Bearer " + token
             };
             const url = `${base_url}/reports/devices/${device_id}/objects/lamp_monitor?from=${start_time}&to=${end_time}`;
-            await axios.get(url, {
-                headers: head
-            }).then(response => {
-                if (response.status === 200) {
-                    let data = response.data.values;
-                    if(data.length > 0){
-                        data = data.splice(1);
-                        let report_result = [];
-                        data.map((row) => {
-                            let report_row = {
-                                timestamp: (new Date(row[0]).getTime())/ 1000,
-                                light_dimming_value: parseInt(row[2]),
-                                active_power: parseFloat(row[3].toFixed(2)),
-                                active_energy: parseFloat((row[5]/1000).toFixed(2)),
-                                v_rms: parseFloat(row[7].toFixed(2))
-                            };
-                            report_result.push(report_row);
-                        });
-                        res.status(200).send({device_id: device_id,report: report_result,units: units});
-                    }else{
-                        res.status(200).send({report: []});
-                    }
+            let response = await axios.get(url, { headers: head });
+            if (response.status === 200) {
+                let data = response.data.values;
+                if(data.length > 0){
+                    data = data.splice(1);
+                    let report_result = [];
+                    data.map((row) => {
+                        let report_row = {
+                            timestamp: (new Date(row[0]).getTime()/ 1000),
+                            light_dimming_value: parseInt(row[2]),
+                            active_power: parseFloat(row[3].toFixed(2)),
+                            active_energy: parseFloat((row[5]/1000).toFixed(2)),
+                            v_rms: parseFloat(row[7].toFixed(2))
+                        };
+                        report_result.push(report_row);
+                    });
+                    res.status(200).send({device_id: device_id,report: report_result, units: units});
+                }else{
+                    res.status(200).send({report: []});
                 }
-            }).catch(error => {
-                res.status(500).send({error: error});
-            });
+            }
         } catch (error) {
             res.status(500).send({error: error});
         }
