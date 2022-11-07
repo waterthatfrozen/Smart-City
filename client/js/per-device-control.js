@@ -66,6 +66,18 @@ function loadingDeviceInfoDisplay() {
     $("#currentConnectionStatus").text("Loading...");
 }
 
+function disableAllSelections() {
+    console.log("disableAllSelections");
+    zoneSelection.attr('disabled', true);
+    deviceSelection.attr('disabled', true);
+}
+
+function enableAllSelections() {
+    console.log("enableAllSelections");
+    zoneSelection.attr('disabled', false);
+    deviceSelection.attr('disabled', false);
+}
+
 function enableAllButtons() {
     $("#setDimming0").attr('disabled', false);
     $("#setDimming25").attr('disabled', false);
@@ -177,7 +189,6 @@ async function setDeviceInfo(currentDeviceID, currentDeviceLabel, currentGateway
             $("#currentActiveEnergyValue").text(data.report.active_energy + " " + data.units.active_energy);
             $("#currentActivePowerValue").text(data.report.active_power + " " + data.units.active_power);
             $("#currentVRMSValue").text(data.report.v_rms + " " + data.units.v_rms);
-            enableAllButtons();
         });
     } catch (error) {
         console.log(error);
@@ -196,12 +207,10 @@ async function setConnectionStatusDisplay(currentDeviceMAC, currentGatewayMAC){
                 return response.json();
             }
         }).then(data => {
+            console.log(data.status);
             $("#currentConnectionStatus").html(connectionString(data.status));
-            if(data.status === "disconnected"){disableAllButtons();}
+            if(data.status === "connected"){enableAllButtons();} else{disableAllButtons();}
             return data.status;
-        }).then((status) => {
-            console.log(status);
-            return status;
         });
     }catch(error){
         console.log(error);
@@ -219,11 +228,9 @@ function displayToast(toastType) {
 }
 
 function connectionString(connected) {
-    if (connected) {
-        return "<span class='text-success'><i class='bi bi-cloud-check-fill'></i> Connected</span>";
-    } else {
-        return "<span class='text-danger fw-bold'><i class='bi bi-cloud-slash-fill'></i> Disconnected</span>";
-    }
+    if (connected === "connected") { return "<span class='text-success'><i class='bi bi-cloud-check-fill'></i> Connected</span>";} 
+    else if (connected === "disconnected"){ return "<span class='text-danger fw-bold'><i class='bi bi-cloud-slash-fill'></i> Disconnected</span>"; }
+    else { return "<span class='text-primary fw-bold'><i class='bi bi-cloud-fill'></i> Unknown... </span>"; }
 }
 
 async function setNewDimmingValue(currentDeviceID, currentDeviceLabel, currentDeviceMAC, currentGatewayMAC, newDimmingValue) {
@@ -272,6 +279,7 @@ function dimming_main() {
         setDeviceListSelection(currentZoneID);
     });
     deviceSelection.on('change', function () {
+        disableAllSelections();
         currentSelection = $(this).val();
         if(currentSelection === ""){resetDeviceInfoDisplay(); return;}
         currentSelection = JSON.parse(currentSelection);
@@ -281,6 +289,7 @@ function dimming_main() {
         currentDeviceLabel = $(this).find(':selected').text();
         setDeviceInfo(currentDeviceID, currentDeviceLabel, currentGatewayMAC, {isNew: false, newValue: null});
         setConnectionStatusDisplay(currentDeviceMAC, currentGatewayMAC);
+        enableAllSelections();
     });
     $("#setDimming0").on('click', () => { setNewDimmingValue(currentDeviceID, currentDeviceLabel, currentDeviceMAC, currentGatewayMAC, 0); });
     $("#setDimming25").on('click', () => { setNewDimmingValue(currentDeviceID,currentDeviceLabel, currentDeviceMAC, currentGatewayMAC, 25); });

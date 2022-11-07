@@ -4,6 +4,7 @@ const SIDEBAR_LINK = [
     links: [{ link: '/dashboard', text: 'System Overview' },
         { link: '/zone-overview', text: 'Zone Overview' },
         { link: '/illuminance-sensor', text: 'Illuminance Report' },
+        { link: '/environment-report', text: 'Environment Report' },
         { link: '/maps-view', text: 'Device Maps' }]
 }, {
     heading: 'CONTROL',
@@ -20,8 +21,7 @@ const SIDEBAR_LINK = [
     { link: '/service-status', text: 'CMS Services Status' }]
 }, {
     heading: 'TABLE & GRAPH',
-    links: [{ link: '/system-overview-t', text: 'System Overview_T' },
-    { link: '/illuminance-g', text: 'Illuminance_G' },
+    links: [{ link: '/illuminance-g', text: 'Illuminance_G' },
     { link: '/export-csv', text: 'Export_CSV' }]
 },{
     heading: 'ABOUT',

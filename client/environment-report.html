@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.88.1">
+    <title>System Overview | Smart City</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/dashboard/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"
+        defer>
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="js/datetime-update.js" defer></script>
+    <script src="js/sidebar.js" defer></script>
+    <script src="js/environment-report.js" defer></script>
+</head>
+<body>
+
+    <header class="navbar navbar-dark sticky-top bg-success flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/dashboard">Smart City Dashboard</a>
+        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
+            data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="form-control bg-dark text-white w-100" id="datetime-display">&nbsp;</div>
+        <div class="navbar-nav">
+            <div class="nav-item text-nowrap">
+                <a class="nav-link px-3" href="/logout" id="sign-out">Sign out</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"></nav>
+        </div>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div
+                class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-1 mb-2 border-bottom">
+                <h2 id="header">Environment Report</h2>
+                <button class="btn btn-sm btn-secondary" onclick="window.location.reload();">Refresh</button>
+            </div>
+
+            <h5 class="pt-2"><i class="bi bi-calendar-week"></i> Search Range</h5>
+            <div class="row row-cols-1 row-cols-md-3 g-3 mb-1">
+                <div class="col col-md-10">
+                    <div class="row row-cols-1 row-cols-md-2 g-2">
+                        <div class="col">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Start Time</span>
+                                <input type="datetime-local" title="Start Time" class="form-control" id="searchStartTime" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" required>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">End Time</span>
+                                <input type="datetime-local" title="End Time" class="form-control" id="searchEndTime" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col col-md-2">
+                    <button type="submit" class="btn btn-primary w-100" id="searchButton"><i class="bi bi-search"></i> Search</button>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-3 g-3 mt-0" id="dataInitialize">
+                <div class="w-100">
+                    <div class="card alert-warning">
+                        <div class="card-body">
+                            <p class="card-text">
+                                Please select start and end time, and click search button to show the environment data report.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-3 g-3 mt-0" id="dataError" hidden>
+                <div class="w-100">
+                    <div class="card alert-danger">
+                        <div class="card-body">
+                            <p class="card-text" id="dataErrorText"><i class="bi bi-exclamation-circle-fill"></i> Error while loading data. Please try again later.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-3 g-3 mt-0" id="dataNodata" hidden>
+                <div class="w-100">
+                    <div class="card alert-primary">
+                        <div class="card-body">
+                            <p class="card-text"><i class="bi bi-info-circle-fill"></i> No environmental data found in the selected range.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-3 g-3 mt-0 pb-3" id="dataLoading" hidden>
+                <div class="w-100">
+                    <div class="card alert-secondary">
+                        <div class="card-body">
+                            <p class="card-text">
+                                <div id="logLoadingSpinner" class="spinner-grow spinner-grow-sm"
+                                    role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div> Loading environmental data in the selected range...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Responsive Table -->
+            <div class="table-responsive rounded-3" id="reportTableContainer" hidden>
+                <table class="table table-striped" id="reportTable" aria-describedby="tableCaption">
+                        <tr id="tableHeader" class="table-dark">
+                            <th>Timestamp</th>
+                            <th>Temperature</th>
+                            <th>Humidity</th>
+                            <th>Wind Velocity</th>
+                            <th>Wind Direction</th>
+                            <th>Illuminance</th>
+                            <th>Rain Level</th>
+                            <th>Air Pressure</th>
+                            <th>Ultra Violet A</th>
+                            <th>Ultra Violet B</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportTableBody">
+                    </tbody>
+                    <caption id="reportTableCaption"></caption>
+                </table>
+            </div>
+
+        </main>
+    </div>
+    </div>
+</body>
+
+</html>
