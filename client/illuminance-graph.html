@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.88.1">
-    <title>Smart City Dashboard</title>
+    <title>Illuminance Graph | Smart City Dashboard</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/dashboard/">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,26 +27,12 @@
         integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <script src="js/datetime-update.js" defer></script>
-    <script src="js/illuminance-g.js" defer></script>
+    <script src="js/illuminance-graph.js" defer></script>
     <script src="js/sidebar.js" defer></script>
 </head>
 
 <body>
-
-    <header class="navbar navbar-dark sticky-top bg-success flex-md-nowrap p-0 shadow">
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/dashboard">Smart City Dashboard</a>
-        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
-            data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
-            aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="form-control bg-dark text-white w-100" id="datetime-display">&nbsp;</div>
-        <div class="navbar-nav">
-            <div class="nav-item text-nowrap">
-                <a class="nav-link px-3" href="/logout" id="sign-out">Sign out</a>
-            </div>
-        </div>
-    </header>
+    <header class="navbar navbar-dark sticky-top bg-success flex-md-nowrap p-0 shadow"></header>
 
     <div class="container-fluid">
         <div class="row">
@@ -58,18 +44,10 @@
             <div
                 class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-1 mb-2 border-bottom">
                 <h2 id="header">Illuminance Graph</h2>
-                <div class="btn-group">
-                    <button type="button" disabled class="btn btn-sm btn-secondary" id="env-sensor-timestamp">
-                        <div class="spinner-grow spinner-grow-sm" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div> Loading timestamp...
-                    </button>
-                    <button class="btn btn-sm btn-secondary" onclick="window.location.reload();">Refresh</button>
-                </div>
+                <button class="btn btn-sm btn-secondary" onclick="window.location.reload();">Refresh</button>
             </div>
 
-            <h4 class="pt-2">Device List</h4>
-            <div class="row row-cols-2 g-3 mb-3">
+            <div class="row row-cols-2 g-3 mb-1">
                 <div class="col">
                     <div class="form-floating">
                         <select class="form-select" id="zoneSelection" aria-label="Select Zone" disabled>
@@ -78,23 +56,37 @@
                         <label for="zoneSelection">Click this to select zone</label>
                     </div>
                 </div>
-                <div class="col">
-                    <div class="form-floating">
-                        <select class="form-select" id="deviceSelection" aria-label="Select Device" disabled>
-                            <option selected disabled>- Select Zone First -</option>
-                        </select>
-                        <label for="deviceSelection">Click this to select device</label>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-3 g-3 mt-0" id="dataInitialize">
+                <div class="w-100">
+                    <div class="card alert-warning">
+                        <div class="card-body">
+                            <p class="card-text">
+                                Please select a zone first.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="row row-cols-1 row-cols-md-1 g-3 m-1" id="env-sensor-graph-container">
-                <!-- loading indicator -->
-                <div class="w-100" id="graph-loading-container">
-                    <div class="card" id="graph-loading-card">
+            <div class="row row-cols-1 row-cols-md-3 g-3 mt-0" id="dataError" hidden>
+                <div class="w-100">
+                    <div class="card alert-danger">
                         <div class="card-body">
-                            <p class="card-text" id="graph-loading-text">
-                                <div id="graph-loading-spinner" class="spinner-grow spinner-grow-sm" role="status">
+                            <p class="card-text" id="dataErrorText"><i class="bi bi-exclamation-circle-fill"></i> Error while loading data. Please try again later.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-3 g-3 mt-0 pb-3" id="dataLoading" hidden>
+                <div class="w-100">
+                    <div class="card alert-secondary">
+                        <div class="card-body">
+                            <p class="card-text">
+                                <div id="logLoadingSpinner" class="spinner-grow spinner-grow-sm"
+                                    role="status">
                                     <span class="visually-hidden">Loading...</span>
                                 </div> Loading graph...
                             </p>
@@ -102,6 +94,8 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row row-cols-1 row-cols-md-2 g-3 mt-1 mb-3 pb-3" id="graphContainer"></div>
         </main>
     </div>
     </div>

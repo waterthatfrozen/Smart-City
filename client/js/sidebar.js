@@ -5,6 +5,7 @@ const SIDEBAR_LINK = [
         { link: '/zone-overview', text: 'Zone Overview' },
         { link: '/illuminance-sensor', text: 'Illuminance Report' },
         { link: '/environment-report', text: 'Environment Report' },
+        { link: '/illuminance-graph', text: 'Illuminance Graph' },
         { link: '/maps-view', text: 'Device Maps' }]
 }, {
     heading: 'CONTROL',
@@ -19,10 +20,6 @@ const SIDEBAR_LINK = [
     { link: '/device-events', text: 'Device Events' },
     { link: '/gateway-disconnect-log', text: 'Disconnection Log' },
     { link: '/service-status', text: 'CMS Services Status' }]
-}, {
-    heading: 'TABLE & GRAPH',
-    links: [{ link: '/illuminance-g', text: 'Illuminance_G' },
-    { link: '/export-csv', text: 'Export_CSV' }]
 },{
     heading: 'ABOUT',
     links: [{ link: '/about-us', text: 'About Us' }]

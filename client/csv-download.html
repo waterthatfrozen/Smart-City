@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.88.1">
-    <title>Smart City Dashboard</title>
+    <title>CSV Environmental Data Download | Smart City Dashboard</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/dashboard/">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,24 +28,16 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <script src="js/datetime-update.js" defer></script>
     <script src="js/export-csv.js" defer></script>
-    <script src="js/sidebar.js" defer></script>
 </head>
 
 <body>
 
     <header class="navbar navbar-dark sticky-top bg-success flex-md-nowrap p-0 shadow">
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/dashboard">Smart City Dashboard</a>
-        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
-            data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
-            aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="form-control bg-dark text-white w-100" id="datetime-display">&nbsp;</div>
-        <div class="navbar-nav">
-            <div class="nav-item text-nowrap">
-                <a class="nav-link px-3" href="/logout" id="sign-out">Sign out</a>
-            </div>
-        </div>
+        <span class="navbar-brand col-md-3 col-lg-2 px-3 mx-0 me-0">
+            <img src="img/icon.png" alt="Smart Lighting" width="20" height="20" class="d-inline-block align-text-top">
+            <a class="text-white text-decoration-none" href="/">TU Smart Street Light</a>
+        </span>
+        <div class="form-control bg-dark text-white w-100 h-100" id="datetime-display">&nbsp;</div>
     </header>
 
     <div class="container-fluid">

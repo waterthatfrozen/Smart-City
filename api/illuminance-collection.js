@@ -144,7 +144,6 @@ async function getLuminanceSensorValueByDeviceIDandRange(device_id, start, end){
         headers: head
     });
     let status = await valueResponse.status;
-    console.log(valueResponse.data);
     valueResponse = await valueResponse.data.values;
     let illuminanceValues = [];
     if (status === 200) {
@@ -156,7 +155,6 @@ async function getLuminanceSensorValueByDeviceIDandRange(device_id, start, end){
             });
         }
     }
-    console.log(illuminanceValues);
     let response = {
         sensor_device_id: device_id,
         sensor_values: illuminanceValues,
@@ -195,7 +193,7 @@ async function getSensorValuebyRange(req, res){
 
 async function getAllIluminanceSensorDevices(_req,res){
     let devices = [];
-    for (const deviceID of deviceIDPrefixes) {
+    deviceIDPrefixes.map(async (deviceID) => {
         let currentDeviceID = deviceID + "0CE500";
         let currentLightDeviceID = deviceID + "0CEF00";
         let currentLightDeviceName = await getDeviceLabel(currentLightDeviceID);
@@ -204,8 +202,13 @@ async function getAllIluminanceSensorDevices(_req,res){
             lightDeviceID: currentLightDeviceID,
             lightDeviceName: currentLightDeviceName,
         });
-    }
-    res.status(200).send({illuminanceDevices: devices});
+    });
+    let interval = setInterval(async () => {
+        if (devices.length === deviceIDPrefixes.length) {
+            clearInterval(interval);
+            res.status(200).send({illuminanceDevices: devices, totalDevices: devices.length});
+        }
+    }, 1000);
 }
 
 exports.getSensorValuebyRange = getSensorValuebyRange;

@@ -88,6 +88,7 @@ http.createServer(app).listen(PORT, () => {
 //Routing
 app.get('/', (_req, res) => { res.status(200).sendFile(PATH + '/index.html');});
 app.get('/sensor-connection', (_req, res) => { res.status(200).sendFile(PATH + '/sensor-connection.html');});
+app.get('/csv-download', (_req, res) => {res.status.sendFile(PATH + '/csv-download.html');})
 app.get('/401', (_req, res) => { res.status(401).sendFile(PATH + '/401.html'); });
 app.get('/404', (_req, res) => { res.status(404).sendFile(PATH + '/404.html'); });
 
