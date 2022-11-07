@@ -45,6 +45,15 @@ async function getDeviceGatewayMAC(deviceID) {
     }
 }
 
+async function getDeviceZoneID(deviceID) {
+    try {
+        const deviceInfoResponse = await axios.get("https://siit-smart-city.azurewebsites.net/api/getDeviceInfo?device_id="+deviceID);
+        return deviceInfoResponse.data.zone_id;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 async function sendGetSensorCommand(deviceID, gatewayMAC) {
     const token = await getToken();
     const head = {
@@ -134,8 +143,9 @@ async function getLuminanceSensorValueByDeviceIDandRange(device_id, start, end){
     let valueResponse = await axios.get(url, {
         headers: head
     });
-    let status = valueResponse.status;
-    valueResponse = valueResponse.data.values;
+    let status = await valueResponse.status;
+    console.log(valueResponse.data);
+    valueResponse = await valueResponse.data.values;
     let illuminanceValues = [];
     if (status === 200) {
         valueResponse = valueResponse.slice(1);
@@ -146,6 +156,7 @@ async function getLuminanceSensorValueByDeviceIDandRange(device_id, start, end){
             });
         }
     }
+    console.log(illuminanceValues);
     let response = {
         sensor_device_id: device_id,
         sensor_values: illuminanceValues,
@@ -191,7 +202,7 @@ async function getAllIluminanceSensorDevices(_req,res){
         devices.push({
             sensorDeviceID: currentDeviceID,
             lightDeviceID: currentLightDeviceID,
-            lightDeviceName: currentLightDeviceName
+            lightDeviceName: currentLightDeviceName,
         });
     }
     res.status(200).send({illuminanceDevices: devices});

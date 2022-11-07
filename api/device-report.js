@@ -152,7 +152,7 @@ async function getLightPowerStatusReportbyDeviceandRange(req,res) {
                     });
                     res.status(200).send({device_id: device_id,report: report_result, units: units});
                 }else{
-                    res.status(200).send({report: []});
+                    res.status(200).send({device_id: device_id,report: []});
                 }
             }
         } catch (error) {
