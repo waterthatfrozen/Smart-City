@@ -11,7 +11,7 @@ const reportTableContainer = $("#reportTableContainer"),
     reportTableBody = $("#reportTableBody"),
     reportTableCaption = $("#reportTableCaption");
 const SELECTED_PARAMS = ['gw_timestamp', 'temperature', 'humidity', 'wind_velocity', 'wind_direction', 'illuminance', 'rain_level', 'air_pressure', 'ultra_violet_a', 'ultra_violet_b'];
-const SELECTED_UNITS = ['', ' °C', '%', ' m/s', '°', ' lux', '', ' hPa', ' W/m²', ' W/m²'];
+const SELECTED_UNITS = ['', '°C', '%', 'm/s', '°', 'lux', '', 'hPa', 'W/m²', 'W/m²'];
 
 let END_DATETIME = new Date(), START_DATETIME = new Date();
 START_DATETIME.setUTCHours(START_DATETIME.getHours() - 24); START_DATETIME.setUTCMinutes(START_DATETIME.getMinutes() - 1);
@@ -64,11 +64,11 @@ function insertToTable(reportHeader, reportValue, startTime, endTime){
         selectedParamIndex.map((selectedIdx, index) => {
             switch(selectedIdx){
                 case 0: row.push((value[selectedIdx]).split("+07")[0]); break;
-                case 3: row.push(value[selectedIdx].toFixed(2) + SELECTED_UNITS[index]); break;
+                case 3: row.push(value[selectedIdx].toFixed(2) + " " + SELECTED_UNITS[index]); break;
                 case 4: row.push(value[selectedIdx].toFixed(0) + SELECTED_UNITS[index]); break;
-                case 10: row.push(value[selectedIdx].toFixed(2) + SELECTED_UNITS[index]); break;
-                case 11: row.push(value[selectedIdx].toFixed(2) + SELECTED_UNITS[index]); break;
-                default: row.push(value[selectedIdx] + SELECTED_UNITS[index]); break;
+                case 10: row.push(value[selectedIdx].toFixed(2) + " " + SELECTED_UNITS[index]); break;
+                case 11: row.push(value[selectedIdx].toFixed(2) + " " + SELECTED_UNITS[index]); break;
+                default: row.push(value[selectedIdx] + " " + SELECTED_UNITS[index]); break;
             }
         });
         reportTableBody.append(reportRow(row));
