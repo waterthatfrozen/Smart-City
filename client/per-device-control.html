@@ -67,7 +67,26 @@
                 </div>
             </div>
 
-            <h4 class="pt-2">Current Device Status</h4>
+            <h4 class="pt-2">Set New Light Power</h4>
+            <div class="row row-cols-1 row-cols-md-2 mb-4 pb-2">
+                <div class="col ">
+                    <div class="row row-cols-5 g-2">
+                        <div class="col"><button class="btn btn-primary w-100" id="setDimming0" disabled>0%</button></div>
+                        <div class="col"><button class="btn btn-primary w-100" id="setDimming25" disabled>25%</button></div>
+                        <div class="col"><button class="btn btn-primary w-100" id="setDimming50" disabled>50%</button></div>
+                        <div class="col"><button class="btn btn-primary w-100" id="setDimming75" disabled>75%</button></div>
+                        <div class="col"><button class="btn btn-primary w-100" id="setDimming100" disabled>100%</button></div>
+                    </div>
+                </div>
+                <div class="col my-2 my-md-0">
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="newDimmingValue" placeholder="Dimming Value" min="0" max="100" value="0" disabled>
+                        <button class="btn btn-success" type="button" id="setDimmingCustom" disabled>Confirm</button>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="pt-1">Current Device Status</h4>
             <div>
                 <p>
                     Current Selected Device: <span id="currentSelectedDevice">---</span><br/>
@@ -103,28 +122,9 @@
                 <div class="col">
                     <div class="card">
                         <div class="card-body">
-                            <h6 class="card-title">Current Dimming Value</h6>
+                            <h6 class="card-title">Current Light Power</h6>
                             <h4 class="card-subtitle" id="currentDimmingValue">---</h4>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <h4 class="pt-2">Set New Dimming Value</h4>
-            <div class="row row-cols-1 row-cols-md-2 mb-4 pb-3">
-                <div class="col ">
-                    <div class="row row-cols-5 g-2">
-                        <div class="col"><button class="btn btn-primary w-100" id="setDimming0" disabled>0%</button></div>
-                        <div class="col"><button class="btn btn-primary w-100" id="setDimming25" disabled>25%</button></div>
-                        <div class="col"><button class="btn btn-primary w-100" id="setDimming50" disabled>50%</button></div>
-                        <div class="col"><button class="btn btn-primary w-100" id="setDimming75" disabled>75%</button></div>
-                        <div class="col"><button class="btn btn-primary w-100" id="setDimming100" disabled>100%</button></div>
-                    </div>
-                </div>
-                <div class="col my-2 my-md-0">
-                    <div class="input-group">
-                        <input type="number" class="form-control" id="newDimmingValue" placeholder="Dimming Value" min="0" max="100" value="0" disabled>
-                        <button class="btn btn-success" type="button" id="setDimmingCustom" disabled>Confirm</button>
                     </div>
                 </div>
             </div>
