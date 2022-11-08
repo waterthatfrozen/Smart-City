@@ -93,45 +93,6 @@
                 </div>
             </div>
 
-            <div class="row row-cols-2 row-cols-md-4 g-3 mb-3" id="currentZoneReportContainer">
-                <div class="col">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title">Average Active Energy</h6>
-                            <p class="card-subtitle text-secondary"><i class="bi bi-clock-history"></i> <span id="timeAverageActiveEnergy">---</span></p>
-                            <h3 class="card-text mt-2" id="currentAverageActiveEnergyValue">---</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title">Average Active Power</h6>
-                            <p class="card-subtitle text-secondary"><i class="bi bi-clock-history"></i> <span id="timeAverageActivePower">---</span></p>
-                            <h3 class="card-text mt-2" id="currentAverageActivePowerValue">---</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title">Average V RMS</h6>
-                            <p class="card-subtitle text-secondary"><i class="bi bi-clock-history"></i> <span id="timeAverageVRMS">---</span></p>
-                            <h3 class="card-text mt-2" id="currentAverageVRMSValue">---</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title">Average Current Power</h6>
-                            <p class="card-subtitle text-secondary"><i class="bi bi-clock-history"></i> <span id="timeAveragePower">---</span></p>
-                            <h3 class="card-text mt-2" id="currentAveragePowerValue">---</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- loading indicator -->
             <h6 class="mt-4">List of devices in the selected zone</h6>
             <div class="table-responsive mb-3" id="zoneDeviceContainer">
@@ -177,42 +138,42 @@
 
                     <div class="toast align-items-center text-white bg-secondary border-0" role="alert" aria-live="assertive" aria-atomic="true" id="dataOnProgressToast">
                         <div class="d-flex">
-                            <div class="toast-body"> <span><i class="bi bi-send"></i> Fetching power usage data in the selected zone.</span> </div>
+                            <div class="toast-body"> <i class="bi bi-send"></i>  <span id="dataOnProgressToastText">Fetching power usage data in the selected zone...</span> </div>
                             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                         </div>
                     </div>
 
                     <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" id="dataSuccessToast">
                         <div class="d-flex">
-                            <div class="toast-body"> <span><i class="bi bi-check-circle"></i> Successfully fetched and displayed data.</span> </div>
+                            <div class="toast-body"> <i class="bi bi-check-circle"></i>  <span id="dataSuccessToastText">Successfully fetched and displayed data.</span> </div>
                             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                         </div>
                     </div>
                     
                     <div class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" id="dataFailedToast">
                         <div class="d-flex">
-                            <div class="toast-body"> <span><i class="bi bi-x-circle"></i> Failure during processing data, please refresh this page and try again. </span> </div>
+                            <div class="toast-body"> <i class="bi bi-exclamation-circle"></i>  <span id="dataFailedToastText">Failure during processing data, please refresh this page and try again. </span> </div>
                             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                         </div>
                     </div>
 
                     <div class="toast align-items-center text-white bg-secondary border-0" role="alert" aria-live="assertive" aria-atomic="true" id="lightOnProgressToast">
                         <div class="d-flex">
-                          <div class="toast-body"> <span><i class="bi bi-send"></i> Sending new light power command to devices in the selected zone...</span> </div>
-                          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            <div class="toast-body"> <i class="bi bi-send"></i>  <span id="lightOnProgressToastText">Sending light power command to the selected zone...</span> </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                         </div>
                     </div>
 
                     <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" id="lightSuccessToast">
                         <div class="d-flex">
-                          <div class="toast-body"> <span><i class="bi bi-check-circle"></i> Successfully sent the command to every devices</span> </div>
-                          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            <div class="toast-body"> <i class="bi bi-check-circle"></i>  <span id="lightSuccessToastText">Successfully sent light power command.</span> </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                         </div>
                     </div>
                     
                     <div class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" id="lightFailedToast">
                         <div class="d-flex">
-                          <div class="toast-body"> <span><i class="bi bi-x-circle"></i> Failed to send the command to some devices. Please try again later.</span> </div>
+                          <div class="toast-body"><i class="bi bi-x-circle"></i> <span id="lightFailedToastText">Failed to send the command to some devices. Please try again later.</span> </div>
                           <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                         </div>
                     </div>
