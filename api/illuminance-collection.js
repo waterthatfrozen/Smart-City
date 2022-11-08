@@ -45,6 +45,15 @@ async function getDeviceGatewayMAC(deviceID) {
     }
 }
 
+async function getDeviceZoneID(deviceID) {
+    try {
+        const deviceInfoResponse = await axios.get("https://siit-smart-city.azurewebsites.net/api/getDeviceInfo?device_id="+deviceID);
+        return deviceInfoResponse.data.zone_id;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 async function sendGetSensorCommand(deviceID, gatewayMAC) {
     const token = await getToken();
     const head = {
@@ -134,8 +143,8 @@ async function getLuminanceSensorValueByDeviceIDandRange(device_id, start, end){
     let valueResponse = await axios.get(url, {
         headers: head
     });
-    let status = valueResponse.status;
-    valueResponse = valueResponse.data.values;
+    let status = await valueResponse.status;
+    valueResponse = await valueResponse.data.values;
     let illuminanceValues = [];
     if (status === 200) {
         valueResponse = valueResponse.slice(1);
@@ -182,8 +191,29 @@ async function getSensorValuebyRange(req, res){
     }
 }
 
+async function getAllIluminanceSensorDevices(_req,res){
+    let devices = [];
+    deviceIDPrefixes.map(async (deviceID) => {
+        let currentDeviceID = deviceID + "0CE500";
+        let currentLightDeviceID = deviceID + "0CEF00";
+        let currentLightDeviceName = await getDeviceLabel(currentLightDeviceID);
+        devices.push({
+            sensorDeviceID: currentDeviceID,
+            lightDeviceID: currentLightDeviceID,
+            lightDeviceName: currentLightDeviceName,
+        });
+    });
+    let interval = setInterval(async () => {
+        if (devices.length === deviceIDPrefixes.length) {
+            clearInterval(interval);
+            res.status(200).send({illuminanceDevices: devices, totalDevices: devices.length});
+        }
+    }, 1000);
+}
+
 exports.getSensorValuebyRange = getSensorValuebyRange;
 exports.getSensorValueByDeviceIDandRange = getSensorValueByDeviceIDandRange;
+exports.getAllIluminanceSensorDevices = getAllIluminanceSensorDevices;
 
 exports.getLastLumianceSensorValue = function (_req, res) {
     res.status(200).send({

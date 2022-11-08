@@ -1,21 +1,25 @@
-const SIDEBAR_LINK = [{
+const SIDEBAR_LINK = [
+{
     heading: 'OVERVIEW',
-    links: [{link: '/dashboard', text: 'System Overview' },
+    links: [{ link: '/dashboard', text: 'System Overview' },
         { link: '/zone-overview', text: 'Zone Overview' },
         { link: '/illuminance-sensor', text: 'Illuminance Report' },
+        { link: '/environment-report', text: 'Environment Report' },
+        { link: '/illuminance-graph', text: 'Illuminance Graph' },
         { link: '/maps-view', text: 'Device Maps' }]
 }, {
     heading: 'CONTROL',
     links: [{ link: '/per-device-control', text: 'Per Device Control' },
         { link: '/per-zone-control', text: 'Per Zone Control'}]
 },{
-    heading: 'IoT Sensors',
+    heading: 'IoT SENSORS',
     links: [{ link: '/iot-sensors', text: 'Sensor Record' }]
 },{
     heading: 'SYSTEM STATUS',
-    links: [{ link: '/device-connection', text: 'Gateway Status'},
-        { link: '#', text: 'Device Events' },
-        { link: '/service-status',  text: 'CMS Services Status'}]
+    links: [{ link: '/device-connection', text: 'Gateway Status' },
+    { link: '/device-events', text: 'Device Events' },
+    { link: '/gateway-disconnect-log', text: 'Disconnection Log' },
+    { link: '/service-status', text: 'CMS Services Status' }]
 },{
     heading: 'ABOUT',
     links: [{ link: '/about-us', text: 'About Us' }]
@@ -40,7 +44,8 @@ function sidebar_division(sidebar_heading, sidebar_links) {
 function footer() {
     return `
     <ul class="nav flex-column mt-3 justify-content-between">
-        <li class="ms-3"><img src="https://graduateadmissions.siit.tu.ac.th/plugin/img/siitlogo.png" style="height: 20px;" alt="logo"></li>
+        <li class="ms-3"><img src="https://graduateadmissions.siit.tu.ac.th/plugin/img/siitlogo.png" class="my-2" height="20" alt="logo">
+        | <img src="img/icon-name-horizontal.png" alt="Smart Lighting Icon" height="25" class="my-2"></li>
         <li class="nav-item nav-link smallest-font text-muted">
         &copy; 2022 SIIT, Thammasat University. <br/> Supported by Thammasat University & Thailand Science Research and Innovation Fundamental Fund, TUFF19/2564 and TUFF24/2565<br/></span>
         </li>
@@ -55,7 +60,8 @@ function sidebar_main() {
     navMenu.append(footer());
     $("header").html(`
         <span class="navbar-brand col-md-3 col-lg-2 px-3 mx-0 me-0">
-            <a class="text-white text-decoration-none" href="/dashboard">Smart Lighting Dashboard</a>
+            <img src="img/icon.png" alt="Smart Lighting" width="20" height="20" class="d-inline-block align-text-top">
+            <a class="text-white text-decoration-none" href="/">TU Smart Street Light</a>
         </span>
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
             data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"

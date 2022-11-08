@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/login.css">
     <link rel="manifest" href="smart-city.webmanifest">
+    <link rel="icon" href="img/icon.png">
     <title>Welcome to Smart Lighting</title>
 </head>
 
@@ -21,9 +22,10 @@
 
     <header class="navbar navbar-dark sticky-top bg-success flex-md-nowrap p-0 shadow">
         <span class="navbar-brand col-md-3 col-lg-2 px-3 mx-0 me-0">
-            <a class="text-white text-decoration-none" href="/">Smart Lighting Dashboard</a>
+            <img src="img/icon.png" alt="Smart Lighting" width="20" height="20" class="d-inline-block align-text-top">
+            <a class="text-white text-decoration-none" href="/">TU Smart Street Light</a>
         </span>
-        <div class="form-control bg-dark text-white w-100 h-100" id="datetime-display">&nbsp;</div>
+        <div class="form-control bg-dark text-white w-100" id="datetime-display">&nbsp;</div>
     </header>
 
     <main class="flex-shrink-0 text-dark">
@@ -46,10 +48,10 @@
                 <button class="w-100 btn btn-success mb-3" id="submit-button" type="submit"><em
                         class='bi bi-key'></em>&nbsp;Log In</button>
                 <p class="text-dark small">
-                    <img src="https://graduateadmissions.siit.tu.ac.th/plugin/img/siitlogo.png" class="my-2" style="height: 25px;" alt="logo"><br/>
+                    <img src="https://graduateadmissions.siit.tu.ac.th/plugin/img/siitlogo.png" class="my-2" height="25" alt="logo">
+                    | <img src="img/icon-name-horizontal.png" alt="Smart Lighting Icon" height="30" class="my-2"><br/>
                     &copy; 2022 SIIT, Thammasat University. Supported by Thammasat University and Thailand Science Research and Innovation Fundamental Fund, TUFF19/2564 and TUFF24/2565<br/>
-                    <a href="/sensor-connection" class="text-decoration-none link-secondary" target="_self">Sensor Connection</a> | 
-                    <a href="http://github.com/waterthatfrozen/Smart-City" class="text-decoration-none link-secondary" target="_blank">Project Information</a>&nbsp;
+                    <a href="/csv-download" class="link link-secondary text-decoration-none" target="_self"><i class="bi bi-file-earmark-arrow-down-fill"></i> Download Environmental Data as CSV</a>
                 </p>
             </form>
         </div>

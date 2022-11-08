@@ -88,6 +88,8 @@ http.createServer(app).listen(PORT, () => {
 //Routing
 app.get('/', (_req, res) => { res.status(200).sendFile(PATH + '/index.html');});
 app.get('/sensor-connection', (_req, res) => { res.status(200).sendFile(PATH + '/sensor-connection.html');});
+app.get('/csv-download', (_req, res) => {res.status(200).sendFile(PATH + '/csv-download.html');})
+app.get('/download-selection', (_req, res) => { res.status(200).sendFile(PATH + '/download-selection.html');})
 app.get('/401', (_req, res) => { res.status(401).sendFile(PATH + '/401.html'); });
 app.get('/404', (_req, res) => { res.status(404).sendFile(PATH + '/404.html'); });
 
@@ -125,6 +127,7 @@ app.get('/api/getZoneIlluminanceSensorDeviceList', (req, res) => { getDeviceAPI.
 app.get('/api/getLastLumianceSensorValue', (req, res) => { illuminanceCollection.getLastLumianceSensorValue(req, res); });
 app.get('/api/getSensorValuebyRange', (req, res) => { illuminanceCollection.getSensorValuebyRange(req, res); });
 app.get('/api/getSensorValueByDeviceIDandRange', (req, res) => { illuminanceCollection.getSensorValueByDeviceIDandRange(req, res); });
+app.get('/api/getAllIluminanceSensorDevices', (req, res) => { illuminanceCollection.getAllIluminanceSensorDevices(req, res); });
 
 // GET CONNECTION STATUS (api/disconnect-detection)
 app.get('/api/checkSensorConnection', (req, res) => { disconnectDetection.checkSensorConnection(req, res); });

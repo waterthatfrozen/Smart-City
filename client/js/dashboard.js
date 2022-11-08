@@ -132,7 +132,7 @@ function envSensorValuePanel(titleIcon ,title, trend, value, unit, trendColor) {
                     <div class="card-body">
                         <h5 class="card-title"><span class="fs-6 pe-1">${titleIcon}</span>${title}</h5>
                         <h6 class="card-subtitle mb-2"><span class="${trendColorClass}">${trendIcon}</span></h6>
-                        <p class="card-text display-5">
+                        <p class="card-text display-6">
                             ${value}<small class="h4"> ${unit}</small>
                         </p>
                     </div>
@@ -219,6 +219,7 @@ function main() {
                 var minutes = currentValue.getMinutes() < 10 ? "0" + currentValue.getMinutes() : currentValue.getMinutes();
                 return hours + ":" + minutes;
             });
+            chartConfig = [];
             for (const param in GRAPHS_PARAMS) {
                 var param_idx = PARAMS.indexOf(GRAPHS_PARAMS[param]);
                 envSensorGraphContainer.append(envSensorGraphPanel(GRAPHS_TITLE[param], timestampStringMessage, PARAMS_TITLE[param_idx], timestampValue, envSensorData[param_idx][0]));
