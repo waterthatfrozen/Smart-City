@@ -26,7 +26,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.js"
         integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous" defer></script>
     <script src="js/datetime-update.js" defer></script>
-    <script src="js/csv-download.js" defer></script>
+    <script src="js/download-selection.js" defer></script>
 </head>
 
 <body class="d-flex flex-column h-100 bg-light">
@@ -41,15 +41,26 @@
 
         <main class="flex-shrink-0 text-dark w-75">
             <div class="container mt-5">
-                <a href="/" class="text-decoration-none link-secondary"><i class="bi bi-arrow-left-square"></i> Back to login page</a>
+                <a href="/" class="text-decoration-none link-secondary"><i class="bi bi-arrow-left-square"></i> Back to login page</a><br/>
+                <a href="/csv-download" class="text-decoration-none link-dark"><i class="bi bi-arrow-left-square"></i> Back to dataset page</a>
                 <h2 class="mt-3" id="header">Download Environmental Sensor Data</h2>
-                <span>Download environmental sensor data in CSV format.</span>
+                <span id="selectedMonthText">Selected Month</span>
 
                 <div class="row row-cols-1 row-cols-md-3 g-3 mt-0" id="dataError" hidden>
                     <div class="w-100">
                         <div class="card alert-danger">
                             <div class="card-body">
                                 <p class="card-text" id="dataErrorText"><i class="bi bi-exclamation-circle-fill"></i> Error while generating files. Please try again later.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row row-cols-1 row-cols-md-3 g-3 mt-0" id="dataNodata" hidden>
+                    <div class="w-100">
+                        <div class="card alert-primary">
+                            <div class="card-body">
+                                <p class="card-text"><i class="bi bi-info-circle-fill"></i> No environmental data is found in the selected time period.</p>
                             </div>
                         </div>
                     </div>
@@ -63,17 +74,19 @@
                                     <div id="logLoadingSpinner" class="spinner-grow spinner-grow-sm"
                                         role="status">
                                         <span class="visually-hidden">Loading...</span>
-                                    </div> Loading environmental data...
+                                    </div> Generating environmental data in the given range to CSV files...
                                 </p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2 my-2" id="downloadContainer">
+                <div class="w-100 g-2 mt-2 mb-4" id="downloadContainer" hidden>
+                    <p>
+                        If the download does not start automatically, please click the button below.<br/>
+                        <small>By downloading the data, you agree to the creative common license <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="link link-dark" target="_blank">CC BY-NC-SA 4.0</a>.</small>
+                    </p>
                 </div>
-                <small class="text-muted" id="downloadContainerCaption"> </small>
-                <small class="text-muted" id="downloadLicense"> | By downloading the data, you agree to the creative common license <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="link link-dark" target="_blank">CC BY-NC-SA 4.0</a>.</small>
 
             <p class="text-dark small mt-2 pb-5">
                 <img src="https://graduateadmissions.siit.tu.ac.th/plugin/img/siitlogo.png" class="my-2" height="25" alt="logo">
