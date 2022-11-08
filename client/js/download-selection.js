@@ -54,27 +54,34 @@ async function pageMain(){
             // input cleanup
             // if start is more than end, swap them
             if(queryParamObject.start > queryParamObject.end){ let temp = queryParamObject.start; queryParamObject.start = queryParamObject.end; queryParamObject.end = temp; }
-            // if start is before the beginning of data, set it to the beginning of data
-            if(queryParamObject.start < Math.round(BEGIN_OF_DATA.getTime()/1000)){ queryParamObject.start = Math.round(BEGIN_OF_DATA.getTime()/1000); }
-            // if end is after the current time, set it to the current time
-            if(queryParamObject.end > Math.round(new Date().getTime()/1000)){ queryParamObject.end = Math.round(new Date().getTime()/1000); }
+
             // if start is not the first day of the month, set it to the first day of the month
             let start = new Date(queryParamObject.start*1000);
             start.setDate(1); start.setHours(0); start.setMinutes(0); start.setSeconds(0);
             queryParamObject.start = Math.round(start.getTime()/1000);
-            // if end is not the last day of the month, set it to the last day of the month of the same year
-            let end = new Date(queryParamObject.end*1000);
-            end.setMonth(end.getMonth()+1); end.setFullYear(start.getFullYear()); end.setDate(0); end.setHours(23); end.setMinutes(59); end.setSeconds(59);
-            queryParamObject.end = Math.round(end.getTime()/1000);
+
             // if start and end are not the same month, set end to the last day of the month of start
             let startMonth = new Date(queryParamObject.start*1000).getMonth();
             let endMonth = new Date(queryParamObject.end*1000).getMonth();
             if(startMonth != endMonth){
                 let end = new Date(queryParamObject.start*1000);
-                end.setMonth(end.getMonth()+1);
+                end.setMonth(end.getMonth()+1); end.setFullYear(start.getFullYear());
                 end.setDate(0); end.setHours(23); end.setMinutes(59); end.setSeconds(59);
                 queryParamObject.end = Math.round(end.getTime()/1000);
             }
+
+            // if end is not the last day of the month, set it to the last day of the month of the same year
+            let end = new Date(queryParamObject.end*1000);
+            end.setMonth(end.getMonth()+1); end.setFullYear(start.getFullYear()); end.setDate(0); end.setHours(23); end.setMinutes(59); end.setSeconds(59);
+
+            // if end is not in the same year as start, set it to the last day of the month of the same year
+            if(start.getFullYear() != end.getFullYear()){ end.setFullYear(start.getFullYear()); end.setDate(0); end.setHours(23); end.setMinutes(59); end.setSeconds(59); }
+
+            // if start is before the beginning of data, set it to the beginning of data
+            if(queryParamObject.start < Math.round(BEGIN_OF_DATA.getTime()/1000)){ queryParamObject.start = Math.round(BEGIN_OF_DATA.getTime()/1000); }
+
+            // if end is after the current time, set it to the current time
+            if(queryParamObject.end > Math.round(new Date().getTime()/1000)){ queryParamObject.end = Math.round(new Date().getTime()/1000); }
 
             setSelectedMonthText(queryParamObject.start, queryParamObject.end);
             console.log(queryParamObject);
