@@ -13,6 +13,8 @@ Digital Engineering Department, School of Information, Computer, and Communicati
 Sirindhorn International Institute of Technology (SIIT), Thammasat University.\
 Project Advisor: [Dr. Somrudee Deepaisarn](https://www.siit.tu.ac.th/personnel.php?id=252)\
 Project Members: [Paphana Yiwsiw](https://waterthatfrozen.github.io), [Thanakit Lerttomolsakul](https://www.linkedin.com/in/thanakit-lerttomolsakul-3675ab24b/), [Sirada Chaisawat](https://www.linkedin.com/in/sirada-chaisawat-a9795724b/), and [Leeyakorn Cheewakriengkrai](https://github.com/Leeyakorn)
+***Senior Project Final Report Link***: https://drive.google.com/file/d/1-imhzrlfxktTWOLqBxgu8-aBoVZw6dF6/view?usp=sharing
+***Senior Project Final Presentation Link***: https://drive.google.com/file/d/15Ir0kOZFm8DLxaxEIuktX2eL9oyjAtfX/view?usp=sharing
 
 ## Copyright and Research Funding
 © 2022 Sirindhorn International Institute of Technology (SIIT), Thammasat University.\
