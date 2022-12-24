@@ -155,16 +155,31 @@ app.post('/login', (req, res) => {
     axios.post(base_url + "/token", auth).then(response => {
         if (response.status === 200) {
             req.session.token = response.data.token;
-            req.session.save(() => { res.status(200).redirect('/dashboard'); });
+            console.log("login success");
+            req.session.save(() => { 
+                res.status(200).send({ "status": "success" });
+            });
         } else { res.status(400).send({ "status": "fail" }); }
     }).catch(error => { res.status(400).send(error); });
 });
 
 // LOGOUT REQUEST
-app.get('/logout', (req, res) => { req.session.destroy(() => { res.status(200).redirect('/'); });});
+app.get('/logout', (req, res) => { 
+    req.session.cookie.expires = new Date(Date.now() - 1000);
+    if(req.headers['user-agent'].includes('Mozilla')) { 
+        req.session.destroy(() => { 
+            res.status(200).redirect('/'); 
+        });
+    }else{ res.status(200).send({message: "Logged out."}); }
+});
 
 const setDevice = require('./api/set-device');
 app.post('/api/setLightDimming', (req, res) => { setDevice.setLightDimming(req, res); });
+
+// AUTOMATIC LIGHTING PART
+const autoLighting = require('./api/auto-lighting');
+app.get('/api/getAutoLightingStatus', (req, res) => { autoLighting.getAutoLightingStatus(req, res); });
+app.post('/api/setEnableAutoLighting', (req, res) => { autoLighting.setEnableAutoLighting(req, res); });
 
 app.get('/:htmlfile', (req, res) => {
     checkTokenValid(req, res, () => {
