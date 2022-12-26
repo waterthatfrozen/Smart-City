@@ -22,8 +22,8 @@ async function login(username, password) {
         },
         body: JSON.stringify(data)
     }).then(response => {
-        if (response.redirected) {
-            window.location.href = response.url;
+        if (response.ok) {
+            window.location.href = "/dashboard";
         } else {
             console.log("login failed");
             var message = "<em class='bi bi-x-circle-fill'></em>&nbsp;<strong>Login failed!</strong><br/>" +
@@ -32,8 +32,6 @@ async function login(username, password) {
             enableButton();
         }
     }).catch(function (error) {
-        var message = "<em class='bi bi-exclamation-circle-fill'></em>&nbsp;<strong>Login Error!</strong><br/>" +
-            "<small>Please contact your system admin.</small>";
         $("#error-message").prop("hidden", false).html(error);
         enableButton();
     });
