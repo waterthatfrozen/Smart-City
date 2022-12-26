@@ -4,7 +4,7 @@
 Project: ***Innovative All-around Learning toward Smart Campus Creation under the AI Ready City Networking in RUN Project***. Under the supervision of [Dr. Somrudee Deepaisarn](https://www.siit.tu.ac.th/personnel.php?id=252), School of Information, Computer, and Communication Technology, SIIT, Thammasat University and [Prof. Dr. Virach Sornlertlamvanich](https://www.virach.com/), Faculty of Engineering, Thammasat University.
 
 ### Generated Publication:
-- S. Deepaisarn, P. Yiwsiw, C. Tantiwattanapaibul, S. Buaruk and V. Sornlertlamvanich, "Smart Street Light Monitoring and Visualization Platform for Campus Management", submitted to The 17th International Joint Symposium on Artificial Intelligence and Natural Language Processing and The International Conference on Artificial Intelligence and Internet of Things, 2022.
+- S. Deepaisarn, P. Yiwsiw, C. Tantiwattanapaibul, S. Buaruk and V. Sornlertlamvanich, "Smart Street Light Monitoring and Visualization Platform for Campus Management," 2022 17th International Joint Symposium on Artificial Intelligence and Natural Language Processing (iSAI-NLP), 2022, pp. 1-5, doi: 10.1109/iSAI-NLP56921.2022.9960257. [View on IEEE](https://doi.org/10.1109/iSAI-NLP56921.2022.9960257)
 
 ## Senior Project Development Information
 ***Smart Lighting: The Web Application and Data Analytics***\
@@ -13,7 +13,6 @@ Digital Engineering Department, School of Information, Computer, and Communicati
 Sirindhorn International Institute of Technology (SIIT), Thammasat University.\
 Project Advisor: [Dr. Somrudee Deepaisarn](https://www.siit.tu.ac.th/personnel.php?id=252)\
 Project Members: [Paphana Yiwsiw](https://waterthatfrozen.github.io), [Thanakit Lerttomolsakul](https://www.linkedin.com/in/thanakit-lerttomolsakul-3675ab24b/), [Sirada Chaisawat](https://www.linkedin.com/in/sirada-chaisawat-a9795724b/), and [Leeyakorn Cheewakriengkrai](https://github.com/Leeyakorn)  
-***Senior Project Final Report Link***: https://drive.google.com/file/d/1-imhzrlfxktTWOLqBxgu8-aBoVZw6dF6/view?usp=sharing  
 ***Senior Project Final Presentation Link***: https://drive.google.com/file/d/15Ir0kOZFm8DLxaxEIuktX2eL9oyjAtfX/view?usp=sharing  
 
 ## Copyright and Research Funding
