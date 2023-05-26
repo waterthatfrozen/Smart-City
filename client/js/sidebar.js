@@ -11,14 +11,14 @@ const SIDEBAR_LINK = [
     heading: 'CONTROL',
     links: [{ link: '/per-device-control', text: 'Per Device Control' },
         { link: '/per-zone-control', text: 'Per Zone Control'}]
-},{
-    heading: 'IoT SENSORS',
-    links: [{ link: '/iot-sensors', text: 'Sensor Record' }]
+// },{
+//     heading: 'IoT SENSORS',
+//     links: [{ link: '/iot-sensors', text: 'Sensor Record' }]
 },{
     heading: 'SYSTEM STATUS',
     links: [{ link: '/device-connection', text: 'Gateway Status' },
     { link: '/device-events', text: 'Device Events' },
-    { link: '/gateway-disconnect-log', text: 'Disconnection Log' },
+    // { link: '/gateway-disconnect-log', text: 'Disconnection Log' },
     { link: '/service-status', text: 'CMS Services Status' }]
 },{
     heading: 'ABOUT',

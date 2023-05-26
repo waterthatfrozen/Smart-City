@@ -1,5 +1,5 @@
 const axios = require('axios').default;
-const sql = require('mssql');
+// const sql = require('mssql');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -22,50 +22,50 @@ function bangkokTimeString(timestamp) {
 }
 
 // function to insert disconnect log into database
-function insertSensorDisconnectLog(disconnectStartTime, disconnectEndTime) {
-    disconnectStartTime = bangkokTimeString(disconnectStartTime);
-    disconnectEndTime = bangkokTimeString(disconnectEndTime);
-    // check for previous disconnect log
-    let selectQuery = "SELECT * FROM dbo.sensor_disconnect_log WHERE disconnectEndTime = '" + disconnectStartTime + "'";
-    let logQuery = "";
-    sql.query(selectQuery, function (err, result) {
-        if (err) {
-            throw err;
-        }
-        if (result.recordset.length > 0) {
-            // update disconnect log
-            logQuery = "UPDATE dbo.sensor_disconnect_log SET disconnectEndTime = '" + disconnectEndTime + "' WHERE disconnectEndTime = '" + disconnectStartTime + "'";
-        } else {
-            // insert disconnect log
-            logQuery = "INSERT INTO dbo.sensor_disconnect_log (disconnectStartTime, disconnectEndTime) VALUES ('" + disconnectStartTime + "', '" + disconnectEndTime + "')";
-        }
-        sql.query(logQuery, function (err2, _result) {
-            if (err2) {
-                throw err2;
-            }
-        });
-    });
-}
+// function insertSensorDisconnectLog(disconnectStartTime, disconnectEndTime) {
+//     disconnectStartTime = bangkokTimeString(disconnectStartTime);
+//     disconnectEndTime = bangkokTimeString(disconnectEndTime);
+//     // check for previous disconnect log
+//     let selectQuery = "SELECT * FROM dbo.sensor_disconnect_log WHERE disconnectEndTime = '" + disconnectStartTime + "'";
+//     let logQuery = "";
+//     sql.query(selectQuery, function (err, result) {
+//         if (err) {
+//             throw err;
+//         }
+//         if (result.recordset.length > 0) {
+//             // update disconnect log
+//             logQuery = "UPDATE dbo.sensor_disconnect_log SET disconnectEndTime = '" + disconnectEndTime + "' WHERE disconnectEndTime = '" + disconnectStartTime + "'";
+//         } else {
+//             // insert disconnect log
+//             logQuery = "INSERT INTO dbo.sensor_disconnect_log (disconnectStartTime, disconnectEndTime) VALUES ('" + disconnectStartTime + "', '" + disconnectEndTime + "')";
+//         }
+//         sql.query(logQuery, function (err2, _result) {
+//             if (err2) {
+//                 throw err2;
+//             }
+//         });
+//     });
+// }
 
-function insertGatewayDisconnectLog(gatewayName, disconnectTime) {
-    disconnectTime = bangkokTimeString(disconnectTime);
-    // check for previous disconnect log
-    // if exists, no need to insert
-    let selectQuery = "SELECT * FROM dbo.gateway_disconnect_log WHERE gatewayName = '" + gatewayName + "' AND disconnectTime = '" + disconnectTime + "'";
-    sql.query(selectQuery, function (err, result) {
-        if (err) {
-            throw err;
-        }
-        if (result.recordset.length === 0) {
-            let logQuery = "INSERT INTO dbo.gateway_disconnect_log (gatewayName, disconnectTime) VALUES ('" + gatewayName + "', '" + disconnectTime + "')";
-            sql.query(logQuery, (err2, _result) => {
-                if (err2) {
-                    throw err2;
-                }
-            });
-        }
-    });
-}
+// function insertGatewayDisconnectLog(gatewayName, disconnectTime) {
+//     disconnectTime = bangkokTimeString(disconnectTime);
+//     // check for previous disconnect log
+//     // if exists, no need to insert
+//     let selectQuery = "SELECT * FROM dbo.gateway_disconnect_log WHERE gatewayName = '" + gatewayName + "' AND disconnectTime = '" + disconnectTime + "'";
+//     sql.query(selectQuery, function (err, result) {
+//         if (err) {
+//             throw err;
+//         }
+//         if (result.recordset.length === 0) {
+//             let logQuery = "INSERT INTO dbo.gateway_disconnect_log (gatewayName, disconnectTime) VALUES ('" + gatewayName + "', '" + disconnectTime + "')";
+//             sql.query(logQuery, (err2, _result) => {
+//                 if (err2) {
+//                     throw err2;
+//                 }
+//             });
+//         }
+//     });
+// }
 
 // calling the API to get the data every 10 minutes to check if the sensor is connected or not
 function checkSensorConnection() {
@@ -85,13 +85,13 @@ function checkSensorConnection() {
             lastKnownSensorConnectedTime = new Date(data[1][0]).getTime() / 1000;
         } else {
             sensorConnected = false;
-            insertSensorDisconnectLog(startTime, endTime);
+            // insertSensorDisconnectLog(startTime, endTime);
         }
     }).catch(function (error) {
         if (error.response !== undefined) {
             if (error.response.status === 400) {
                 sensorConnected = false;
-                insertSensorDisconnectLog(startTime, endTime);
+                // insertSensorDisconnectLog(startTime, endTime);
             }
         } else {
             sensorCheckError = true;
@@ -125,7 +125,7 @@ async function checkGatewayConnection() {
                         gateway_timestamp: bangkokTimeString(gatewayLogTimestamp),
                         gateway_event: log.name
                     }
-                    insertGatewayDisconnectLog(gatewayLogName, gatewayLogTimestamp);
+                    // insertGatewayDisconnectLog(gatewayLogName, gatewayLogTimestamp);
                     gatewayDisconnectLog.push(gatewayLog);
                 }
             });
@@ -136,34 +136,34 @@ async function checkGatewayConnection() {
     });
 }
 
-async function querySQL(query) {
-    return new Promise((resolve, reject) => {
-        sql.query(query, (err, result) => {
-            if (err) {
-                reject(err);
-            }
-            resolve(result.recordset);
-        });
-    });
-}
+// async function querySQL(query) {
+//     return new Promise((resolve, reject) => {
+//         sql.query(query, (err, result) => {
+//             if (err) {
+//                 reject(err);
+//             }
+//             resolve(result.recordset);
+//         });
+//     });
+// }
 
-async function queryGatewayDisconnectLog(queryStartTime = 0, queryEndTime = 0) {
-    let logQuery = "SELECT * FROM dbo.gateway_disconnect_log"
-    if (queryStartTime > 0 && endTime > 0) {
-        logQuery += " WHERE disconnectTime BETWEEN '" + bangkokTimeString(queryStartTime) + "' AND '" + bangkokTimeString(queryEndTime) + "'";
-    }
-    logQuery += " ORDER BY disconnectTime DESC";
-    return querySQL(logQuery);
-}
+// async function queryGatewayDisconnectLog(queryStartTime = 0, queryEndTime = 0) {
+//     let logQuery = "SELECT * FROM dbo.gateway_disconnect_log"
+//     if (queryStartTime > 0 && endTime > 0) {
+//         logQuery += " WHERE disconnectTime BETWEEN '" + bangkokTimeString(queryStartTime) + "' AND '" + bangkokTimeString(queryEndTime) + "'";
+//     }
+//     logQuery += " ORDER BY disconnectTime DESC";
+//     return querySQL(logQuery);
+// }
 
-async function getSensorDisconnectLog(queryStartTime = 0, queryEndTime = 0) {
-    let logQuery = "SELECT * FROM dbo.sensor_disconnect_log"
-    if (queryStartTime > 0 && endTime > 0) {
-        logQuery += " WHERE disconnectEndTime BETWEEN '" + bangkokTimeString(queryStartTime) + "' AND '" + bangkokTimeString(queryEndTime) + "'";
-    }
-    logQuery += " ORDER BY disconnectEndTime DESC";
-    return querySQL(logQuery);
-}
+// async function getSensorDisconnectLog(queryStartTime = 0, queryEndTime = 0) {
+//     let logQuery = "SELECT * FROM dbo.sensor_disconnect_log"
+//     if (queryStartTime > 0 && endTime > 0) {
+//         logQuery += " WHERE disconnectEndTime BETWEEN '" + bangkokTimeString(queryStartTime) + "' AND '" + bangkokTimeString(queryEndTime) + "'";
+//     }
+//     logQuery += " ORDER BY disconnectEndTime DESC";
+//     return querySQL(logQuery);
+// }
 
 function checkAllConnection() {
     checkSensorConnection();
@@ -206,44 +206,44 @@ exports.checkGatewayConnection = function (_req, res) {
     }
 };
 
-exports.queryGatewayDisconnectLog = function (req, res) {
-    let queryStartTime = req.query.start;
-    let queryEndTime = req.query.end;
-    if (queryStartTime === undefined || queryEndTime === undefined) {
-        queryStartTime = 0;
-        queryEndTime = 0;
-    }
-    queryGatewayDisconnectLog(queryStartTime, queryEndTime).then(function (result) {
-        res.status(200).send({
-            gatewayDisconnectLog: result,
-            queryTime: parseInt(((new Date().getTime()) / 1000).toFixed(0))
-        });
-    }).catch(function (error) {
-        res.status(500).send({
-            error: "Error while getting gateway disconnect log",
-            message: error.message
-        });
-    });
-}
+// exports.queryGatewayDisconnectLog = function (req, res) {
+//     let queryStartTime = req.query.start;
+//     let queryEndTime = req.query.end;
+//     if (queryStartTime === undefined || queryEndTime === undefined) {
+//         queryStartTime = 0;
+//         queryEndTime = 0;
+//     }
+//     queryGatewayDisconnectLog(queryStartTime, queryEndTime).then(function (result) {
+//         res.status(200).send({
+//             gatewayDisconnectLog: result,
+//             queryTime: parseInt(((new Date().getTime()) / 1000).toFixed(0))
+//         });
+//     }).catch(function (error) {
+//         res.status(500).send({
+//             error: "Error while getting gateway disconnect log",
+//             message: error.message
+//         });
+//     });
+// }
 
-exports.querySensorDisconnectLog = function (req, res) {
-    let queryStartTime = req.query.start;
-    let queryEndTime = req.query.end;
-    if (queryStartTime === undefined || queryEndTime === undefined) {
-        queryStartTime = 0;
-        queryEndTime = 0;
-    }
-    getSensorDisconnectLog(queryStartTime, queryEndTime).then(function (result) {
-        res.status(200).send({
-            sensorDisconnectLog: result,
-            queryTime: parseInt(((new Date().getTime()) / 1000).toFixed(0))
-        });
-    }).catch(function (error) {
-        res.status(500).send({
-            error: "Error while getting sensor disconnect log",
-            message: error.message
-        });
-    });
-}
+// exports.querySensorDisconnectLog = function (req, res) {
+//     let queryStartTime = req.query.start;
+//     let queryEndTime = req.query.end;
+//     if (queryStartTime === undefined || queryEndTime === undefined) {
+//         queryStartTime = 0;
+//         queryEndTime = 0;
+//     }
+//     getSensorDisconnectLog(queryStartTime, queryEndTime).then(function (result) {
+//         res.status(200).send({
+//             sensorDisconnectLog: result,
+//             queryTime: parseInt(((new Date().getTime()) / 1000).toFixed(0))
+//         });
+//     }).catch(function (error) {
+//         res.status(500).send({
+//             error: "Error while getting sensor disconnect log",
+//             message: error.message
+//         });
+//     });
+// }
 
 exports.bangkokTimeString = bangkokTimeString;

@@ -5,18 +5,18 @@ const http = require('http'),
     bodyParser = require('body-parser'),
     dotenv = require('dotenv'),
     axios = require('axios'),
-    sql = require('mssql'),
+    // sql = require('mssql'),
     fs = require('fs'),
     app = express();
 dotenv.config();
 
-// connect to SQL server
-const sqlConfig = { user: process.env.SQL_UNAME, password: process.env.SQL_PWD, server: process.env.SQL_SERVER, database: process.env.SQL_DB };
+// // connect to SQL server
+// const sqlConfig = { user: process.env.SQL_UNAME, password: process.env.SQL_PWD, server: process.env.SQL_SERVER, database: process.env.SQL_DB };
 
-sql.connect(sqlConfig, function (err) {
-    if (err) { console.log("Error while connecting to database :- \n" + err); }
-    else { console.log('Connected to SQL Server'); }
-});
+// sql.connect(sqlConfig, function (err) {
+//     if (err) { console.log("Error while connecting to database :- \n" + err); }
+//     else { console.log('Connected to SQL Server'); }
+// });
 
 // require API
 const getDataAPI = require('./api/get-data');
@@ -98,10 +98,10 @@ app.get('/img/:img', (req, res) => { res.status(200).sendFile(PATH + '/img/' + r
 
 // Test API
 app.get('/api/helloWorld', (req, res) => { playgroundAPI.helloWorld(req, res); });
-app.get('/api/testSelectData', (req, res) => { playgroundAPI.testSelectData(req, res); });
-app.post('/api/testInsertData', (req, res) => { playgroundAPI.testInsertData(req, res); });
-app.put('/api/testUpdateData', (req, res) => { playgroundAPI.testUpdateData(req, res); });
-app.delete('/api/testDeleteData', (req, res) => { playgroundAPI.testDeleteData(req, res); });
+// app.get('/api/testSelectData', (req, res) => { playgroundAPI.testSelectData(req, res); });
+// app.post('/api/testInsertData', (req, res) => { playgroundAPI.testInsertData(req, res); });
+// app.put('/api/testUpdateData', (req, res) => { playgroundAPI.testUpdateData(req, res); });
+// app.delete('/api/testDeleteData', (req, res) => { playgroundAPI.testDeleteData(req, res); });
 app.post('/api/testSendData', (req, res) => { playgroundAPI.testSendData(req, res); });
 
 // GET REQUEST
@@ -132,13 +132,13 @@ app.get('/api/getAllIluminanceSensorDevices', (req, res) => { illuminanceCollect
 // GET CONNECTION STATUS (api/disconnect-detection)
 app.get('/api/checkSensorConnection', (req, res) => { disconnectDetection.checkSensorConnection(req, res); });
 app.get('/api/checkGatewayConnection', (req, res) => { disconnectDetection.checkGatewayConnection(req, res); });
-app.get('/api/querySensorDisconnectLog', (req, res) => { disconnectDetection.querySensorDisconnectLog(req, res); });
-app.get('/api/queryGatewayDisconnectLog', (req, res) => { disconnectDetection.queryGatewayDisconnectLog(req, res); });
+// app.get('/api/querySensorDisconnectLog', (req, res) => { disconnectDetection.querySensorDisconnectLog(req, res); });
+// app.get('/api/queryGatewayDisconnectLog', (req, res) => { disconnectDetection.queryGatewayDisconnectLog(req, res); });
 
-// RECORD IoT SENSOR VALUE (api/iot-sensors)
-app.post('/api/recordIoTSensorValue', (req, res) => { iotSensorAPI.recordIoTSensorValue(req, res); });
-app.get('/api/getLastRecordedData', (req, res) => { iotSensorAPI.getLastRecordedData(req, res); });
-app.get('/api/getRecordedData', (req, res) => { iotSensorAPI.getRecordedData(req, res); });
+// // RECORD IoT SENSOR VALUE (api/iot-sensors)
+// app.post('/api/recordIoTSensorValue', (req, res) => { iotSensorAPI.recordIoTSensorValue(req, res); });
+// app.get('/api/getLastRecordedData', (req, res) => { iotSensorAPI.getLastRecordedData(req, res); });
+// app.get('/api/getRecordedData', (req, res) => { iotSensorAPI.getRecordedData(req, res); });
 
 // LIGHTING DEVICE REPORT (api/device-report)
 app.get('/api/getAllLightDevices', (req, res) => { lightingDeviceReport.getAllLightDevices(req, res); });
