@@ -10,6 +10,12 @@ const http = require('http'),
     app = express();
 dotenv.config();
 
+// Initialize CMS token
+const { cmsToken } = require('./utils/token');
+
+// Delay App Start
+console.info('Starting APP');
+
 // // connect to SQL server
 // const sqlConfig = { user: process.env.SQL_UNAME, password: process.env.SQL_PWD, server: process.env.SQL_SERVER, database: process.env.SQL_DB };
 

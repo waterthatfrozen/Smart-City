@@ -2,6 +2,7 @@ const axios = require('axios');
 const {
     bangkokTimeString
 } = require('./disconnect-detection');
+const { cmsToken } = require('../utils/token');
 
 // Selected Device
 // Light Device:          1.2,          1.6,          1.12,         2.1,          2.13,         2.25,         3.1,          3.15,         3.29,         4.1,          4.8,          5.1,          5.22,         5.44,         5.66,         6.1,          6.14,         6.27
@@ -11,20 +12,6 @@ const intervalDuration = 60 * 15;
 const base_url = process.env.CMS_BASE_URL;
 let lastSensorValue = [];
 let currentTimestamp = 0;
-
-async function getToken() {
-    try {
-        const auth = {
-            "username": process.env.CMS_UNAME,
-            "password": process.env.CMS_PWD,
-            "cms_uid": process.env.CMS_UID
-        };
-        const response = await axios.post(base_url + "/token", auth);
-        return response.data.token;
-    } catch (error) {
-        console.log(error);
-    }
-}
 
 async function getDeviceLabel(deviceID) {
     try {
@@ -55,9 +42,8 @@ async function getDeviceZoneID(deviceID) {
 }
 
 async function sendGetSensorCommand(deviceID, gatewayMAC) {
-    const token = await getToken();
     const head = {
-        "Authorization": "Bearer " + token
+        "Authorization": "Bearer " + cmsToken.token
     };
     const url = base_url + "/devices/commands/id/" + deviceID;
     await axios.put(url, {
@@ -82,9 +68,8 @@ async function sendGetSensorCommand(deviceID, gatewayMAC) {
 async function getLuminanceSensorValue(deviceID) {
     console.log("Getting illuminance value from " + deviceID);
     const currentTime = Math.round(new Date().getTime() / 1000);
-    const token = await getToken();
     const head = {
-        "Authorization": "Bearer " + token
+        "Authorization": "Bearer " + cmsToken.token
     };
     const url = base_url + "/data/last/devices/" + deviceID + "/objects";
     let valueResponse = await axios.get(url, {
@@ -136,9 +121,8 @@ async function getAllLuminanceSensorValue() {
 
 async function getLuminanceSensorValueByDeviceIDandRange(device_id, start, end){
     const url = base_url + `/reports/devices/${device_id}/objects/illuminance?from=${start}&to=${end}`;
-    const token = await getToken();
     const head = {
-        "Authorization": "Bearer " + token
+        "Authorization": "Bearer " + cmsToken.token
     };
     let valueResponse = await axios.get(url, {
         headers: head
