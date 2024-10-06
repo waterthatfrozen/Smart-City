@@ -24,6 +24,6 @@
     "dotenv": "^16.0.1",
     "express": "^4.21.0",
     "express-session": "^1.17.3",
-    "mssql": "^8.1.2"
+    "mssql": "^11.0.1"
   }
 }
