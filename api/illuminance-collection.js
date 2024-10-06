@@ -2,6 +2,7 @@ const axios = require('axios');
 const {
     bangkokTimeString
 } = require('./disconnect-detection');
+const { cmsToken } = require('../utils/token');
 
 // Selected Device
 // Light Device:          1.2,          1.6,          1.12,         2.1,          2.13,         2.25,         3.1,          3.15,         3.29,         4.1,          4.8,          5.1,          5.22,         5.44,         5.66,         6.1,          6.14,         6.27
@@ -12,26 +13,12 @@ const base_url = process.env.CMS_BASE_URL;
 let lastSensorValue = [];
 let currentTimestamp = 0;
 
-async function getToken() {
-    try {
-        const auth = {
-            "username": process.env.CMS_UNAME,
-            "password": process.env.CMS_PWD,
-            "cms_uid": process.env.CMS_UID
-        };
-        const response = await axios.post(base_url + "/token", auth);
-        return response.data.token;
-    } catch (error) {
-        console.log(error);
-    }
-}
-
 async function getDeviceLabel(deviceID) {
     try {
         const deviceInfoResponse = await axios.get("https://siit-smart-city.azurewebsites.net/api/getDeviceInfo?device_id="+deviceID);
         return deviceInfoResponse.data.device_label;
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 }
 
@@ -41,7 +28,7 @@ async function getDeviceGatewayMAC(deviceID) {
         const deviceInfoResponse = await axios.get("https://siit-smart-city.azurewebsites.net/api/getDeviceInfo?device_id="+deviceID);
         return deviceInfoResponse.data.gateway_MAC;
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 }
 
@@ -50,14 +37,13 @@ async function getDeviceZoneID(deviceID) {
         const deviceInfoResponse = await axios.get("https://siit-smart-city.azurewebsites.net/api/getDeviceInfo?device_id="+deviceID);
         return deviceInfoResponse.data.zone_id;
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 }
 
 async function sendGetSensorCommand(deviceID, gatewayMAC) {
-    const token = await getToken();
     const head = {
-        "Authorization": "Bearer " + token
+        "Authorization": "Bearer " + cmsToken.token
     };
     const url = base_url + "/devices/commands/id/" + deviceID;
     await axios.put(url, {
@@ -70,21 +56,20 @@ async function sendGetSensorCommand(deviceID, gatewayMAC) {
         headers: head
     }).then(response => {
         if (response.status === 200) {
-            console.log("Successfully sent get illuminance command to " + deviceID);
+            console.info("Successfully sent get illuminance command to " + deviceID);
         } else {
-            console.log("Failed to send get illuminance command to " + deviceID);
+            console.warn("Failed to send get illuminance command to " + deviceID);
         }
     }).catch(_error => {
-        console.log("Failed to send get illuminance command to " + deviceID);
+        console.error("Failed to send get illuminance command to " + deviceID);
     });
 }
 
 async function getLuminanceSensorValue(deviceID) {
-    console.log("Getting illuminance value from " + deviceID);
+    console.info("Getting illuminance value from " + deviceID);
     const currentTime = Math.round(new Date().getTime() / 1000);
-    const token = await getToken();
     const head = {
-        "Authorization": "Bearer " + token
+        "Authorization": "Bearer " + cmsToken.token
     };
     const url = base_url + "/data/last/devices/" + deviceID + "/objects";
     let valueResponse = await axios.get(url, {
@@ -112,7 +97,7 @@ async function getLuminanceSensorValue(deviceID) {
 }
 
 async function getAllLuminanceSensorValue() {
-    console.log("Calling new set of data");
+    console.info("Calling new set of data");
     let illuminanceValues = [];
     // Send command to read value from illuminance Sensor
     for (const deviceID of deviceIDPrefixes) {
@@ -136,9 +121,8 @@ async function getAllLuminanceSensorValue() {
 
 async function getLuminanceSensorValueByDeviceIDandRange(device_id, start, end){
     const url = base_url + `/reports/devices/${device_id}/objects/illuminance?from=${start}&to=${end}`;
-    const token = await getToken();
     const head = {
-        "Authorization": "Bearer " + token
+        "Authorization": "Bearer " + cmsToken.token
     };
     let valueResponse = await axios.get(url, {
         headers: head

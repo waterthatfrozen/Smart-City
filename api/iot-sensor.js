@@ -1,3 +1,7 @@
+/**
+ * THIS FILE IS DEPRECATED
+ */
+
 const axios = require('axios').default;
 const sql = require('mssql');
 const dotenv = require('dotenv');

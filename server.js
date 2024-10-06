@@ -10,6 +10,14 @@ const http = require('http'),
     app = express();
 dotenv.config();
 
+// Initialize CMS token
+const { cmsToken } = require('./utils/token');
+
+// Delay App Start
+console.info("Delaying app start for token");
+const sleep = new Promise(resolve => setTimeout(resolve, 5 * 1000));
+console.info('Starting Application');
+
 // // connect to SQL server
 // const sqlConfig = { user: process.env.SQL_UNAME, password: process.env.SQL_PWD, server: process.env.SQL_SERVER, database: process.env.SQL_DB };
 
@@ -29,7 +37,7 @@ const disconnectDetection = require('./api/disconnect-detection');
 const illuminanceCollection = require('./api/illuminance-collection');
 
 // IoT Sensor Measurement Collection
-const iotSensorAPI = require('./api/iot-sensor');
+// const iotSensorAPI = require('./api/iot-sensor');
 
 // Lighting Device Report
 const lightingDeviceReport = require('./api/device-report');
@@ -82,7 +90,7 @@ app.use(function (req, res, next) {
 
 app.use(express.static(PATH));
 http.createServer(app).listen(PORT, () => {
-    console.log('Server listening on http://localhost:' + PORT);
+    console.info('Server listening on http://localhost:' + PORT);
 });
 
 //Routing
@@ -110,7 +118,7 @@ app.get('/api/getNasaData', (req, res) => { getDataAPI.getNasaData(req, res); })
 app.get('/api/getEnvSensorData', (req, res) => { getDataAPI.getEnvSensorData(req, res); });
 app.get('/api/getEnvSensorHourlyData', (req, res) => { getDataAPI.getEnvSensorHourlyData(req, res); });
 app.get('/api/getZoneLightData', (req, res) => { getDataAPI.getZoneLightData(req, res); });
-app.get('/api/getIlluminanceSensorDatabyDevice', (req, res) => { getDataAPI.getIlluminanceSensorDatabyDevice(req, res); });
+// app.get('/api/getIlluminanceSensorDatabyDevice', (req, res) => { getDataAPI.getIlluminanceSensorDatabyDevice(req, res); });
 
 // GET SUPPORT DATA REQUEST (api/get-support-data)
 app.get('/api/getServiceStatus', (req, res) => { getSupportDataAPI.getServiceStatus(req, res); });
@@ -155,7 +163,7 @@ app.post('/login', (req, res) => {
     axios.post(base_url + "/token", auth).then(response => {
         if (response.status === 200) {
             req.session.token = response.data.token;
-            console.log("login success");
+            console.info("login success");
             req.session.save(() => { 
                 res.status(200).send({ "status": "success" });
             });
@@ -184,7 +192,7 @@ app.post('/api/setEnableAutoLighting', (req, res) => { autoLighting.setEnableAut
 app.get('/:htmlfile', (req, res) => {
     checkTokenValid(req, res, () => {
         if (fs.access(PATH + '/' + req.params.htmlfile + '.html', fs.constants.F_OK, (err) => {
-            console.log(err);
+            console.error(err);
             if (err) { res.status(404).redirect('/404'); }
             else { res.status(200).sendFile(PATH + '/' + req.params.htmlfile + '.html'); }
         }));

@@ -14,23 +14,10 @@ const {
 const ZONE_ID = [4, 5, 6, 7, 8, 9];
 const ZONE_NAME = ["Prachasanti", "Sanya-Thammasak", "Talad Wicha", "Yung Thong - Outside", "Yung Thong - Inside", "Pitaktham"];
 const base_url = process.env.CMS_BASE_URL;
-
-async function getToken() {
-    try {
-        const auth = {
-            "username": process.env.CMS_UNAME,
-            "password": process.env.CMS_PWD,
-            "cms_uid": process.env.CMS_UID
-        };
-        const response = await axios.post(base_url + "/token", auth);
-        return response.data.token;
-    } catch (error) {
-        console.log(error);
-    }
-}
+const { cmsToken } = require('../utils/token');
 
 async function getAllLightDevices(_req,res){   
-    console.log("Getting all light devices");
+    console.info("Getting all light devices");
     let allLightDevices = [];
     let finished = 0;
     try {
@@ -55,7 +42,7 @@ async function getAllLightDevices(_req,res){
                         });
                     }
                 });
-            }).then(() =>{ finished++; }).catch((error) => { console.log(error); throw error; });
+            }).then(() =>{ finished++; }).catch((error) => { console.error(error); throw error; });
         }, this);
         let interval = setInterval(async () => {
             if(finished === ZONE_ID.length){
@@ -66,9 +53,9 @@ async function getAllLightDevices(_req,res){
                     else { return a.device_name.localeCompare(b.device_name); }
                 });
                 res.status(200).send({devices: allLightDevices, totalDevices: allLightDevices.length});
-                console.log("Finished getting all light devices");
+                console.info("Finished getting all light devices");
             }else{
-                console.log("Waiting for all light devices");
+                console.info("Waiting for all light devices");
             }
         }, 1000);
     } catch (error) {
@@ -85,9 +72,8 @@ async function getLightControlReportbyDeviceandRange(req,res) {
         res.status(400).send("Please provide device ID, start and end time");
     } else {
         try {        
-            const token = await getToken();
             const head = {
-                "Authorization": "Bearer " + token
+                "Authorization": "Bearer " + cmsToken.token
             };
             const url = `${base_url}/reports/devices/${device_id}/objects/light_control?from=${start_time}&to=${end_time}`;
             await axios.get(url, {
@@ -129,9 +115,8 @@ async function getLightPowerStatusReportbyDeviceandRange(req,res) {
     } else {
         try {
             const units = {light_dimming_value: "%", active_power: "W", active_energy: "kWh", v_rms: "V"};
-            const token = await getToken();
             const head = {
-                "Authorization": "Bearer " + token
+                "Authorization": "Bearer " + cmsToken.token
             };
             const url = `${base_url}/reports/devices/${device_id}/objects/lamp_monitor?from=${start_time}&to=${end_time}`;
             let response = await axios.get(url, { headers: head });
@@ -169,9 +154,8 @@ async function getLastLightPowerReportbyDevice(req,res){
     } else {
         try {
             const units = {light_dimming_value: "%", active_power: "W", active_energy: "kWh", v_rms: "V"};
-            const token = await getToken();
             const head = {
-                "Authorization": "Bearer " + token
+                "Authorization": "Bearer " + cmsToken.token
             };
             const url = `${base_url}/data/last/devices/${device_id}/objects`;
             await axios.get(url, {
@@ -212,9 +196,8 @@ async function getCurrentDeviceConnection(req,res){
         res.status(400).send("Please provide device MAC and gateway MAC");
     }else{
         try{
-            const token = await getToken();
             const head = {
-                "Authorization": "Bearer " + token
+                "Authorization": "Bearer " + cmsToken.token
             };
             const url = `${base_url}/network/gateways/${gatewayMAC}/nodes/${deviceMAC}`;
             await axios.get(url, {
@@ -239,9 +222,8 @@ async function sendGetPowerCommand(req,res) {
     if (!deviceID || !gatewayMAC) {
         res.status(400).send("Please provide device ID and gateway MAC");
     }else{
-        const token = await getToken();
         const head = {
-            "Authorization": "Bearer " + token
+            "Authorization": "Bearer " + cmsToken.token
         };
         const url = base_url + "/devices/commands/id/" + deviceID;
         await axios.put(url, {
