@@ -27,7 +27,7 @@ class cmsToken {
         let currentTime = this.getCurrentTime();
         let diffFromLastRefresh = currentTime - this.lastRefreshTime;
 
-        if (diffFromLastRefresh <= 3600) {
+        if (diffFromLastRefresh <= 3590) {
             console.warn('Token is not expired from last refresh time');
             return;
         }
