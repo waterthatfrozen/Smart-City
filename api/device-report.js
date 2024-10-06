@@ -17,7 +17,7 @@ const base_url = process.env.CMS_BASE_URL;
 const { cmsToken } = require('../utils/token');
 
 async function getAllLightDevices(_req,res){   
-    console.log("Getting all light devices");
+    console.info("Getting all light devices");
     let allLightDevices = [];
     let finished = 0;
     try {
@@ -42,7 +42,7 @@ async function getAllLightDevices(_req,res){
                         });
                     }
                 });
-            }).then(() =>{ finished++; }).catch((error) => { console.log(error); throw error; });
+            }).then(() =>{ finished++; }).catch((error) => { console.error(error); throw error; });
         }, this);
         let interval = setInterval(async () => {
             if(finished === ZONE_ID.length){
@@ -53,9 +53,9 @@ async function getAllLightDevices(_req,res){
                     else { return a.device_name.localeCompare(b.device_name); }
                 });
                 res.status(200).send({devices: allLightDevices, totalDevices: allLightDevices.length});
-                console.log("Finished getting all light devices");
+                console.info("Finished getting all light devices");
             }else{
-                console.log("Waiting for all light devices");
+                console.info("Waiting for all light devices");
             }
         }, 1000);
     } catch (error) {

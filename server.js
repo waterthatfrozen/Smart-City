@@ -14,7 +14,9 @@ dotenv.config();
 const { cmsToken } = require('./utils/token');
 
 // Delay App Start
-console.info('Starting APP');
+console.info("Delaying app start for token");
+const sleep = new Promise(resolve => setTimeout(resolve, 5 * 1000));
+console.info('Starting Application');
 
 // // connect to SQL server
 // const sqlConfig = { user: process.env.SQL_UNAME, password: process.env.SQL_PWD, server: process.env.SQL_SERVER, database: process.env.SQL_DB };
@@ -88,7 +90,7 @@ app.use(function (req, res, next) {
 
 app.use(express.static(PATH));
 http.createServer(app).listen(PORT, () => {
-    console.log('Server listening on http://localhost:' + PORT);
+    console.info('Server listening on http://localhost:' + PORT);
 });
 
 //Routing
@@ -161,7 +163,7 @@ app.post('/login', (req, res) => {
     axios.post(base_url + "/token", auth).then(response => {
         if (response.status === 200) {
             req.session.token = response.data.token;
-            console.log("login success");
+            console.info("login success");
             req.session.save(() => { 
                 res.status(200).send({ "status": "success" });
             });
@@ -190,7 +192,7 @@ app.post('/api/setEnableAutoLighting', (req, res) => { autoLighting.setEnableAut
 app.get('/:htmlfile', (req, res) => {
     checkTokenValid(req, res, () => {
         if (fs.access(PATH + '/' + req.params.htmlfile + '.html', fs.constants.F_OK, (err) => {
-            console.log(err);
+            console.error(err);
             if (err) { res.status(404).redirect('/404'); }
             else { res.status(200).sendFile(PATH + '/' + req.params.htmlfile + '.html'); }
         }));

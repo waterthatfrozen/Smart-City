@@ -37,7 +37,6 @@ class cmsToken {
             try {
                 const response = await axios.post(CMS_BASE_URL + '/token', AUTH_BODY);
                 this.setNewToken(response.data.token, false)
-                console.info(this);
                 break;
             } catch (error) {
                 console.error(error);

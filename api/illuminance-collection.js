@@ -18,7 +18,7 @@ async function getDeviceLabel(deviceID) {
         const deviceInfoResponse = await axios.get("https://siit-smart-city.azurewebsites.net/api/getDeviceInfo?device_id="+deviceID);
         return deviceInfoResponse.data.device_label;
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 }
 
@@ -28,7 +28,7 @@ async function getDeviceGatewayMAC(deviceID) {
         const deviceInfoResponse = await axios.get("https://siit-smart-city.azurewebsites.net/api/getDeviceInfo?device_id="+deviceID);
         return deviceInfoResponse.data.gateway_MAC;
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 }
 
@@ -37,7 +37,7 @@ async function getDeviceZoneID(deviceID) {
         const deviceInfoResponse = await axios.get("https://siit-smart-city.azurewebsites.net/api/getDeviceInfo?device_id="+deviceID);
         return deviceInfoResponse.data.zone_id;
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 }
 
@@ -56,17 +56,17 @@ async function sendGetSensorCommand(deviceID, gatewayMAC) {
         headers: head
     }).then(response => {
         if (response.status === 200) {
-            console.log("Successfully sent get illuminance command to " + deviceID);
+            console.info("Successfully sent get illuminance command to " + deviceID);
         } else {
-            console.log("Failed to send get illuminance command to " + deviceID);
+            console.warn("Failed to send get illuminance command to " + deviceID);
         }
     }).catch(_error => {
-        console.log("Failed to send get illuminance command to " + deviceID);
+        console.error("Failed to send get illuminance command to " + deviceID);
     });
 }
 
 async function getLuminanceSensorValue(deviceID) {
-    console.log("Getting illuminance value from " + deviceID);
+    console.info("Getting illuminance value from " + deviceID);
     const currentTime = Math.round(new Date().getTime() / 1000);
     const head = {
         "Authorization": "Bearer " + cmsToken.token
@@ -97,7 +97,7 @@ async function getLuminanceSensorValue(deviceID) {
 }
 
 async function getAllLuminanceSensorValue() {
-    console.log("Calling new set of data");
+    console.info("Calling new set of data");
     let illuminanceValues = [];
     // Send command to read value from illuminance Sensor
     for (const deviceID of deviceIDPrefixes) {
