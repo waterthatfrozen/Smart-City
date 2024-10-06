@@ -35,7 +35,7 @@ const disconnectDetection = require('./api/disconnect-detection');
 const illuminanceCollection = require('./api/illuminance-collection');
 
 // IoT Sensor Measurement Collection
-const iotSensorAPI = require('./api/iot-sensor');
+// const iotSensorAPI = require('./api/iot-sensor');
 
 // Lighting Device Report
 const lightingDeviceReport = require('./api/device-report');
@@ -116,7 +116,7 @@ app.get('/api/getNasaData', (req, res) => { getDataAPI.getNasaData(req, res); })
 app.get('/api/getEnvSensorData', (req, res) => { getDataAPI.getEnvSensorData(req, res); });
 app.get('/api/getEnvSensorHourlyData', (req, res) => { getDataAPI.getEnvSensorHourlyData(req, res); });
 app.get('/api/getZoneLightData', (req, res) => { getDataAPI.getZoneLightData(req, res); });
-app.get('/api/getIlluminanceSensorDatabyDevice', (req, res) => { getDataAPI.getIlluminanceSensorDatabyDevice(req, res); });
+// app.get('/api/getIlluminanceSensorDatabyDevice', (req, res) => { getDataAPI.getIlluminanceSensorDatabyDevice(req, res); });
 
 // GET SUPPORT DATA REQUEST (api/get-support-data)
 app.get('/api/getServiceStatus', (req, res) => { getSupportDataAPI.getServiceStatus(req, res); });
